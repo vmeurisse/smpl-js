@@ -1,0 +1,16 @@
+{
+	"name": "smpl",
+	"version": "0.0.1",
+	"author": "Vincent Meurisse <dev@meurisse.org>",
+	"description": "A simple javascrit library used to build complex web applications",
+	"dependencies" : {
+		"requirejs"   :  "2.0.x"
+	},
+	"scripts": {
+		"preinstall": "node ./utils/build.js"
+	},
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/vmeurisse/smpl-js.git"
+	}
+}
