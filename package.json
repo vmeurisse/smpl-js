@@ -7,7 +7,7 @@
 		"requirejs"   :  "2.0.x"
 	},
 	"scripts": {
-		"preinstall": "node ./utils/build.js"
+		"install": "node ./utils/build.js"
 	},
 	"repository": {
 		"type": "git",
