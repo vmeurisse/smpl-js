@@ -1,4 +1,4 @@
-define(['smpl.core'], function(smpl) {
+define(['./smpl.core'], function(smpl) {
 	smpl.string = {};
 	
 	smpl.string.supplant = function(s, o) {

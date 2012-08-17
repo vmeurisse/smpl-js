@@ -1,4 +1,4 @@
-define(['smpl.core'], function(smpl) {
+define(['./smpl.core'], function(smpl) {
 	smpl.dom = {};
 
 	smpl.dom.hasClass = function (ele, cls) {

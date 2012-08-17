@@ -1,4 +1,4 @@
-define(['smpl.core', 'smpl.string', 'smpl.utils'], function(smpl) {
+define(['./smpl.core', './smpl.string', './smpl.utils'], function(smpl) {
 	smpl.tpl = {};
 	
 	smpl.tpl.Template = function (name, txt) {

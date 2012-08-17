@@ -12,5 +12,6 @@
 	"repository": {
 		"type": "git",
 		"url": "https://github.com/vmeurisse/smpl-js.git"
-	}
+	},
+	"main": "src/smpl.js"
 }

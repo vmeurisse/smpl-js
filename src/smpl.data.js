@@ -1,4 +1,4 @@
-define(['smpl.core'], function(smpl) {
+define(['./smpl.core'], function(smpl) {
 	var data = smpl.data = {};
 
 	data.updateObject = function (receiver, updater){
