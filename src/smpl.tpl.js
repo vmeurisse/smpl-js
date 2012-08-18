@@ -21,6 +21,11 @@ define(['./smpl.string', './smpl.utils'], function(smpl) {
 				}
 			}
 		}
+		if (smpl.tpl.globalObj) {
+			this.__globalKey = '_' + smpl.utils.uniq();
+			smpl.tpl.globalObj[this.__globalKey] = this;
+			this.__globalKey = smpl.tpl.globalKey + '.' + this.__globalKey;
+		}
 	};
 
 	smpl.tpl.Template.prototype.set = function(key, value) {
@@ -42,7 +47,9 @@ define(['./smpl.string', './smpl.utils'], function(smpl) {
 		if (!this.blocks[smpl.tpl.utils.MAIN]) {
 			this.init(this.blocks.toInit);
 		}
-		this.data = {};
+		this.data = {
+			me: this.__globalKey
+		};
 		this.parsedBlocks = {};
 		return this;
 	};
@@ -68,7 +75,7 @@ define(['./smpl.string', './smpl.utils'], function(smpl) {
 			display = display || container.style.display;
 			container.style.display = 'none';
 			container.innerHTML = this.retrieve();
-			this.onLoad && this.onLoad();
+			this.onLoad && this.onLoad(container, display);
 			container.style.display = display;
 		}
 	};
@@ -77,7 +84,20 @@ define(['./smpl.string', './smpl.utils'], function(smpl) {
 		this.set(pfx, obj);
 	};
 
-
+	smpl.tpl.globalRepo = {};
+	smpl.tpl.enableGlobal = function(key, obj) {
+		if (key) {
+			smpl.tpl.globalKey = key;
+			smpl.tpl.globalObj = obj;
+		} else {
+			if (typeof window === 'object' && window.smpl === smpl) {
+				smpl.tpl.globalKey = 'window.tpl.globalRepo';
+				smpl.tpl.globalObj = window.tpl.globalRepo;
+			}
+		}
+		return !!smpl.tpl.globalKey;
+	};
+	
 	smpl.tpl.utils = {};
 	smpl.tpl.utils.libraries = {};
 	smpl.tpl.utils.registerLibrary = function(libName, library) {
