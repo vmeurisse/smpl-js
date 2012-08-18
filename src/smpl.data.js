@@ -218,6 +218,6 @@ define(['./smpl.core'], function(smpl) {
 		return true;
 	};
 
-	return smpl.data;
+	return smpl;
 });
 

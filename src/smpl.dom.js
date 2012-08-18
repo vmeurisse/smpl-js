@@ -39,5 +39,5 @@ define(['./smpl.core'], function(smpl) {
 		}
 	};
 	
-	return smpl.dom;
+	return smpl;
 });

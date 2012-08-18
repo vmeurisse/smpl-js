@@ -1,17 +1,26 @@
-define(['./smpl.core', './smpl.string', './smpl.utils'], function(smpl) {
+define(['./smpl.string', './smpl.utils'], function(smpl) {
 	smpl.tpl = {};
 	
-	smpl.tpl.Template = function (name, txt) {
+	smpl.tpl.Template = function (name, blocks) {
 		this.name = name;
-		if (txt !== undefined) {
-			this.init(txt);
+		this.blocks = {
+			toInit: blocks
 		}
 	};
 
-	smpl.tpl.Template.prototype.init = function(txt) {
-		var params = Array.prototype.slice.call(arguments, 1);
-		this.onCreate && this.onCreate.apply(this, params);
-		smpl.tpl.utils.make(this, txt);
+	smpl.tpl.Template.prototype.init = function(blocks, partial) {
+		delete this.blocks.toInit;
+		if (typeof blocks === 'string') {
+			smpl.tpl.utils.make(this, blocks);
+			blocks = this.blocks;
+		}
+		if (!partial) {
+			for (var blkId in blocks) {
+				if (typeof blocks[blkId]  === 'string') {
+					this.blocks[blkId] = new Function(blocks[blkId]);
+				}
+			}
+		}
 	};
 
 	smpl.tpl.Template.prototype.set = function(key, value) {
@@ -30,8 +39,12 @@ define(['./smpl.core', './smpl.string', './smpl.utils'], function(smpl) {
 	};
 
 	smpl.tpl.Template.prototype.reset = function(blkId) {
+		if (!this.blocks[smpl.tpl.utils.MAIN]) {
+			this.init(this.blocks.toInit);
+		}
 		this.data = {};
 		this.parsedBlocks = {};
+		return this;
 	};
 
 	smpl.tpl.Template.prototype.parseBlock = function(blkId) {
@@ -44,16 +57,17 @@ define(['./smpl.core', './smpl.string', './smpl.utils'], function(smpl) {
 		this.reset();
 		this.onParse.apply(this, arguments);
 		this.parseBlock(smpl.tpl.utils.MAIN);
+		return this;
 	};
 
 	smpl.tpl.Template.prototype.load = function(container, display) {
-		if (typeof container === "string") {
+		if (typeof container === 'string') {
 			container = document.getElementById(container);
 		}
 		if (container) {
 			display = display || container.style.display;
-			container.style.display = "none";
-			smpl.dom.updateContainer(container, this.retrieve());
+			container.style.display = 'none';
+			container.innerHTML = this.retrieve();
 			this.onLoad && this.onLoad();
 			container.style.display = display;
 		}
@@ -76,12 +90,13 @@ define(['./smpl.core', './smpl.string', './smpl.utils'], function(smpl) {
 		}
 	};
 
-	smpl.tpl.utils.MAIN = "_main";
+	smpl.tpl.utils.MAIN = '_main';
 	smpl.tpl.utils.make = function (tpl, txt) {
 		var l = txt.length,
 			pos = 0,
 			startPos = 0,
-			stack = [];
+			stack = [],
+			newpos;
 		tpl.blocks = {};
 		this.processToken(tpl, stack, {type: 'BEGIN', txt: this.MAIN});
 		while (pos < l) {
@@ -89,7 +104,7 @@ define(['./smpl.core', './smpl.string', './smpl.utils'], function(smpl) {
 			if (chr === '\\' && '\\{'.indexOf(txt.charAt(pos)) !== -1) { // skip escaped \ and {
 				++pos;
 			} else if (chr === '<' && txt.charAt(pos) === '!' && txt.charAt(pos + 1) === '-' && txt.charAt(pos + 2) === '-') { // <!-- (BEGIN|END): [-\w]+ --> block
-				var newpos = txt.indexOf('-->', pos + 3);
+				newpos = txt.indexOf('-->', pos + 3);
 				if (newpos !== -1) {
 					var m = /^\s+(BEGIN|END):\s+([-\w]+)\s+$/.exec(txt.substring(pos + 3, newpos));
 					if (m) {
@@ -100,11 +115,14 @@ define(['./smpl.core', './smpl.string', './smpl.utils'], function(smpl) {
 					}
 				}
 			} else if (chr === '{') {
-				this.processToken(tpl, stack, {type: 'html', txt: txt.substring(startPos, pos - 1), beforeJs: true});
-				startPos = pos;
-				pos = this.jsTokenize(txt, pos);
-				this.processToken(tpl, stack, {type: 'js', txt: txt.substring(startPos, pos)});
-				startPos = ++pos; //skip closing }
+				newpos = this.jsTokenize(txt, pos);
+				if (newpos != pos) {
+					this.processToken(tpl, stack, {type: 'html', txt: txt.substring(startPos, pos - 1), beforeJs: true});
+					startPos = pos;
+					this.processToken(tpl, stack, {type: 'js', txt: txt.substring(pos, newpos)});
+					startPos = pos = newpos + 1; //skip closing }
+				}
+
 			}
 		}
 		this.processToken(tpl, stack, {type: 'html', txt: txt.substring(startPos, pos)});
@@ -123,7 +141,7 @@ define(['./smpl.core', './smpl.string', './smpl.utils'], function(smpl) {
 				if (closed !== token.txt) {
 					console.error(smpl.string.supplant('Incorrect block closed <{0}>. Openned block was <{1}>.', [token.txt, closed]));
 				}
-				tpl.blocks[closed] = new Function('return ' + tpl.blocks[closed].join(' + '));
+				tpl.blocks[closed] = 'return ' + tpl.blocks[closed].join(' + ');
 				processed = "(this.retrieve('" + closed + "') || '')";
 				break;
 			case 'html':
@@ -147,18 +165,25 @@ define(['./smpl.core', './smpl.string', './smpl.utils'], function(smpl) {
 				'[': ']',
 				'{': '}'
 			},
-			lastchar = '';
+			lastchar = '',
+			newLine = /[\u000A\u000D\u2028\u2029]/,
+			at = input.charAt(pos) === '@',
+			initialPos = pos;
 		
 		while (pos < l) {
 			var chr = input.charAt(pos++);
-			if (chr === '/' && input.charAt(pos) === '/') { //Single line comment
-				while(!/[\u000A\u000D\u2028\u2029]/.test(input.charAt(++pos)));
+			if (newLine.test(chr)) {
+				if (!at) return initialPos;
+			} if (chr === '/' && input.charAt(pos) === '/') { //Single line comment
+				if (!at) return initialPos;
+				while(!newLine.test(input.charAt(++pos)));
 				++pos;
 			} else if (chr === '/' && input.charAt(pos) === '*') { //Multi line comment
+				if (!at) return initialPos;
 				var newpos = input.indexOf('*/', pos + 1);
 				pos = (newpos === -1) ? l : newpos + 2;
 			} else {
-				if (chr === '"' || chr === "'") { //String	
+				if (chr === '"' || chr === "'") { //String
 					pos = this.findUnescaped(input, chr, pos);
 				} else if (chr === '/' && '(,=:[!&|?{};'.indexOf(lastchar) !== -1) { //Regexp literal 
 					while (pos < l) {
@@ -216,5 +241,5 @@ define(['./smpl.core', './smpl.string', './smpl.utils'], function(smpl) {
 		return input;
 	};
 	
-	return smpl.tpl;
+	return smpl;
 });

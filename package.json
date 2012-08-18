@@ -4,14 +4,21 @@
 	"author": "Vincent Meurisse <dev@meurisse.org>",
 	"description": "A simple javascrit library used to build complex web applications",
 	"dependencies" : {
-		"requirejs"   :  "2.0.x"
+		"jake" :  "git://github.com/vmeurisse/jake.git",
+		"amdefine": "0.0.x"
 	},
 	"scripts": {
-		"install": "node ./utils/build.js"
+		"install": "jake"
 	},
 	"repository": {
 		"type": "git",
 		"url": "https://github.com/vmeurisse/smpl-js.git"
 	},
-	"main": "src/smpl.js"
+	"files": [
+		"package.json",
+		"Jakefile.js",
+		"README.md",
+		"src"
+	],
+	"main": "smpl.js"
 }

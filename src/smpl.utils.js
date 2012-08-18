@@ -18,5 +18,5 @@ define(['./smpl.core'], function(smpl) {
 				.replace(/\//g, '\\/');
 	};
 	
-	return smpl.utils;
+	return smpl;
 });

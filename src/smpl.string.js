@@ -7,5 +7,5 @@ define(['./smpl.core'], function(smpl) {
 			return (r !== undefined) ? r : a;
 		});
 	};
-	return smpl.string;
+	return smpl;
 });
