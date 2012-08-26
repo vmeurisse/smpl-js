@@ -1,4 +1,4 @@
-define(['./smpl.string', './smpl.utils'], function(smpl) {
+define(['./smpl.string', './smpl.utils', './smpl.dom'], function(smpl) {
 	smpl.tpl = {};
 	
 	smpl.tpl.Template = function (name, blocks) {
@@ -17,7 +17,7 @@ define(['./smpl.string', './smpl.utils'], function(smpl) {
 		if (!partial) {
 			for (var blkId in blocks) {
 				if (typeof blocks[blkId]  === 'string') {
-					this.blocks[blkId] = new Function(blocks[blkId]);
+					this.blocks[blkId] = new Function('smpl', '"use strict";' + blocks[blkId]);
 				}
 			}
 		}
@@ -55,7 +55,7 @@ define(['./smpl.string', './smpl.utils'], function(smpl) {
 	};
 
 	smpl.tpl.Template.prototype.parseBlock = function(blkId) {
-		var str = this.blocks[blkId].call(this);
+		var str = this.blocks[blkId].call(this, smpl);
 		this.parsedBlocks[blkId] = this.parsedBlocks[blkId] || [];
 		this.parsedBlocks[blkId].push(str);
 	};
@@ -169,7 +169,7 @@ define(['./smpl.string', './smpl.utils'], function(smpl) {
 				processed = "'" + smpl.utils.escapeJs(token.txt) + "'";
 				break
 			case 'js':
-				processed = '((' + this.compileJs(token.txt) + ') || "")';
+				processed = this.compileJs(token.txt);
 				break;
 		}
 		if (processed && stack.length) {
@@ -257,6 +257,8 @@ define(['./smpl.string', './smpl.utils'], function(smpl) {
 			var id = /^[-\w]+(?::[-\w]+)*\s/.exec(input);
 			var args = input.substring(id[0].length).trim();
 			input = 'smpl.tpl.utils.retrieveWidget(' + id[0].split(':').join() + (args ? ', ' + args : '') + ')';
+		} else {
+			input = 'smpl.dom.escapeHTML(' + input + "||'')";
 		}
 		return input;
 	};
