@@ -4,10 +4,10 @@ var path = require('path');
 var dir = {
 	base: path.normalize(__dirname + '/')
 };
+
 dir.src = dir.base + 'src/';
 
 task('default', [], function() {
-//	jake.cpR(dir.src + '*', dir.base);
 	var list = new jake.FileList();
 	list.include(dir.src + '/**');
 	list = list.toArray();
@@ -17,7 +17,6 @@ task('default', [], function() {
 			var filePath = srcPath.substr(dir.src.length);
 			var destDir = dir.base + path.dirname(filePath);
 			jake.mkdirP(destDir);
-			console.log(filePath, destDir, filePath);
 			var txt = fs.readFileSync(srcPath, 'utf8');
 			txt = "if (typeof define !== 'function') {var define = require('amdefine')(module);}\n" + txt; 
 			fs.writeFileSync(filePath, txt, 'utf8');
