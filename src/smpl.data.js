@@ -1,5 +1,5 @@
 define(['./smpl.core'], function(smpl) {
-	var data = smpl.data = {};
+	var data = smpl.data = smpl.data || {};
 
 	data.updateObject = function (receiver, updater){
 		for(var p in updater) {
