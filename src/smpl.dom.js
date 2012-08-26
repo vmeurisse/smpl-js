@@ -39,5 +39,12 @@ define(['./smpl.core'], function(smpl) {
 		}
 	};
 	
+	smpl.dom.escapeHTML = function(string) {
+		return String(string).replace(/&/g, '&amp;')
+		                     .replace(/"/g, '&quot;')
+		                     .replace(/'/g, '&#39;')
+		                     .replace(/</g, '&lt;')
+		                     .replace(/>/g, '&gt;');
+	};
 	return smpl;
 });
