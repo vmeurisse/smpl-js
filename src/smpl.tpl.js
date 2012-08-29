@@ -34,7 +34,7 @@ define(['./smpl.string', './smpl.utils', './smpl.dom'], function(smpl) {
 
 	smpl.tpl.Template.prototype.retrieve = function(blkId) {
 		blkId = blkId || smpl.tpl.utils.MAIN;
-		blk = this.parsedBlocks[blkId];
+		var blk = this.parsedBlocks[blkId];
 		if (blk) {
 			delete this.parsedBlocks[blkId]
 			return blk.join('');
