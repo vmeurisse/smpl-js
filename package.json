@@ -1,10 +1,15 @@
 {
 	"name": "smpl",
-	"version": "0.0.1",
+	"version": "0.0.1alpha",
 	"author": "Vincent Meurisse <dev@meurisse.org>",
 	"description": "A simple javascrit library used to build complex web applications",
-	"dependencies" : {
-		"jake" :  "git://github.com/vmeurisse/jake.git",
+	"keywords": ["simple",  "template", "ajax", "library", "data", "toolkit", "amd", "light", "lightweight", "mvc"],
+	"homepage": "https://github.com/vmeurisse/smpl-js",
+	"bugs": {
+		"url": "https://github.com/vmeurisse/smpl-js/issues"
+	},
+	"dependencies": {
+		"jake": "git://github.com/vmeurisse/jake.git",
 		"amdefine": "0.0.x"
 	},
 	"scripts": {

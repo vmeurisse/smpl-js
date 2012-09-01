@@ -9,7 +9,7 @@ dir.src = dir.base + 'src/';
 
 task('default', [], function() {
 	var list = new jake.FileList();
-	list.include(dir.src + '/**');
+	list.include(dir.src + '**');
 	list = list.toArray();
 	list.forEach(function(srcPath) {
 		var stat = fs.statSync(srcPath);
