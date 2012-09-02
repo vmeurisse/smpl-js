@@ -1,12 +1,12 @@
 define(['./smpl.core'], function(smpl) {
 	var data = smpl.data = smpl.data || {};
-
+	
 	data.updateObject = function (receiver, updater){
 		for(var p in updater) {
 			receiver[p]=updater[p];
 		}
 	};
-
+	
 	data.extendObject = function(receiver, extender) {
 		for (var p in extender) {
 			if (!receiver.hasOwnProperty(p)) {
@@ -14,7 +14,7 @@ define(['./smpl.core'], function(smpl) {
 			}
 		}
 	};
-
+	
 	data.filter = function(list, property, value) {
 		var filteredList = [];
 		for (var i = 0, l = list.length; i < l; i++) {
@@ -25,7 +25,7 @@ define(['./smpl.core'], function(smpl) {
 		}
 		return filteredList;
 	};
-
+	
 	data.Sorter = function(sorter) {
 		this.type = sorter.type;
 		this.key = sorter.key;
@@ -60,11 +60,11 @@ define(['./smpl.core'], function(smpl) {
 			return (this.isNumber && value == null) ? Infinity : value;
 		}
 	};
-
+	
 	data.SortItem = function(item) {
 		this.item = item;
 	};
-
+	
 	/**
 	* Sort an array of objects on the specified properties
 	* @param {Object[]} list  the list of object to sort
@@ -74,7 +74,7 @@ define(['./smpl.core'], function(smpl) {
 	*/
 	data.sort = function(list, sorters, reverse, reversed) {
 		if (!list.length || !sorters.length) return list;
-
+		
 		var sortList, transformed, originalList = list,
 			single = (sorters.length === 1);
 		data._prepareSorters(sorters);
@@ -108,7 +108,7 @@ define(['./smpl.core'], function(smpl) {
 		}
 		return list;
 	};
-
+	
 	data._prepareSorters = function(sorters) {
 		var needPreprocess = false;
 		for (var i = 0, l = sorters.length; i < l; ++i) {
@@ -122,7 +122,7 @@ define(['./smpl.core'], function(smpl) {
 		}
 		return needPreprocess;
 	};
-
+	
 	data._preprocessData = function(list, sorters, force) {
 		var sortList, m = list.length, initIndex;
 		for (var i = 0, l = sorters.length; i < l; i++) {
@@ -151,22 +151,22 @@ define(['./smpl.core'], function(smpl) {
 		}
 		return sortList;
 	};
-
+	
 	data.sortList = [];
-
+	
 	data._cleanData = function(originalList, sortedList) {
 		for (var i = 0, l = originalList.length; i < l; i++) {
 			originalList[i] = sortedList[i].item;
 			delete sortedList[i].item;
 		};
 	};
-
+	
 	data._sortNumbers = function(a, b) {
 		var va = a.sorter0;
 		var vb = b.sorter0;
 		return (va === vb) ? 0 : ((va < vb) ? -1 : 1);
 	};
-
+	
 	data._sortMultipleKeys = function(a, b) {
 		var sorters = data._sorters, transformed = data._transformed;
 		var sorter, va, vb;
@@ -188,7 +188,7 @@ define(['./smpl.core'], function(smpl) {
 		}
 		return 0;
 	};
-
+	
 	data.get = function(obj, keys) {
 		if (typeof keys === 'string') {
 			keys = keys.split('.');
@@ -200,24 +200,67 @@ define(['./smpl.core'], function(smpl) {
 		}
 		return obj;
 	};
-
-	data.compare = function (o1, o2, deep) {
-		if (o1 === o2) return true;
-		if (typeof o1 !== 'object' || typeof o2 !== 'object') return false;
-		if (!o1 || !o2) return false;
-		var k1 = Object.keys(o1).sort(),
-			k2 = Object.keys(o2).sort(),
-			i = k1.length;
-		if (k2.length != i) return false;
+	
+	data.compare = function (a, b, stackA, stackB) {
+		if (a === b) {
+			// We must take care that comparing 0 and -0 should return false;
+			return a !== 0 || 1 / a == 1 / b;
+		}
+		if (a !== a && b !== b) {
+			// Test for NaN
+			// NaN is the only value where x !== x
+			// Don't use isNaN as isNaN('x') === true
+			return true;
+		}
+		
+		var stringA = Object.prototype.toString.call(a);
+		if (stringA !== Object.prototype.toString.call(b)) {
+			return false;
+		}
+		
+		if (stringA === '[object RegExp]') {
+			return '' + a === '' + b;
+		}
+		
+		if (typeof a !== 'object' || typeof b !== 'object') return false;
+		if (!a || !b) return false;
+		
+		stackA || (stackA = []);
+		stackB || (stackB = []);
+		
+		var i = stackA.length;
 		while (i--) {
-			var key = k1[i];
-			if (k2[i] !== key) return false;
-			if (deep && !data.compare(o1[key], o2[key], deep)) return false;
-			if (!deep && o1[key] !== o2[key]) return false;
+			if (stackA[i] === a) {
+				return stackB[i] === b;
+			}
+		}
+		
+		if (Object.getPrototypeOf(a) !== Object.getPrototypeOf(b)) {
+			return false;
+		}
+		
+		var keysA = Object.keys(a).sort(),
+		    keysB = Object.keys(b).sort();
+		i  = keysA.length;
+		if (keysB.length !== i) return false;
+		
+		while (i--) {
+			if (keysA[i] !== keysB[i]) {
+				return false;
+			}
+		}
+		
+		stackA.push(a);
+		stackB.push(b);
+	
+		i = keysA.length;
+		while (i--) {
+			var key = keysA[i];
+			if (!data.compare(a[key], b[key], stackA, stackB)) return false;
 		}
 		return true;
 	};
-
+	
 	return smpl;
 });
 

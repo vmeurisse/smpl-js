@@ -1,4 +1,5 @@
 /build
 /node_modules
 /smpl*.js
+/assert.js
 /npm-shrinkwrap.json

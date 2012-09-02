@@ -12,8 +12,12 @@
 		"jake": "git://github.com/vmeurisse/jake.git",
 		"amdefine": "0.0.x"
 	},
+	"devDependencies": {
+		"mocha": "1.4.x"
+	},
 	"scripts": {
-		"install": "jake"
+		"install": "jake",
+		"test": "mocha"
 	},
 	"repository": {
 		"type": "git",
