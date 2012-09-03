@@ -247,6 +247,10 @@ define(['./smpl.string', './smpl.utils', './smpl.dom'], function(smpl) {
 	};
 
 	smpl.tpl.utils.compileJs = function(input) {
+		if (input.charAt(0) === '{' && input.charAt(input.length - 1) === '}') {
+			var noEscape = true;
+			input = input.slice(1, -1);
+		}
 		var noDolar = /^\$[@\s]/.test(input);
 		var at = /^\$?@/.test(input);
 		input = input.substring(+noDolar + at);
@@ -257,6 +261,8 @@ define(['./smpl.string', './smpl.utils', './smpl.dom'], function(smpl) {
 			var id = /^[\-\w]+(?::[\-\w]+)*\s/.exec(input);
 			var args = input.substring(id[0].length).trim();
 			input = 'smpl.tpl.utils.retrieveWidget(' + id[0].split(':').join() + (args ? ', ' + args : '') + ')';
+		} else if (noEscape) {
+			input = '((' + input + ")||'')";
 		} else {
 			input = 'smpl.dom.escapeHTML(' + input + "||'')";
 		}
