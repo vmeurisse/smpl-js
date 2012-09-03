@@ -57,7 +57,7 @@ define(['./smpl.core'], function(smpl) {
 		} else if (this.isText && value.toLocaleLowerCase) {
 			return value.toLocaleLowerCase();
 		} else {
-			return (this.isNumber && value == null) ? Infinity : value;
+			return (this.isNumber && (value === null || value === undefined)) ? Infinity : value;
 		}
 	};
 	
@@ -158,7 +158,7 @@ define(['./smpl.core'], function(smpl) {
 		for (var i = 0, l = originalList.length; i < l; i++) {
 			originalList[i] = sortedList[i].item;
 			delete sortedList[i].item;
-		};
+		}
 	};
 	
 	data._sortNumbers = function(a, b) {
@@ -225,8 +225,8 @@ define(['./smpl.core'], function(smpl) {
 		if (typeof a !== 'object' || typeof b !== 'object') return false;
 		if (!a || !b) return false;
 		
-		stackA || (stackA = []);
-		stackB || (stackB = []);
+		stackA  = stackA || [];
+		stackB = stackB || [];
 		
 		var i = stackA.length;
 		while (i--) {

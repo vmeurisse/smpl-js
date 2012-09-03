@@ -32,23 +32,24 @@ define(['./smpl.core'], function(smpl) {
 	};
 	
 	data.DataDispatcher.prototype.dispatch = function(data) {
-		for (var key in data) {
+		var i, l, key;
+		for (key in data) {
 			var item = data[key];
 			
 			var processors = this.processors[key] || [];
-			for (var i = 0, l = processors.length; i < l; i++) {
+			for (i = 0, l = processors.length; i < l; i++) {
 				item = processors[i](item);
 			}
 			
 			var endpoints = this.endpoints[key] || [];
-			for (var i = 0, l = endpoints.length; i < l; i++) {
+			for (i = 0, l = endpoints.length; i < l; i++) {
 				endpoints[i](item);
 			}
 		}
 		
-		for (var i = 0, l = this.listeners.length; i < l; i++) {
+		for (i = 0, l = this.listeners.length; i < l; i++) {
 			var listener = this.listeners[i];
-			for (var key in data) {
+			for (key in data) {
 				if (listener.keys[key]) {
 					listener.fn();
 					break;

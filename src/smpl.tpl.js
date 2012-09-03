@@ -5,7 +5,7 @@ define(['./smpl.string', './smpl.utils', './smpl.dom'], function(smpl) {
 		this.name = name;
 		this.blocks = {
 			toInit: blocks
-		}
+		};
 	};
 
 	smpl.tpl.Template.prototype.init = function(blocks, partial) {
@@ -36,14 +36,14 @@ define(['./smpl.string', './smpl.utils', './smpl.dom'], function(smpl) {
 		blkId = blkId || smpl.tpl.utils.MAIN;
 		var blk = this.parsedBlocks[blkId];
 		if (blk) {
-			delete this.parsedBlocks[blkId]
+			delete this.parsedBlocks[blkId];
 			return blk.join('');
 		} else {
 			return '';
 		}
 	};
 
-	smpl.tpl.Template.prototype.reset = function(blkId) {
+	smpl.tpl.Template.prototype.reset = function() {
 		if (!this.blocks[smpl.tpl.utils.MAIN]) {
 			this.init(this.blocks.toInit);
 		}
@@ -126,7 +126,7 @@ define(['./smpl.string', './smpl.utils', './smpl.dom'], function(smpl) {
 			} else if (chr === '<' && txt.charAt(pos) === '!' && txt.charAt(pos + 1) === '-' && txt.charAt(pos + 2) === '-') { // <!-- (BEGIN|END): [-\w]+ --> block
 				newpos = txt.indexOf('-->', pos + 3);
 				if (newpos !== -1) {
-					var m = /^\s+(BEGIN|END):\s+([-\w]+)\s+$/.exec(txt.substring(pos + 3, newpos));
+					var m = /^\s+(BEGIN|END):\s+([\-\w]+)\s+$/.exec(txt.substring(pos + 3, newpos));
 					if (m) {
 						this.processToken(tpl, stack, {type: 'html', txt: txt.substring(startPos, pos - 1)});
 						this.processToken(tpl, stack, {type: m[1], txt: m[2]});
@@ -165,9 +165,9 @@ define(['./smpl.string', './smpl.utils', './smpl.dom'], function(smpl) {
 				processed = "(this.retrieve('" + closed + "') || '')";
 				break;
 			case 'html':
-				token.txt = token.txt.replace(token.beforeJs ? /(\\*)\1\\({|$)/g : /(\\*)\1\\({)/g,"$1$2");
+				token.txt = token.txt.replace(token.beforeJs ? /(\\*)\1\\(\{|$)/g : /(\\*)\1\\(\{)/g,"$1$2");
 				processed = "'" + smpl.utils.escapeJs(token.txt) + "'";
-				break
+				break;
 			case 'js':
 				processed = this.compileJs(token.txt);
 				break;
@@ -254,7 +254,7 @@ define(['./smpl.string', './smpl.utils', './smpl.dom'], function(smpl) {
 			input = input.replace(/\$/g, 'this.data.');
 		}
 		if (at) {
-			var id = /^[-\w]+(?::[-\w]+)*\s/.exec(input);
+			var id = /^[\-\w]+(?::[\-\w]+)*\s/.exec(input);
 			var args = input.substring(id[0].length).trim();
 			input = 'smpl.tpl.utils.retrieveWidget(' + id[0].split(':').join() + (args ? ', ' + args : '') + ')';
 		} else {

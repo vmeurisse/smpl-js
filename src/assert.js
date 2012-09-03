@@ -49,7 +49,7 @@ define(['./smpl.data'], function(smpl) {
 	
 	function stringify(o) {
 		return JSON.stringify(o, replacer, '\t');
-	};
+	}
 	function fail(message, actual, expected, stackStartFunction) {
 		var options = {
 			message: message

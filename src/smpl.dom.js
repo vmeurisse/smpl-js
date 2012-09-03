@@ -31,9 +31,9 @@ define(['./smpl.core'], function(smpl) {
 			return ele.addEventListener(ev, fn);
 		} else {
 			return ele.attachEvent('on' + ev, function(e) {
-				var e = e || window.event;
-				e.preventDefault  = e.preventDefault  || function(){ e.returnValue = false };
-				e.stopPropagation = e.stopPropagation || function(){ e.cancelBubble = true };
+				e = e || window.event;
+				e.preventDefault  = e.preventDefault  || function(){ e.returnValue = false; };
+				e.stopPropagation = e.stopPropagation || function(){ e.cancelBubble = true; };
 				fn.call(ele, e);
 			});
 		}

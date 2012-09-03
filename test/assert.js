@@ -89,20 +89,22 @@ suite('assert', function() {
 	});
 	suite('fail', function() {
 		test('should throw an AssertionError', function() {
+			var ok;
 			try {
 				assert.fail();
 			} catch (e) {
 				if (e.constructor !== assert.AssertionError) {
 					throw new Error('Wrong error thrown');
 				}
-				var ok = true;
+				ok = true;
 			}
 			if (!ok) {
-				throw new Error('no error thrown')
+				throw new Error('no error thrown');
 			}
 		});
 		test('with a message', function() {
-			var message = 'this is a custom message';
+			var ok,
+			    message = 'this is a custom message';
 			try {
 				assert.fail(message);
 			} catch (e) {
@@ -112,10 +114,10 @@ suite('assert', function() {
 				if ('' + e !== 'AssertionError: ' + message) {
 					throw new Error('Wrong mesage thrown');
 				}
-				var ok = true;
+				ok = true;
 			}
 			if (!ok) {
-				throw new Error('no error thrown')
+				throw new Error('no error thrown');
 			}
 			
 		});

@@ -12,7 +12,7 @@ define(['./smpl.data'], function(smpl) {
 			}
 		});
 		
-		if (config.method === 'POST' && config.data != null) {
+		if (config.method === 'POST' && config.data !== undefined) {
 			config.headers['Content-type'] = config.headers['Content-type'] || 'application/x-www-form-urlencoded; charset=UTF-8';
 		}
 		
@@ -90,10 +90,11 @@ define(['./smpl.data'], function(smpl) {
 	
 	smpl.ajax.Request.prototype.handleTransactionResponse = function() {
 		this.cleanConnection();
-
+		
+		var httpStatus, httpStatusText;
 		try {
-			var httpStatus = this.xhr.status;
-			var httpStatusText = this.xhr.statusText;
+			httpStatus = this.xhr.status;
+			httpStatusText = this.xhr.statusText;
 		} catch (e) {
 		}
 		
@@ -106,16 +107,12 @@ define(['./smpl.data'], function(smpl) {
 		if ([12002, 12029, 12030, 12031, 12152, 13030].indexOf(httpStatus) != -1) {
 			//Cool, some more IE non-conformance: http://stackoverflow.com/questions/872206/http-status-code-0-what-does-this-mean-in-ms-xmlhttp#905751
 			httpStatus = 0;
-			httpStatusText: 'fail';
+			httpStatusText = 'fail';
 		}
 		
 		var responseObject = this.createResponseObject(httpStatus, httpStatusText);
 		
-		if (httpStatus >= 200 && httpStatus < 300) {
-			var callbacks = this.config.onSuccess;
-		} else {
-			var callbacks = this.config.onError;
-		}
+		var callbacks = (httpStatus >= 200 && httpStatus < 300) ? this.config.onSuccess : this.config.onError;
 		callbacks = callbacks.concat(this.config.onDone);
 		var scope = this.config.scope;
 		callbacks.forEach(function(callback) {
