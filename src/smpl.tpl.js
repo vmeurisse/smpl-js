@@ -205,7 +205,7 @@ define(['./smpl.string', './smpl.utils', './smpl.dom'], function(smpl) {
 			} else {
 				if (chr === '"' || chr === "'") { //String
 					pos = this.findUnescaped(input, chr, pos);
-				} else if (chr === '/' && '(,=:[!&|?{};'.indexOf(lastchar) !== -1) { //Regexp literal 
+				} else if (chr === '/' && '(,=:[!&|?{};'.indexOf(lastchar) !== -1) { //Regexp literal
 					while (pos < l) {
 						chr = input.charAt(pos++);
 						if (chr === '\\') {
@@ -236,7 +236,7 @@ define(['./smpl.string', './smpl.utils', './smpl.dom'], function(smpl) {
 	smpl.tpl.utils.findUnescaped = function(input, char, pos) {
 		var l = input.length;
 		while (pos < l) {
-			chr = input.charAt(pos++);
+			var chr = input.charAt(pos++);
 			if (chr === '\\') {
 				++pos;
 			} else if (chr === char) {

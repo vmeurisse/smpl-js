@@ -94,11 +94,9 @@ define(['./smpl.core'], function(smpl) {
 				// (if the browser provide a stable sort)
 				list.reverse();
 			}
-			console.time('sort');
 			data._sorters = sorters;
 			data._transformed = transformed;
 			list.sort(data._sortMultipleKeys);
-			console.timeEnd('sort');
 		}
 		if (reverse) {
 			list.reverse();
