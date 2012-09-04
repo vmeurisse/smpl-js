@@ -162,6 +162,13 @@ suite('assert', function() {
 		test('tricky values', function() {
 			equals(NaN, NaN);
 			inequals(0, -0);
+			inequals(0, new Number(0));
+			equals('test', String('test'));
+			inequals('test', new String('test'));
+			inequals(true, new Boolean(true));
+			equals(true, Boolean(3));
+			equals(['a'], new Array('a'));
+			equals(new Object(2), new Number(2));
 		});
 		test('transtype', function() {
 			inequals(0, '0');
