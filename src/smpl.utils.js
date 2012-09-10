@@ -18,5 +18,51 @@ define(['./smpl.core'], function(smpl) {
 				.replace(/\//g, '\\/');
 	};
 	
+	var replacer = function(key, value) {
+		if (value === undefined) {
+			return '' + value;
+		}
+		if (typeof value === 'number' && (isNaN(value) || !isFinite(value))) {
+			return value.toString();
+		}
+		if (typeof value === 'function' || value instanceof RegExp) {
+			return value.toString();
+		}
+		if (typeof value === 'object') {
+			var i = stringifyStack.length;
+			while (i--) {
+				if (stringifyStack[i] === value) {
+					return 'circular reference';
+				}
+			}
+			stringifyStack.push(value);
+		}
+		if (Array.isArray(value)) {
+			var cleanArray = [];
+			var lastIndex = -1;
+			for (var k in value) {
+				var index = +k;
+				if (!isNaN(index)) { //skip stupid non-array values stored in array. (eg. var a = []; a.stupid = true;)
+					if (index > lastIndex + 1) {
+						cleanArray.push('undefined x ' + (lastIndex - index));
+					}
+					cleanArray.push(smpl.utils.stringify(value[k], stringifyStack));
+					lastIndex = index;
+				}
+			}
+			if (lastIndex < value.length - 1) {
+				cleanArray.push('undefined x ' + (value.length - lastIndex - 1));
+			}
+			return '[' + cleanArray.join(', ') + ']';
+		}
+		return value;
+	};
+	var stringifyStack = [];
+	
+	smpl.utils.stringify = function(object, stack) {
+		stringifyStack = stack || [];
+		return JSON.stringify(object, replacer, '\t');
+	};
+	
 	return smpl;
 });

@@ -1,12 +1,12 @@
-define(['./smpl.data'], function(smpl) {
+define(['./smpl.data', './smpl.utils'], function(smpl) {
 	var AssertionError = function AssertionError(options) {
 		this.name = 'AssertionError';
 		this.message = options.message;
 		if (options.hasOwnProperty('actual')) {
-			this.actual = stringify(options.actual);
+			this.actual = smpl.utils.stringify(options.actual);
 		}
 		if (options.hasOwnProperty('expected')) {
-			this.expected = stringify(options.expected);
+			this.expected = smpl.utils.stringify(options.expected);
 		}
 
 		if (Error.captureStackTrace) {
@@ -34,22 +34,7 @@ define(['./smpl.data'], function(smpl) {
 		}
 	};
 
-	function replacer(key, value) {
-		if (value === undefined) {
-			return '' + value;
-		}
-		if (typeof value === 'number' && (isNaN(value) || !isFinite(value))) {
-			return value.toString();
-		}
-		if (typeof value === 'function' || value instanceof RegExp) {
-			return value.toString();
-		}
-		return value;
-	}
-	
-	function stringify(o) {
-		return JSON.stringify(o, replacer, '\t');
-	}
+
 	function fail(message, actual, expected, stackStartFunction) {
 		var options = {
 			message: message
@@ -71,7 +56,7 @@ define(['./smpl.data'], function(smpl) {
 	var assert = function(value, message) {
 		if (!!!value) {
 			if (!message) {
-				message = 'Expected <' + stringify(value) + '> to be truthy';
+				message = 'Expected <' + smpl.utils.stringify(value) + '> to be truthy';
 			}
 			fail(message, assert);
 		}

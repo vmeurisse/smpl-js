@@ -1,4 +1,5 @@
 var assert = require('../assert');
+var smpl = require('../smpl.utils');
 suite('assert', function() {
 	suite('throws', function() {
 		test('when throw', function() {
@@ -124,11 +125,11 @@ suite('assert', function() {
 	});
 	suite('equals', function() {
 		equals = function(a, b) {
-			assert.equals(a, b, '<' + a + '> should be equal to <' + b + '>');
+			assert.equals(a, b, '<' + smpl.utils.stringify(a) + '> should be equal to <' + smpl.utils.stringify(b) + '>');
 		};
 		inequals = function(a, b) {
-			var message = '<' + a + '> should not be equal to <' + b + '>';
-			assert.throws(assert.equals.bind(assert, a, b), assert.AssertionError, message);
+			var message = '<' + smpl.utils.stringify(a) + '> should not be equal to <' + smpl.utils.stringify(b) + '>';
+			assert.throws(assert.equals.bind(assert, a, b, ' '), assert.AssertionError, message);
 		};
 		test('simple equals', function() {
 			equals(null, null);
@@ -201,6 +202,22 @@ suite('assert', function() {
 			equals(a, b);
 			b.a.a = {a: {}};
 			inequals(a, b);
+		});
+		test('Arrays', function() {
+			var a = [1, 2, '3', {a: 4}, true];
+			var b = [1, 2, '3', {a: 5}, true];
+			inequals(a, b);
+			b[3].a = 4;
+			equals(a, b);
+			
+			var BIG_LENGTH = 1000000000;
+			
+			a.length = BIG_LENGTH;
+			inequals(a, b);
+			b[BIG_LENGTH - 1] = BIG_LENGTH;
+			inequals(a, b);
+			a[BIG_LENGTH - 1] = BIG_LENGTH;
+			equals(a, b);
 		});
 	});
 });

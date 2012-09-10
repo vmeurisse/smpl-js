@@ -237,6 +237,12 @@ define(['./smpl.core'], function(smpl) {
 			return false;
 		}
 		
+		if (a.length != b.length) {
+			// Special case for arrays: the length property is not returned by Object.keys but as impact on the array
+			return false;
+		}
+
+		
 		var keysA = Object.keys(a).sort(),
 		    keysB = Object.keys(b).sort();
 		i  = keysA.length;
@@ -247,7 +253,7 @@ define(['./smpl.core'], function(smpl) {
 				return false;
 			}
 		}
-		
+
 		stackA.push(a);
 		stackB.push(b);
 	
