@@ -202,7 +202,7 @@ define(['./smpl.core'], function(smpl) {
 	data.compare = function (a, b, stackA, stackB) {
 		if (a === b) {
 			// We must take care that comparing 0 and -0 should return false;
-			return a !== 0 || 1 / a == 1 / b;
+			return a !== 0 || 1 / a === 1 / b;
 		}
 		if (a !== a && b !== b) {
 			// Test for NaN
@@ -217,11 +217,17 @@ define(['./smpl.core'], function(smpl) {
 		}
 		
 		if (stringA === '[object RegExp]') {
+			// We test for RegExp before using typeof as some implementation return 'function' instead of 'object'
+			// (old chrome for exemple)
 			return '' + a === '' + b;
 		}
 		
 		if (typeof a !== 'object' || typeof b !== 'object') return false;
-		if (!a || !b) return false;
+		if (!a || !b) return false; //a or b is null
+		
+		if (stringA === '[object Boolean]' || stringA === '[object Number]') {
+			return data.compare(a.valueOf(), b.valueOf());
+		}
 		
 		stackA  = stackA || [];
 		stackB = stackB || [];

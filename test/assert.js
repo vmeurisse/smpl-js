@@ -125,7 +125,8 @@ suite('assert', function() {
 	});
 	suite('equals', function() {
 		equals = function(a, b) {
-			assert.equals(a, b, '<' + smpl.utils.stringify(a) + '> should be equal to <' + smpl.utils.stringify(b) + '>');
+			var message = '<' + smpl.utils.stringify(a) + '> should be equal to <' + smpl.utils.stringify(b) + '>';
+			assert.equals(a, b, message);
 		};
 		inequals = function(a, b) {
 			var message = '<' + smpl.utils.stringify(a) + '> should not be equal to <' + smpl.utils.stringify(b) + '>';
@@ -159,6 +160,17 @@ suite('assert', function() {
 			inequals(/a/, /b/);
 			inequals(/a/g, /a/);
 			inequals(true, false);
+		});
+		test('bad constructors', function() {
+			equals(new String('test'), new String('test'));
+			inequals(new String('test'), new String('test2'));
+			equals(new Boolean(4), new Boolean(3));
+			inequals(new Boolean(false), new Boolean(true));
+			equals(new Array('a'), new Array('a'));
+			inequals(new Array('a'), new Array('b'));
+			equals(new Number(0), new Number(0));
+ 			inequals(new Number(0), new Number(-0));
+			inequals(new Number(0), new Number(0.1));
 		});
 		test('tricky values', function() {
 			equals(NaN, NaN);
@@ -210,7 +222,7 @@ suite('assert', function() {
 			b[3].a = 4;
 			equals(a, b);
 			
-			var BIG_LENGTH = 1000000000;
+			var BIG_LENGTH = 1000000000; //use something huge to test performence on sparse arrays
 			
 			a.length = BIG_LENGTH;
 			inequals(a, b);
