@@ -65,7 +65,7 @@ define(['./smpl.core'], function(smpl) {
 			}
 			stringifyStack.push(value);
 			
-			if (Array.isArray(value)) {
+			if (Array.isArray(value) || Object.prototype.toString.call(value) === '[object Arguments]') {
 				var cleanArray = [];
 				var lastIndex = -1;
 				for (var k in value) {

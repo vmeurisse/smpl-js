@@ -51,5 +51,10 @@ suite('smpl.utils', function() {
 			o.a = o;
 			assert.equals(smpl.utils.stringify(o), '{\n\t"a": circular reference\n}');
 		});
+		test('arguments as array', function() {
+			(function() {
+				assert.equals(smpl.utils.stringify(arguments), '[\n\t1,\n\t2\n]');
+			})(1, 2);
+		});
 	});
 });
