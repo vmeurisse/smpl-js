@@ -1,4 +1,5 @@
 define(['./smpl.data', './smpl.utils'], function(smpl) {
+	
 	var AssertionError = function AssertionError(options) {
 		this.name = 'AssertionError';
 		this.message = options.message;
@@ -8,15 +9,15 @@ define(['./smpl.data', './smpl.utils'], function(smpl) {
 		if (options.hasOwnProperty('expected')) {
 			this.expected = smpl.utils.stringify(options.expected);
 		}
-
+		
 		if (Error.captureStackTrace) {
 			Error.captureStackTrace(this, options.stackStartFunction);
 		}
 	};
-
+	
 	AssertionError.prototype = Object.create(Error.prototype);
 	AssertionError.prototype.constructor = AssertionError;
-
+	
 	AssertionError.prototype.toString = function() {
 		if (this.message) {
 			return [this.name + ':', this.message].join(' ');
@@ -33,8 +34,7 @@ define(['./smpl.data', './smpl.utils'], function(smpl) {
 			return this.name;
 		}
 	};
-
-
+	
 	function fail(message, actual, expected, stackStartFunction) {
 		var options = {
 			message: message
@@ -49,28 +49,50 @@ define(['./smpl.data', './smpl.utils'], function(smpl) {
 			options.expected = expected;
 		}
 		options.stackStartFunction = stackStartFunction || fail;
-
+		
 		throw new AssertionError(options);
 	}
-
+	
+	/**
+	 * Assert that a `value` is truthy. If the value is falsy, throw an `AssertionError`.
+	 * @param {?} value        The value to test
+	 * @param {String} message Message to be used in the `AssertionError`. If no message is provided, an automatic one will be used (optional)
+	 */
 	var assert = function(value, message) {
-		if (!!!value) {
+		if (!value) {
 			if (!message) {
 				message = 'Expected <' + smpl.utils.stringify(value) + '> to be truthy';
 			}
 			fail(message, assert);
 		}
 	};
-
+	
+	/**
+	 * throw an `AssertionError`
+	 * @param {String} message Message to be used in the `AssertionError`
+	 */
 	assert.fail = function(message) {
 		fail(message, assert.fail);
 	};
+	
+	/**
+	 * Assert that `value` and `expected` are equals. Use `smpl.data.compare` to compare the values.
+	 * @param {?} value        Value to test
+	 * @param {?} expected     Expected value
+	 * @param {String} message Message to be used in the `AssertionError`. If no message is provided, an automatic one will be used (optional)
+	 */
 	assert.equals = function(value, expected, message) {
 		if (!smpl.data.compare(value, expected)) {
 			fail(message, value, expected, assert.equals);
 		}
 	};
-
+	
+	/**
+	 * Assert that a function throws an exception when called
+	 * @param {Function} fn    Function to test
+	 * @param {Function} type  Type of the expected exception. (optional)
+	 * @param {String} message Message to be used in the `AssertionError`. If no message is provided, an automatic one will be used (optional)
+	 */
 	assert.throws = function(fn, type, message) {
 		if (typeof type === 'string') {
 			message = type;
@@ -86,6 +108,8 @@ define(['./smpl.data', './smpl.utils'], function(smpl) {
 		}
 		fail(message || 'Expected function to throw an error', assert.throws);
 	};
+	
 	assert.AssertionError = AssertionError;
+	
 	return assert;
 });
