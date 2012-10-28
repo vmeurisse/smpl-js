@@ -26,7 +26,8 @@ define(['./smpl.core'], function(smpl) {
 		return chars.charAt(0) + '\n' + inlevel + array.join(',\n' + inlevel) + '\n' + level + chars.charAt(1);
 	};
 	
-	var stringify = function(value, stringifyStack, level) {
+	var stringify = function(value, path, stringifyStack, level) {
+		var str;
 		
 		if (value === undefined || value === null) {
 			return '' + value;
@@ -47,25 +48,30 @@ define(['./smpl.core'], function(smpl) {
 			return JSON.stringify(value);
 		}
 		
-		var proto = Object.prototype.toString.call(value);
-		if (proto === '[object Boolean]' || proto === '[object Number]' || proto === '[object String]') {
-			return proto.slice(8, -1) + '(' + stringify(value.valueOf(), [], 0) + ')';
-		}
-		
-		if (proto === '[object Date]') {
-			return 'new Date("' + value.toString() + '")';
-		}
-		
 		if (typeof value === 'object') {
+			var objectType = Object.prototype.toString.call(value).slice(8, -1);
+			
+			if (objectType === 'Boolean' || objectType === 'Number' || objectType === 'String') {
+				return objectType + '(' + stringify(value.valueOf(), '', [], 0) + ')';
+			}
+			
+			if (objectType === 'Date') {
+				return 'Date("' + value.toString() + '")';
+			}
+			
 			var i = stringifyStack.length;
 			while (i--) {
-				if (stringifyStack[i] === value) {
-					return 'circular reference';
+				if (stringifyStack[i].value === value) {
+					return 'circular reference(' + stringifyStack[i].path + ')';
 				}
 			}
-			stringifyStack.push(value);
+			stringifyStack = stringifyStack.slice()
+			stringifyStack.push({
+				path: path,
+				value: value
+			});
 			
-			if (Array.isArray(value) || Object.prototype.toString.call(value) === '[object Arguments]') {
+			if (objectType === 'Array' || objectType === 'Arguments') {
 				var cleanArray = [];
 				var lastIndex = -1;
 				for (var k in value) {
@@ -74,21 +80,27 @@ define(['./smpl.core'], function(smpl) {
 						if (index > lastIndex + 1) {
 							cleanArray.push('undefined x ' + (index - lastIndex - 1));
 						}
-						cleanArray.push(stringify(value[k], stringifyStack, level + '\t'));
+						cleanArray.push(stringify(value[k], path + '[' + index + ']', stringifyStack, level + '\t'));
 						lastIndex = index;
 					}
 				}
 				if (lastIndex < value.length - 1) {
 					cleanArray.push('undefined x ' + (value.length - lastIndex - 1));
 				}
-				return indent(cleanArray, level, '[]')
+				str = indent(cleanArray, level, '[]');
+				if (objectType === 'Array') {
+					return str;
+				} else {
+					return objectType + '(' + str + ')';
+				}
 			} else {
-				var str = [];
+				str = [];
 				var keys = Object.keys(value).sort(); //Make sure we get reproducible results
 				for (var i = 0, l = keys.length; i < l; i++) {
 					var k = keys[i];
-					var v = stringify(value[k], stringifyStack, level + '\t');
-					str.push(JSON.stringify(k) + ': ' + v);
+					var key = JSON.stringify(k);
+					var v = stringify(value[k], path + '[' + key + ']', stringifyStack, level + '\t');
+					str.push(key + ': ' + v);
 				}
 				return indent(str, level, '{}')
 			}
@@ -96,7 +108,7 @@ define(['./smpl.core'], function(smpl) {
 		return '' + value;
 	};
 	smpl.utils.stringify = function(object) {
-		return stringify(object, [], '');
+		return stringify(object, '$', [], '');
 	};
 	
 	return smpl;
