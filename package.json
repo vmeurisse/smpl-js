@@ -9,7 +9,7 @@
 		"url": "https://github.com/vmeurisse/smpl-js/issues"
 	},
 	"dependencies": {
-		"jake": "git://github.com/vmeurisse/jake.git",
+		"jake": "0.5.x",
 		"amdefine": "0.0.x"
 	},
 	"devDependencies": {
