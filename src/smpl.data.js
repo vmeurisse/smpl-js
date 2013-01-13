@@ -1,13 +1,13 @@
 define(['./smpl.core'], function(smpl) {
-	var data = smpl.data = smpl.data || {};
+	smpl.data = smpl.data || {};
 	
-	data.updateObject = function (receiver, updater){
+	smpl.data.updateObject = function (receiver, updater){
 		for(var p in updater) {
 			receiver[p]=updater[p];
 		}
 	};
 	
-	data.extendObject = function(receiver, extender) {
+	smpl.data.extendObject = function(receiver, extender) {
 		for (var p in extender) {
 			if (!receiver.hasOwnProperty(p)) {
 				receiver[p] = extender[p];
@@ -15,7 +15,17 @@ define(['./smpl.core'], function(smpl) {
 		}
 	};
 	
-	data.filter = function(list, property, value) {
+	/**
+	 * Filter an array of object. Each object is searched for the property whith the given value.
+	 * 
+	 *     smpl.data.filter([{o:1,a:1},{o:2,a:2},{o:3,a:1}], 'a', 1) // => [{o:1,a:1},{o:3,a:1}]
+	 * 
+	 * @param {Array.<Object>} list The list to filter. The original list is not modified.
+	 * @param {String} property The property to search in each object.
+	 * @param {?} property The property to search in each object. Equality is tested using the === operator.
+	 * @return {Array.<Object>} The filtered list.
+	 */
+	smpl.data.filter = function(list, property, value) {
 		var filteredList = [];
 		for (var i = 0, l = list.length; i < l; i++) {
 			var item = list[i];
@@ -26,7 +36,7 @@ define(['./smpl.core'], function(smpl) {
 		return filteredList;
 	};
 	
-	data.Sorter = function(sorter) {
+	smpl.data.Sorter = function(sorter) {
 		this.type = sorter.type;
 		this.key = sorter.key;
 		this.dir = sorter.dir || 1;
@@ -50,8 +60,8 @@ define(['./smpl.core'], function(smpl) {
 		this.needPreprocess = this.isNumber || this.isEnum || this.isText || this.isCompositeKey;
 		this.sortKey = false;
 	};
-	data.Sorter.prototype.sortValue = function(item) {
-		var value = this.isCompositeKey ? data.get(item, this.keys) : item[this.key];
+	smpl.data.Sorter.prototype.sortValue = function(item) {
+		var value = this.isCompositeKey ? smpl.data.get(item, this.keys) : item[this.key];
 		if (this.isEnum) {
 			return this.enumMap[value] || Infinity;
 		} else if (this.isText && value.toLocaleLowerCase) {
@@ -61,7 +71,7 @@ define(['./smpl.core'], function(smpl) {
 		}
 	};
 	
-	data.SortItem = function(item) {
+	smpl.data.SortItem = function(item) {
 		this.item = item;
 	};
 	
@@ -72,15 +82,15 @@ define(['./smpl.core'], function(smpl) {
 	*           {string} key  the property the sort on
 	*           {number} dir  the sort direction: ascending (1, default) or descending (-1)
 	*/
-	data.sort = function(list, sorters, reverse, reversed) {
+	smpl.data.sort = function(list, sorters, reverse, reversed) {
 		if (!list.length || !sorters.length) return list;
 		
 		var sortList, transformed, originalList = list,
 			single = (sorters.length === 1);
-		data._prepareSorters(sorters);
+		smpl.data._prepareSorters(sorters);
 		
 		single = false;
-		sortList = data._preprocessData(list, sorters, single);
+		sortList = smpl.data._preprocessData(list, sorters, single);
 		if (sortList) {
 			transformed = true;
 			list = sortList;
@@ -94,34 +104,34 @@ define(['./smpl.core'], function(smpl) {
 				// (if the browser provide a stable sort)
 				list.reverse();
 			}
-			data._sorters = sorters;
-			data._transformed = transformed;
-			list.sort(data._sortMultipleKeys);
+			smpl.data._sorters = sorters;
+			smpl.data._transformed = transformed;
+			list.sort(smpl.data._sortMultipleKeys);
 		}
 		if (reverse) {
 			list.reverse();
 		}
 		if (transformed) {
-			data._cleanData(originalList, list);
+			smpl.data._cleanData(originalList, list);
 		}
 		return list;
 	};
 	
-	data._prepareSorters = function(sorters) {
+	smpl.data._prepareSorters = function(sorters) {
 		var needPreprocess = false;
 		for (var i = 0, l = sorters.length; i < l; ++i) {
 			var sorter = sorters[i];
-			if (sorter.constructor === data.Sorter) {
+			if (sorter.constructor === smpl.data.Sorter) {
 				delete sorter.sortKey;
 			} else {
-				sorters[i] = sorter = new data.Sorter(sorter);
+				sorters[i] = sorter = new smpl.data.Sorter(sorter);
 			}
 			needPreprocess = needPreprocess || sorter.needPreprocess;
 		}
 		return needPreprocess;
 	};
 	
-	data._preprocessData = function(list, sorters, force) {
+	smpl.data._preprocessData = function(list, sorters, force) {
 		var sortList, m = list.length, initIndex;
 		for (var i = 0, l = sorters.length; i < l; i++) {
 			var sorter = sorters[i];
@@ -129,7 +139,7 @@ define(['./smpl.core'], function(smpl) {
 				sorter.sortKey = 'sorter' + i;
 				var needInit = false;
 				if (!sortList) {
-					sortList = data.sortList;
+					sortList = smpl.data.sortList;
 					needInit = true;
 					initIndex = sortList.length;
 					sortList.length = m;
@@ -138,7 +148,7 @@ define(['./smpl.core'], function(smpl) {
 					var item = list[j];
 					if (needInit) {
 						if (i > initIndex) {
-							sortList[j] = new data.SortItem(item);
+							sortList[j] = new smpl.data.SortItem(item);
 						} else {
 							sortList[j].item = item;
 						}
@@ -150,23 +160,23 @@ define(['./smpl.core'], function(smpl) {
 		return sortList;
 	};
 	
-	data.sortList = [];
+	smpl.data.sortList = [];
 	
-	data._cleanData = function(originalList, sortedList) {
+	smpl.data._cleanData = function(originalList, sortedList) {
 		for (var i = 0, l = originalList.length; i < l; i++) {
 			originalList[i] = sortedList[i].item;
 			delete sortedList[i].item;
 		}
 	};
 	
-	data._sortNumbers = function(a, b) {
+	smpl.data._sortNumbers = function(a, b) {
 		var va = a.sorter0;
 		var vb = b.sorter0;
 		return (va === vb) ? 0 : ((va < vb) ? -1 : 1);
 	};
 	
-	data._sortMultipleKeys = function(a, b) {
-		var sorters = data._sorters, transformed = data._transformed;
+	smpl.data._sortMultipleKeys = function(a, b) {
+		var sorters = smpl.data._sorters, transformed = smpl.data._transformed;
 		var sorter, va, vb;
 		for (var i = 0, l = sorters.length; i < l; ++i) {
 			sorter = sorters[i];
@@ -187,19 +197,33 @@ define(['./smpl.core'], function(smpl) {
 		return 0;
 	};
 	
-	data.get = function(obj, keys) {
+	/**
+	 * Safe method to get recurcive values inside an object.
+	 * 
+	 *     smpl.data.get({a:{b:{c:2}}}, 'a.b.c') // => 2
+	 *     smpl.data.get({a:{b:{c:2}}}, ['a', 'b', 'c']) // => 2
+	 * 
+	 * @param {Object} obj The object to search in.
+	 * @param {String|Array.<String>} keys The keys to search in object. String and array notation are equivalent:
+	 *                                     'a.b.c' <=> ['a', 'b', 'c']. Use array notation in performance critcal 
+	 *                                     sections as spliting the string as a performance inpact.
+	 * @return The value or `undefined` if the value is not found.
+	 */
+	smpl.data.get = function(obj, keys) {
 		if (typeof keys === 'string') {
-			keys = keys.split('.');
+			keys = (keys === '') ? [] : keys.split('.');
 		}
 		for (var i = 0, l = keys.length; i < l; i++) {
 			if (obj) {
 				obj = obj[keys[i]];
+			} else {
+				return undefined;
 			}
 		}
 		return obj;
 	};
 	
-	data.compare = function (a, b, stackA, stackB) {
+	smpl.data.compare = function (a, b, stackA, stackB) {
 		if (a === b) {
 			// We must take care that comparing 0 and -0 should return false;
 			return a !== 0 || 1 / a === 1 / b;
@@ -226,7 +250,7 @@ define(['./smpl.core'], function(smpl) {
 		if (!a || !b) return false; //a or b is null
 		
 		if (stringA === '[object Boolean]' || stringA === '[object Number]') {
-			return data.compare(a.valueOf(), b.valueOf());
+			return smpl.data.compare(a.valueOf(), b.valueOf());
 		}
 		
 		stackA  = stackA || [];
@@ -266,7 +290,7 @@ define(['./smpl.core'], function(smpl) {
 		i = keysA.length;
 		while (i--) {
 			var key = keysA[i];
-			if (!data.compare(a[key], b[key], stackA, stackB)) return false;
+			if (!smpl.data.compare(a[key], b[key], stackA, stackB)) return false;
 		}
 		return true;
 	};
