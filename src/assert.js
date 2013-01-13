@@ -88,6 +88,26 @@ define(['./smpl.data', './smpl.utils'], function(smpl) {
 	};
 	
 	/**
+	 * Assert that `value` and `expected` are the same (primitive object with the same value or pointer to the same object).
+	 * This is the same as the triple equal operator exept that -0 and 0 are considered different and that NaN is NaN.
+	 * @param {?} value        Value to test
+	 * @param {?} expected     Expected value
+	 * @param {String} message Message to be used in the `AssertionError`. If no message is provided, an automatic one will be used (optional)
+	 */
+	assert.is = function(value, expected, message) {
+		var is;
+		if (value === expected) {
+			// We must take care that comparing 0 and -0 should return false;
+			is = (value !== 0 || 1 / value === 1 / expected);
+		} else {
+			// take care of the NaN value
+			is = (value !== value && expected !== expected);
+		}
+		if (!is) {
+			fail(message, value, expected, assert.equals);
+		}
+	};
+	/**
 	 * Assert that a function throws an exception when called
 	 * @param {Function} fn    Function to test
 	 * @param {Function} type  Type of the expected exception. (optional)

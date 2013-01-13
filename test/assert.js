@@ -233,5 +233,66 @@ define(['../assert', '../smpl.utils'], function(assert, smpl) {
 				equals(a, b);
 			});
 		});
+		suite('is', function() {
+			is = function(a, b) {
+				var message = '<' + smpl.utils.stringify(a) + '> should be <' + smpl.utils.stringify(b) + '>';
+				assert.is(a, b, message);
+			};
+			isnot = function(a, b) {
+				var message = '<' + smpl.utils.stringify(a) + '> should not be <' + smpl.utils.stringify(b) + '>';
+				assert.throws(assert.is.bind(assert, a, b, ' '), assert.AssertionError, message);
+			};
+			test('simple is', function() {
+				is(null, null);
+				is(undefined, undefined);
+				is(0, 0);
+				is(1, 1);
+				is('', '');
+				is('test', 'test');
+				is(true, true);
+				is(false, false);
+			});
+			
+			test('simple isnot', function() {
+				isnot(null, undefined);
+				isnot(0, 1);
+				isnot(1, 2);
+				isnot('', ' ');
+				isnot('test', 't');
+				isnot([], []);
+				isnot([], [1]);
+				isnot({}, {});
+				isnot(/a/, /a/);
+			});
+			test('bad constructors', function() {
+				isnot(new String('test'), new String('test'));
+				isnot(new String('test'), new String('test2'));
+				isnot(new Boolean(4), new Boolean(3));
+				isnot(new Boolean(false), new Boolean(true));
+				isnot(new Array('a'), new Array('a'));
+				isnot(new Array('a'), new Array('b'));
+				isnot(new Number(0), new Number(0));
+				isnot(new Number(0), new Number(-0));
+				isnot(new Number(0), new Number(0.1));
+			});
+			test('tricky values', function() {
+				is(NaN, NaN);
+				isnot(0, -0);
+				isnot(0, new Number(0));
+				is('test', String('test'));
+				isnot('test', new String('test'));
+				isnot(true, new Boolean(true));
+				is(true, Boolean(3));
+				isnot(['a'], new Array('a'));
+				isnot(new Object(2), new Number(2));
+			});
+			test('transtype', function() {
+				isnot(0, '0');
+				isnot(0, '');
+				isnot(0, ' ');
+				isnot(false, '0');
+				isnot(true, '1');
+			});
+		});
 	});
 });
