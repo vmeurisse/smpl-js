@@ -13,7 +13,8 @@
 		"amdefine": "0.0.x"
 	},
 	"devDependencies": {
-		"mocha": "1.4.x"
+		"mocha": "1.4.x",
+		"requirejs": "2.1.x"
 	},
 	"scripts": {
 		"install": "jake",
