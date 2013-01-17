@@ -6,7 +6,8 @@ define(['../assert', '../smpl.data'], function(assert, smpl) {
 			var obj = {
 				a: {
 					b: {
-						c: 2
+						c: 2,
+						d: ''
 					}
 				}
 			};
@@ -17,6 +18,10 @@ define(['../assert', '../smpl.data'], function(assert, smpl) {
 			test('non existing value', function() {
 				assert.equals(smpl.data.get(obj, 'a.b.c.d'), undefined);
 				assert.equals(smpl.data.get(obj, ['a', 'b', 'c', 'd']), undefined);
+				
+				assert.equals(smpl.data.get(obj, 'a.b.d.e'), undefined);
+				assert.equals(smpl.data.get(obj, ['a', 'b', 'd', 'e']), undefined);
+				
 			});
 			test('no op', function() {
 				assert.is(smpl.data.get(obj, ''), obj);

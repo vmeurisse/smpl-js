@@ -158,6 +158,7 @@ define(['../assert', '../smpl.utils'], function(assert, smpl) {
 				inequals([], [1]);
 				inequals([1], [2]);
 				inequals({}, {a: 1});
+				inequals({a: 1}, {b: 1});
 				inequals(/a/, /b/);
 				inequals(/a/g, /a/);
 				inequals(true, false);
