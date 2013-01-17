@@ -14,11 +14,13 @@
 	},
 	"devDependencies": {
 		"mocha": "1.4.x",
-		"requirejs": "2.1.x"
+		"requirejs": "2.1.x",
+		"fs-extra": "0.3.x"
 	},
 	"scripts": {
 		"install": "jake",
-		"test": "mocha"
+		"test": "mocha",
+		"coverage": "jake coverage"
 	},
 	"repository": {
 		"type": "git",
