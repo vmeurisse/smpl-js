@@ -13,9 +13,11 @@
 		"amdefine": "0.0.x"
 	},
 	"devDependencies": {
+		"fs-extra": "0.3.x",
 		"mocha": "1.4.x",
 		"requirejs": "2.1.x",
-		"fs-extra": "0.3.x"
+		"es5-shim": "2.0.x",
+		"JSON": "1.0.x"
 	},
 	"scripts": {
 		"install": "jake",

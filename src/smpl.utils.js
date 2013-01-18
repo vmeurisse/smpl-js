@@ -76,7 +76,7 @@ define(['./smpl.core'], function(smpl) {
 				var lastIndex = -1;
 				for (var k in value) {
 					var index = +k;
-					if (!isNaN(index)) { //skip stupid non-array values stored in array. (eg. var a = []; a.stupid = true;)
+					if (!isNaN(index) && value[k] !== undefined) { //skip stupid non-array values stored in array. (eg. var a = []; a.stupid = true;)
 						if (index > lastIndex + 1) {
 							cleanArray.push('undefined x ' + (index - lastIndex - 1));
 						}
@@ -98,9 +98,11 @@ define(['./smpl.core'], function(smpl) {
 				var keys = Object.keys(value).sort(); //Make sure we get reproducible results
 				for (var i = 0, l = keys.length; i < l; i++) {
 					var k = keys[i];
-					var key = JSON.stringify(k);
-					var v = stringify(value[k], path + '[' + key + ']', stringifyStack, level + '\t');
-					str.push(key + ': ' + v);
+					if (k !== '__proto__') {
+						var key = JSON.stringify(k);
+						var v = stringify(value[k], path + '[' + key + ']', stringifyStack, level + '\t');
+						str.push(key + ': ' + v);
+					}
 				}
 				return indent(str, level, '{}')
 			}

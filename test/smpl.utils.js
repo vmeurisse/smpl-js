@@ -35,13 +35,13 @@ define(['../assert', '../smpl.utils'], function(assert, smpl) {
 			* Test that [sparse arrays](http://en.wikipedia.org/wiki/Sparse_array) render correctly
 			*/
 			test('sparse array', function() {
-				assert.equals(smpl.utils.stringify([undefined, undefined]), '[\n\tundefined,\n\tundefined\n]');
+				assert.equals(smpl.utils.stringify([undefined, undefined]), '[\n\tundefined x 2\n]');
 				var sparse = [];
 				sparse[2] = 1;
-				sparse[10] = undefined; //Test that manualy inserted values are not like missing ones
+				sparse[10] = undefined; //Test that manualy inserted values are like missing ones
 				sparse.length = 1000000000; //use something huge to test performence
 				sparse.badProperty = 'x';
-				var sparseString = '[\n\tundefined x 2,\n\t1,\n\tundefined x 7,\n\tundefined,\n\tundefined x 999999989\n]';
+				var sparseString = '[\n\tundefined x 2,\n\t1,\n\tundefined x 999999997\n]';
 				assert.equals(smpl.utils.stringify(sparse), sparseString);
 			});
 			

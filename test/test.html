@@ -7,6 +7,15 @@
 </head>
 <body>
 	<div id="mocha"></div>
+	<script>
+		if (!Object.create) { // Simple test for bad browsers. May need some improvement
+			document.write('<script src="../node_modules/es5-shim/es5-shim.js"><\/script>');
+			document.write('<script src="../node_modules/es5-shim/es5-sham.js"><\/script>');
+		}
+		if (!window.JSON) {
+			document.write('<script src="../node_modules/JSON/json2.js"><\/script>');
+		}
+	</script>
 	<script src="../node_modules/requirejs/require.js"></script>
 	<script src="../node_modules/mocha/mocha.js"></script>
 	<script>mocha.setup('tdd')</script>
