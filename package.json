@@ -14,7 +14,7 @@
 		"shelljs": "0.1.x"
 	},
 	"devDependencies": {
-		"fs-extra": "0.3.x",
+		"jshint": "https://github.com/jshint/jshint/archive/1.0.0-rc3.tar.gz",
 		"mocha": "1.4.x",
 		"requirejs": "2.1.x",
 		"es5-shim": "2.0.x",
@@ -23,7 +23,8 @@
 	"scripts": {
 		"install": "jake",
 		"test": "mocha",
-		"coverage": "jake coverage"
+		"coverage": "jake coverage",
+		"lint": "jake lint"
 	},
 	"repository": {
 		"type": "git",

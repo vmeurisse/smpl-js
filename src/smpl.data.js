@@ -17,9 +17,9 @@ define(['./smpl.core'], function(smpl) {
 	
 	/**
 	 * Filter an array of object. Each object is searched for the property whith the given value.
-	 * 
+	 *
 	 *     smpl.data.filter([{o:1,a:1},{o:2,a:2},{o:3,a:1}], 'a', 1) // => [{o:1,a:1},{o:3,a:1}]
-	 * 
+	 *
 	 * @param {Array.<Object>} list The list to filter. The original list is not modified.
 	 * @param {String} property The property to search in each object.
 	 * @param {?} property The property to search in each object. Equality is tested using the === operator.
@@ -199,13 +199,13 @@ define(['./smpl.core'], function(smpl) {
 	
 	/**
 	 * Safe method to get recurcive values inside an object.
-	 * 
+	 *
 	 *     smpl.data.get({a:{b:{c:2}}}, 'a.b.c') // => 2
 	 *     smpl.data.get({a:{b:{c:2}}}, ['a', 'b', 'c']) // => 2
-	 * 
+	 *
 	 * @param {Object} obj The object to search in.
 	 * @param {String|Array.<String>} keys The keys to search in object. String and array notation are equivalent:
-	 *                                     'a.b.c' <=> ['a', 'b', 'c']. Use array notation in performance critcal 
+	 *                                     'a.b.c' <=> ['a', 'b', 'c']. Use array notation in performance critcal
 	 *                                     sections as spliting the string as a performance inpact.
 	 * @return The value or `undefined` if the value is not found.
 	 */

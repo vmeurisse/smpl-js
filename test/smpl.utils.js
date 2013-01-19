@@ -72,6 +72,7 @@ define(['../assert', '../smpl.utils'], function(assert, smpl) {
 			* This wrapper are dangerous and should never be used. eg.: `true === !!new Boolean(false)`
 			*/
 			test('typed wrapper', function() {
+				/* jshint -W053 */ //Allow bad constructors
 				// One advice: never ever use that !!!
 				assert.equals(smpl.utils.stringify(new String('test')), 'String("test")');
 				assert.equals(smpl.utils.stringify(new Number(7)), 'Number(7)');
@@ -97,7 +98,8 @@ define(['../assert', '../smpl.utils'], function(assert, smpl) {
 					a: [0, 1, {}]
 				};
 				c.a[2].c = c.a[2];
-				assert.equals(smpl.utils.stringify(c), '{\n\t"a": [\n\t\t0,\n\t\t1,\n\t\t{\n\t\t\t"c": circular reference($["a"][2])\n\t\t}\n\t]\n}');
+				assert.equals(smpl.utils.stringify(c),
+					'{\n\t"a": [\n\t\t0,\n\t\t1,\n\t\t{\n\t\t\t"c": circular reference($["a"][2])\n\t\t}\n\t]\n}');
 			});
 			
 			

@@ -21,7 +21,7 @@ define(['../assert', '../smpl.Ecb'], function(assert, smpl) {
 						args: Array.prototype.slice.call(arguments),
 						scope: this
 					});
-				}
+				};
 			}
 			return listeners[key];
 		};
@@ -75,7 +75,7 @@ define(['../assert', '../smpl.Ecb'], function(assert, smpl) {
 				ecb.addListener(key, getListener(key), getScope(key));
 				ecb.addListener(key, getListener(key), getScope(key + key));
 				ecb.addListener(key, getListener(key + key), getScope(key + key));
-			}
+			};
 			var expectedCalls = [];
 			
 			addListeners('a');

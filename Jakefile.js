@@ -30,6 +30,51 @@ task('coverage', [], function() {
 	});
 });
 
+task('lint', [], function() {
+	var jshint = require('jshint').JSHINT;
+	var OPTIONS = JSON.parse(cat(dir.base + 'jshint.json'));
+	
+	var files = find(dir.src, dir.test).filter(function (file) {
+		return file.match(/\.js$/);
+	});
+
+	echo('Linting files...', '\n');
+
+	var failures = {};
+	files.forEach(function (file) {
+		jshint(cat(file), OPTIONS, {
+			require: false,
+			define: true,
+			module: false,
+			suite: false,
+			test: false,
+			setup: false
+		});
+		var passed = true;
+		var errors = jshint.data().errors;
+		if (errors) {
+			errors.forEach(function(err) {
+				if (!err) {
+					return;
+				}
+				if (err.code === 'W102' && err.evidence.match(/^\t+$/)) {
+					return;
+				}
+				if (passed) {
+					echo(file);
+					passed = false;
+				}
+				var line = '[L' + err.line + ':' + err.code + ']';
+				while (line.length < 15) {
+					line += ' ';
+				}
+
+				echo(line, err.reason);
+			});
+		}
+	});
+});
+
 function amdefine(folder, destination) {
 	var HEADER = "if (typeof define !== 'function') {var define = require('amdefine')(module);}\n";
 	

@@ -1,24 +1,31 @@
 define(['./smpl.data'], function(smpl) {
-	
+	/*jshint browser: true */
 	/**
 	 * Make an ajax call to a server
-	 * 
+	 *
 	 * @param {Object} args
-	 * @param {String} args.method                       Method to use to connect to the server. Default to 'GET'. (optional)
+	 * @param {String} args.method                       Method to use to connect to the server. Default: 'GET'.
+	 *                                                   (optional)
 	 * @param {String} args.url                          Url to connect to.
 	 * @param {String} args.data                         Data to be send in the body of the request. (optional)
 	 * @param {Function|Array.<Function>} args.onSuccess Called after a successfull response from the server. (optional)
 	 *                                                   The function take a `smpl.ajax.Response` as parameter
-	 * @param {Function|Array.<Function>} args.onError   Called after a error response from the server or an abort. (optional)
+	 * @param {Function|Array.<Function>} args.onError   Called after a error response from the server or an abort.
+	 *                                                   (optional)
 	 *                                                   The function take a `smpl.ajax.Response` as parameter
-	 * @param {Function|Array.<Function>} args.onDone    Called everytime after the other `onSuccess` or `onError` callbacks. (optional)
+	 * @param {Function|Array.<Function>} args.onDone    Called everytime after the other `onSuccess` or `onError`
+	 *                                                   callbacks. (optional)
 	 *                                                   The function take a `smpl.ajax.Response` as parameter
-	 * @param {Object} args.scope                        Scope to be used when calling `onSuccess`, `onError` and `onDone` callbacks
+	 * @param {Object} args.scope                        Scope to be used when calling `onSuccess`, `onError` and
+	 *                                                   `onDone` callbacks
 	 * @param {number} args.timeout                      Timeout of the call in ms. Default to 30000. (optional)
-	 * @param {boolean} args.async                       Set it to false for synchronus call. Default to true. (optional)
+	 * @param {boolean} args.async                       Set it to false for synchronus call. Default: true. (optional)
 	 * @param {Object.<String, String>} args.headers     Headers to set for the calls.
-	 * @param {?} args.passThrough                       Will be transmited to the `smpl.ajax.Response`. Usefull if you have multiple calls in parallel and you need to identify the responses.
-	 * @return {smpl.ajax.Request|smpl.ajax.Response} The `smpl.ajax.Request` object for asynchronus calls, the `smpl.ajax.Response` object for synchronus ones.
+	 * @param {?} args.passThrough                       Will be transmited to the `smpl.ajax.Response`. Usefull if you
+	 *                                                   have multiple calls in parallel and you need to identify the
+	 *                                                   responses.
+	 * @return {smpl.ajax.Request|smpl.ajax.Response} The `smpl.ajax.Request` object for asynchronus calls, the
+	 *                                                `smpl.ajax.Response` object for synchronus ones.
 	 */
 	smpl.ajax = function(args) {
 		var config = Object.create(smpl.ajax.defaultConfig);
@@ -33,7 +40,8 @@ define(['./smpl.data'], function(smpl) {
 		});
 		
 		if (config.method === 'POST' && config.data !== undefined) {
-			config.headers['Content-type'] = config.headers['Content-type'] || 'application/x-www-form-urlencoded; charset=UTF-8';
+			config.headers['Content-type'] = config.headers['Content-type'] ||
+			                                 'application/x-www-form-urlencoded; charset=UTF-8';
 		}
 		
 		
@@ -133,7 +141,7 @@ define(['./smpl.data'], function(smpl) {
 			window.clearTimeout(this.killer);
 		}
 		
-		var responseObject = new smpl.ajax.Response(xhr, passThrough);
+		var responseObject = new smpl.ajax.Response(this.xhr, this.config.passThrough);
 		
 		var callbacks = responseObject.successfull ? this.config.onSuccess : this.config.onError;
 		callbacks = callbacks.concat(this.config.onDone);
@@ -192,8 +200,9 @@ define(['./smpl.data'], function(smpl) {
 			this.statusText = 'No Content';
 		}
 		
-		if ([12002, 12029, 12030, 12031, 12152, 13030].indexOf(status) != -1) {
-			//Cool, some more IE non-conformance: http://stackoverflow.com/questions/872206/http-status-code-0-what-does-this-mean-in-ms-xmlhttp#905751
+		if ([12002, 12029, 12030, 12031, 12152, 13030].indexOf(this.status) != -1) {
+			//Cool, some more IE non-conformance:
+			// http://stackoverflow.com/questions/872206/http-status-code-0-what-does-this-mean-in-ms-xmlhttp#905751
 			this.status = 0;
 			this.statusText = 'fail';
 		}

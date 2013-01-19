@@ -27,14 +27,14 @@ define(['./smpl.core'], function(smpl) {
 	};
 	
 	var stringify = function(value, path, stringifyStack, level) {
-		var str;
+		var i, k, l, str;
 		
 		if (value === undefined || value === null) {
 			return '' + value;
 		}
 		
 		if (typeof value === 'number') {
-			if (value === 0 && 1/value === -Infinity) {
+			if (value === 0 && 1 / value === -Infinity) {
 				return '-0';
 			}
 			return value.toString();
@@ -59,13 +59,13 @@ define(['./smpl.core'], function(smpl) {
 				return 'Date("' + value.toString() + '")';
 			}
 			
-			var i = stringifyStack.length;
+			i = stringifyStack.length;
 			while (i--) {
 				if (stringifyStack[i].value === value) {
 					return 'circular reference(' + stringifyStack[i].path + ')';
 				}
 			}
-			stringifyStack = stringifyStack.slice()
+			stringifyStack = stringifyStack.slice();
 			stringifyStack.push({
 				path: path,
 				value: value
@@ -74,9 +74,10 @@ define(['./smpl.core'], function(smpl) {
 			if (objectType === 'Array' || objectType === 'Arguments') {
 				var cleanArray = [];
 				var lastIndex = -1;
-				for (var k in value) {
+				for (k in value) {
 					var index = +k;
-					if (!isNaN(index) && value[k] !== undefined) { //skip stupid non-array values stored in array. (eg. var a = []; a.stupid = true;)
+					//skip stupid non-array values stored in array. (eg. var a = []; a.stupid = true;)
+					if (!isNaN(index) && value[k] !== undefined) {
 						if (index > lastIndex + 1) {
 							cleanArray.push('undefined x ' + (index - lastIndex - 1));
 						}
@@ -96,15 +97,15 @@ define(['./smpl.core'], function(smpl) {
 			} else {
 				str = [];
 				var keys = Object.keys(value).sort(); //Make sure we get reproducible results
-				for (var i = 0, l = keys.length; i < l; i++) {
-					var k = keys[i];
+				for (i = 0, l = keys.length; i < l; i++) {
+					k = keys[i];
 					if (k !== '__proto__') {
 						var key = JSON.stringify(k);
 						var v = stringify(value[k], path + '[' + key + ']', stringifyStack, level + '\t');
 						str.push(key + ': ' + v);
 					}
 				}
-				return indent(str, level, '{}')
+				return indent(str, level, '{}');
 			}
 		}
 		return '' + value;

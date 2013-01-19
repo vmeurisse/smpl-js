@@ -1,0 +1,11 @@
+{
+	"bitwise":   true,
+	"es5":       true,
+	"smarttabs": true,
+	"maxlen":    120,
+	"newcap":    false,
+	"undef":     true,
+	"unused":    true,
+	"onecase":   true,
+	"trailing":  true
+}

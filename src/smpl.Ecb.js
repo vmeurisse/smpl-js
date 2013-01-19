@@ -21,7 +21,7 @@ define(['./smpl.core'], function(smpl) {
 	
 	/**
 	 * Add a listener to an event
-	 * 
+	 *
 	 * @param {String} event Name of the event to listen to
 	 * @param {Function} fn  Function to be called
 	 * @param {Object} scope Scope under which the `fn` is called (optional)
@@ -39,8 +39,10 @@ define(['./smpl.core'], function(smpl) {
 	/**
 	 * Remove one or multiple listeners.
 	 * @param {String} event Name of the event
-	 * @param {Function} fn  Remove only listeners whose function is equal to `fn`. Ignored is equal to undefined (optional)
-	 * @param {Object} scope Remove only listeners whose scope is equal to `fn`. Ignored is equal to undefined (optional)
+	 * @param {Function} fn  Remove only listeners whose function is equal to `fn`.
+	 *                       Ignored is equal to undefined (optional)
+	 * @param {Object} scope Remove only listeners whose scope is equal to `fn`.
+	 *                       Ignored is equal to undefined (optional)
 	 */
 	smpl.Ecb.prototype.removeListener = function(event, fn, scope) {
 		var callbacks = this.callbacks[event];
@@ -59,11 +61,11 @@ define(['./smpl.core'], function(smpl) {
 	/**
 	 * fire an event. Every listener associated to the event will be called in the order they where registered
 	 * Any parameter of `fire` will be passed to the listeners
-	 * 
+	 *
 	 *     var ecb = new smpl.Ecb();
 	 *     ecb.addListener('log', console.log, console);
 	 *     ecb.fire('log', 1, 2); // => 'log' 1 2
-	 * 
+	 *
 	 * @param {String} event Name of the event
 	 */
 	smpl.Ecb.prototype.fire = function(event) {

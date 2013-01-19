@@ -53,6 +53,7 @@ define(['./smpl.core'], function(smpl) {
 	};
 
 	smpl.dom.addEventListener = function(ele, ev, fn) {
+		/* jshint browser:true */
 		if (ele.addEventListener) {
 			return ele.addEventListener(ev, fn);
 		} else {

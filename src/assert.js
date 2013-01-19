@@ -56,7 +56,8 @@ define(['./smpl.data', './smpl.utils'], function(smpl) {
 	/**
 	 * Assert that a `value` is truthy. If the value is falsy, throw an `AssertionError`.
 	 * @param {?} value        The value to test
-	 * @param {String} message Message to be used in the `AssertionError`. If no message is provided, an automatic one will be used (optional)
+	 * @param {String} message Message to be used in the `AssertionError`.
+	 *                         If no message is provided, an automatic one will be used (optional)
 	 */
 	var assert = function(value, message) {
 		if (!value) {
@@ -79,7 +80,8 @@ define(['./smpl.data', './smpl.utils'], function(smpl) {
 	 * Assert that `value` and `expected` are equals. Use `smpl.data.compare` to compare the values.
 	 * @param {?} value        Value to test
 	 * @param {?} expected     Expected value
-	 * @param {String} message Message to be used in the `AssertionError`. If no message is provided, an automatic one will be used (optional)
+	 * @param {String} message Message to be used in the `AssertionError`.
+	 *                         If no message is provided, an automatic one will be used (optional)
 	 */
 	assert.equals = function(value, expected, message) {
 		if (!smpl.data.compare(value, expected)) {
@@ -88,11 +90,12 @@ define(['./smpl.data', './smpl.utils'], function(smpl) {
 	};
 	
 	/**
-	 * Assert that `value` and `expected` are the same (primitive object with the same value or pointer to the same object).
+	 * Assert that `value` and `expected` are the same.
 	 * This is the same as the triple equal operator exept that -0 and 0 are considered different and that NaN is NaN.
 	 * @param {?} value        Value to test
 	 * @param {?} expected     Expected value
-	 * @param {String} message Message to be used in the `AssertionError`. If no message is provided, an automatic one will be used (optional)
+	 * @param {String} message Message to be used in the `AssertionError`.
+	 *                         If no message is provided, an automatic one will be used (optional)
 	 */
 	assert.is = function(value, expected, message) {
 		var is;
@@ -111,7 +114,8 @@ define(['./smpl.data', './smpl.utils'], function(smpl) {
 	 * Assert that a function throws an exception when called
 	 * @param {Function} fn    Function to test
 	 * @param {Function} type  Type of the expected exception. (optional)
-	 * @param {String} message Message to be used in the `AssertionError`. If no message is provided, an automatic one will be used (optional)
+	 * @param {String} message Message to be used in the `AssertionError`.
+	 *                         If no message is provided, an automatic one will be used (optional)
 	 */
 	assert.throws = function(fn, type, message) {
 		if (typeof type === 'string') {

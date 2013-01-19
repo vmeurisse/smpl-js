@@ -125,12 +125,13 @@ define(['../assert', '../smpl.utils'], function(assert, smpl) {
 			});
 		});
 		suite('equals', function() {
-			equals = function(a, b) {
+			var equals = function(a, b) {
 				var message = '<' + smpl.utils.stringify(a) + '> should be equal to <' + smpl.utils.stringify(b) + '>';
 				assert.equals(a, b, message);
 			};
-			inequals = function(a, b) {
-				var message = '<' + smpl.utils.stringify(a) + '> should not be equal to <' + smpl.utils.stringify(b) + '>';
+			var inequals = function(a, b) {
+				var message = '<' + smpl.utils.stringify(a) + '> should not be equal to <' +
+				              smpl.utils.stringify(b) + '>';
 				assert.throws(assert.equals.bind(assert, a, b, ' '), assert.AssertionError, message);
 			};
 			test('simple equals', function() {
@@ -164,6 +165,7 @@ define(['../assert', '../smpl.utils'], function(assert, smpl) {
 				inequals(true, false);
 			});
 			test('bad constructors', function() {
+				/* jshint -W053 */ //Allow bad constructors
 				equals(new String('test'), new String('test'));
 				inequals(new String('test'), new String('test2'));
 				equals(new Boolean(4), new Boolean(3));
@@ -175,6 +177,7 @@ define(['../assert', '../smpl.utils'], function(assert, smpl) {
 				inequals(new Number(0), new Number(0.1));
 			});
 			test('tricky values', function() {
+				/* jshint -W053 */ //Allow bad constructors
 				equals(NaN, NaN);
 				inequals(0, -0);
 				inequals(0, new Number(0));
@@ -235,11 +238,11 @@ define(['../assert', '../smpl.utils'], function(assert, smpl) {
 			});
 		});
 		suite('is', function() {
-			is = function(a, b) {
+			var is = function(a, b) {
 				var message = '<' + smpl.utils.stringify(a) + '> should be <' + smpl.utils.stringify(b) + '>';
 				assert.is(a, b, message);
 			};
-			isnot = function(a, b) {
+			var isnot = function(a, b) {
 				var message = '<' + smpl.utils.stringify(a) + '> should not be <' + smpl.utils.stringify(b) + '>';
 				assert.throws(assert.is.bind(assert, a, b, ' '), assert.AssertionError, message);
 			};
