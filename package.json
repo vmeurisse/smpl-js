@@ -10,7 +10,8 @@
 	},
 	"dependencies": {
 		"jake": "0.5.x",
-		"amdefine": "0.0.x"
+		"amdefine": "0.0.x",
+		"shelljs": "0.1.x"
 	},
 	"devDependencies": {
 		"fs-extra": "0.3.x",
