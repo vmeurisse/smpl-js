@@ -46,7 +46,7 @@ define(['./smpl.core'], function(smpl) {
 	 */
 	smpl.dom.toggleClass = function (ele, cls) {
 		if (!smpl.dom.removeClass(ele, cls)) {
-			ele.className += " " + cls;
+			ele.className += ' ' + cls;
 			return true;
 		}
 		return false;
@@ -59,8 +59,8 @@ define(['./smpl.core'], function(smpl) {
 		} else {
 			return ele.attachEvent('on' + ev, function(e) {
 				e = e || window.event;
-				e.preventDefault  = e.preventDefault  || function(){ e.returnValue = false; };
-				e.stopPropagation = e.stopPropagation || function(){ e.cancelBubble = true; };
+				e.preventDefault  = e.preventDefault  || function() { e.returnValue = false; };
+				e.stopPropagation = e.stopPropagation || function() { e.cancelBubble = true; };
 				fn.call(ele, e);
 			});
 		}

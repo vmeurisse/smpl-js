@@ -1,11 +1,25 @@
 {
 	"bitwise":   true,
-	"es5":       true,
-	"smarttabs": true,
-	"maxlen":    120,
-	"newcap":    false,
+	"camelcase": true,
+	"curly":     true,
+	"eqeqeq":    true,
+	"forin":     false,
+	"immed":     true,
+	"latedef":   true,
+	"newcap":    true,
+	"noarg":     true,
+	"noempty":   true,
+	"nonew":     true,
+	"quotmark":  "single",
 	"undef":     true,
 	"unused":    true,
-	"onecase":   true,
-	"trailing":  true
+	"trailing":  true,
+	"maxlen":    120,
+	"white":     true,
+
+	"es5":       true,
+	"smarttabs": true,
+	"lastsemic": true,
+
+	"maxerr":    1000
 }

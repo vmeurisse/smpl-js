@@ -1,4 +1,4 @@
-if (typeof define !== 'function') {var define = require('amdefine')(module);}
+if (typeof define !== 'function') {var define = require('amdefine')(module)}
 define(['../assert', '../smpl.utils'], function(assert, smpl) {
 
 	/**
@@ -28,7 +28,7 @@ define(['../assert', '../smpl.utils'], function(assert, smpl) {
 			* Test that arrays render correctly
 			*/
 			test('array', function() {
-				assert.equals(smpl.utils.stringify([1, 2, "3"]), '[\n\t1,\n\t2,\n\t"3"\n]');
+				assert.equals(smpl.utils.stringify([1, 2, '3']), '[\n\t1,\n\t2,\n\t"3"\n]');
 			});
 			
 			/**

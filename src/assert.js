@@ -124,7 +124,7 @@ define(['./smpl.data', './smpl.utils'], function(smpl) {
 		}
 		try {
 			fn();
-		} catch(e) {
+		} catch (e) {
 			if (type && !e instanceof type) {
 				fail(message || 'exception of wrong type thrown', assert.throws);
 			}

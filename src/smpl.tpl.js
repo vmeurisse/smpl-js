@@ -9,6 +9,7 @@ define(['./smpl.string', './smpl.utils', './smpl.dom'], function(smpl) {
 	};
 
 	smpl.tpl.Template.prototype.init = function(blocks, partial) {
+		/* jshint evil: true */
 		delete this.blocks.toInit;
 		if (typeof blocks === 'string') {
 			smpl.tpl.utils.make(this, blocks);
@@ -68,6 +69,7 @@ define(['./smpl.string', './smpl.utils', './smpl.dom'], function(smpl) {
 	};
 
 	smpl.tpl.Template.prototype.load = function(container, display) {
+		/* jshint browser: true */
 		if (typeof container === 'string') {
 			container = document.getElementById(container);
 		}
@@ -75,7 +77,9 @@ define(['./smpl.string', './smpl.utils', './smpl.dom'], function(smpl) {
 			display = display || container.style.display;
 			container.style.display = 'none';
 			container.innerHTML = this.retrieve();
-			this.onLoad && this.onLoad(container, display);
+			if (this.onLoad) {
+				this.onLoad(container, display);
+			}
 			container.style.display = display;
 		}
 	};
@@ -123,7 +127,8 @@ define(['./smpl.string', './smpl.utils', './smpl.dom'], function(smpl) {
 			var chr = txt.charAt(pos++);
 			if (chr === '\\' && '\\{'.indexOf(txt.charAt(pos)) !== -1) { // skip escaped \ and {
 				++pos;
-			} else if (chr === '<' && txt.charAt(pos) === '!' && txt.charAt(pos + 1) === '-' && txt.charAt(pos + 2) === '-') { // <!-- (BEGIN|END): [-\w]+ --> block
+			} else if (chr === '<' && txt.charAt(pos) === '!' && txt.charAt(pos + 1) === '-' &&
+				       txt.charAt(pos + 2) === '-') { // <!-- (BEGIN|END): [-\w]+ --> block
 				newpos = txt.indexOf('-->', pos + 3);
 				if (newpos !== -1) {
 					var m = /^\s+(BEGIN|END):\s+([\-\w]+)\s+$/.exec(txt.substring(pos + 3, newpos));
@@ -136,8 +141,9 @@ define(['./smpl.string', './smpl.utils', './smpl.dom'], function(smpl) {
 				}
 			} else if (chr === '{') {
 				newpos = this.jsTokenize(txt, pos);
-				if (newpos != pos) {
-					this.processToken(tpl, stack, {type: 'html', txt: txt.substring(startPos, pos - 1), beforeJs: true});
+				if (newpos !== pos) {
+					var tokenTxt = txt.substring(startPos, pos - 1);
+					this.processToken(tpl, stack, {type: 'html', txt: tokenTxt, beforeJs: true});
 					startPos = pos;
 					this.processToken(tpl, stack, {type: 'js', txt: txt.substring(pos, newpos)});
 					startPos = pos = newpos + 1; //skip closing }
@@ -150,6 +156,7 @@ define(['./smpl.string', './smpl.utils', './smpl.dom'], function(smpl) {
 	};
 
 	smpl.tpl.utils.processToken = function(tpl, stack, token) {
+		/* global console: false */
 		var processed;
 		switch (token.type) {
 			case 'BEGIN':
@@ -158,14 +165,15 @@ define(['./smpl.string', './smpl.utils', './smpl.dom'], function(smpl) {
 				break;
 			case 'END':
 				var closed = stack.pop();
-				if (closed !== token.txt) {
-					console.error(smpl.string.supplant('Incorrect block closed <{0}>. Openned block was <{1}>.', [token.txt, closed]));
+				if (closed !== token.txt && typeof console !== 'undefined') {
+					console.error(smpl.string.supplant('Incorrect block closed <{0}>. Openned block was <{1}>.',
+					                                   [token.txt, closed]));
 				}
 				tpl.blocks[closed] = 'return ' + tpl.blocks[closed].join(' + ');
 				processed = "(this.retrieve('" + closed + "') || '')";
 				break;
 			case 'html':
-				token.txt = token.txt.replace(token.beforeJs ? /(\\*)\1\\(\{|$)/g : /(\\*)\1\\(\{)/g,"$1$2");
+				token.txt = token.txt.replace(token.beforeJs ? /(\\*)\1\\(\{|$)/g : /(\\*)\1\\(\{)/g, '$1$2');
 				processed = "'" + smpl.utils.escapeJs(token.txt) + "'";
 				break;
 			case 'js':
@@ -194,9 +202,9 @@ define(['./smpl.string', './smpl.utils', './smpl.dom'], function(smpl) {
 			var chr = input.charAt(pos++);
 			if (newLine.test(chr)) {
 				if (!at) return initialPos;
-			} if (chr === '/' && input.charAt(pos) === '/') { //Single line comment
+			} else if (chr === '/' && input.charAt(pos) === '/') { //Single line comment
 				if (!at) return initialPos;
-				while(!newLine.test(input.charAt(++pos)));
+				while (!newLine.test(input.charAt(++pos)));
 				++pos;
 			} else if (chr === '/' && input.charAt(pos) === '*') { //Multi line comment
 				if (!at) return initialPos;
@@ -220,7 +228,7 @@ define(['./smpl.string', './smpl.utils', './smpl.dom'], function(smpl) {
 					context.push(closingChar[chr]);
 				} else if (chr === '}' || chr === ']' || chr === ')') { //closing context
 					var lastContext = context.pop();
-					if (lastContext != chr) {
+					if (lastContext !== chr) {
 						--pos;
 						break;
 					}
@@ -247,8 +255,9 @@ define(['./smpl.string', './smpl.utils', './smpl.dom'], function(smpl) {
 	};
 
 	smpl.tpl.utils.compileJs = function(input) {
+		var noEscape;
 		if (input.charAt(0) === '{' && input.charAt(input.length - 1) === '}') {
-			var noEscape = true;
+			noEscape = true;
 			input = input.slice(1, -1);
 		}
 		var noDolar = /^\$[@\s]/.test(input);

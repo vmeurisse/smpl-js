@@ -1,9 +1,9 @@
 define(['./smpl.core'], function(smpl) {
 	smpl.data = smpl.data || {};
 	
-	smpl.data.updateObject = function (receiver, updater){
-		for(var p in updater) {
-			receiver[p]=updater[p];
+	smpl.data.updateObject = function(receiver, updater) {
+		for (var p in updater) {
+			receiver[p] = updater[p];
 		}
 	};
 	
@@ -47,7 +47,7 @@ define(['./smpl.core'], function(smpl) {
 		this.isText = (sorter.type === 'text');
 		
 		this.isCompositeKey = (this.key.indexOf('.') > -1);
-		this.keys = this.isCompositeKey ? this.key.split(".") : null;
+		this.keys = this.isCompositeKey ? this.key.split('.') : null;
 		
 		this.enumMap = null;
 		if (this.isEnum) {
@@ -95,10 +95,10 @@ define(['./smpl.core'], function(smpl) {
 			transformed = true;
 			list = sortList;
 		}
-		if (single) {
-			var sorter = sorters[0];
+		/*if (single) {
+			//var sorter = sorters[0];
 			
-		} else {
+		} else */{
 			if (reverse && reversed) {
 				// We reverse the list before to have a stable sort
 				// (if the browser provide a stable sort)
@@ -267,7 +267,7 @@ define(['./smpl.core'], function(smpl) {
 			return false;
 		}
 		
-		if (a.length != b.length) {
+		if (a.length !== b.length) {
 			// Special case for arrays: the length property is not returned by Object.keys but as impact on the array
 			return false;
 		}

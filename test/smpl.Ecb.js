@@ -1,4 +1,4 @@
-if (typeof define !== 'function') {var define = require('amdefine')(module);}
+if (typeof define !== 'function') {var define = require('amdefine')(module)}
 define(['../assert', '../smpl.Ecb'], function(assert, smpl) {
 	suite('smpl.Ecb', function() {
 		'use strict';
@@ -9,7 +9,7 @@ define(['../assert', '../smpl.Ecb'], function(assert, smpl) {
 			defaultScope,
 			scopes = {};
 		
-		(function(){
+		(function() {
 			defaultScope = this;
 		}).call(undefined);
 

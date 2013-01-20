@@ -22,7 +22,7 @@
 	},
 	"scripts": {
 		"install": "jake",
-		"test": "mocha",
+		"test": "jake test",
 		"coverage": "jake coverage",
 		"lint": "jake lint"
 	},

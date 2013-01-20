@@ -32,7 +32,7 @@ define(['./smpl.data'], function(smpl) {
 		smpl.data.updateObject(config, args);
 		
 		['onSuccess', 'onError', 'onDone'].forEach(function (key) {
-			if (config[key] && typeof config[key] === "function") {
+			if (config[key] && typeof config[key] === 'function') {
 				config[key] = [config[key]];
 			} else if (!config[key]) {
 				config[key] = [];
@@ -53,8 +53,8 @@ define(['./smpl.data'], function(smpl) {
 	 * Store default values for configuration.
 	 */
 	smpl.ajax.defaultConfig = {
-		method: "GET",
-		url: "#",
+		method: 'GET',
+		url: '#',
 		data: null,
 	
 		scope: null,
@@ -100,7 +100,7 @@ define(['./smpl.data'], function(smpl) {
 		} else {
 			try {
 				this.xhr.send(data);
-			} catch(e) {
+			} catch (e) {
 			}
 			return this.handleTransactionResponse();
 		}
@@ -200,7 +200,7 @@ define(['./smpl.data'], function(smpl) {
 			this.statusText = 'No Content';
 		}
 		
-		if ([12002, 12029, 12030, 12031, 12152, 13030].indexOf(this.status) != -1) {
+		if ([12002, 12029, 12030, 12031, 12152, 13030].indexOf(this.status) !== -1) {
 			//Cool, some more IE non-conformance:
 			// http://stackoverflow.com/questions/872206/http-status-code-0-what-does-this-mean-in-ms-xmlhttp#905751
 			this.status = 0;

@@ -1,4 +1,4 @@
-if (typeof define !== 'function') {var define = require('amdefine')(module);}
+if (typeof define !== 'function') {var define = require('amdefine')(module)}
 define(['../assert', '../smpl.utils'], function(assert, smpl) {
 
 	suite('assert', function() {
@@ -28,7 +28,7 @@ define(['../assert', '../smpl.utils'], function(assert, smpl) {
 				try {
 					assert.throws(function() {
 					});
-				} catch(e) {
+				} catch (e) {
 					return;
 				}
 				throw new Error('assert.throws should have thrown an exception');
@@ -37,7 +37,7 @@ define(['../assert', '../smpl.utils'], function(assert, smpl) {
 				try {
 					assert.throws(function() {
 					}, Error);
-				} catch(e) {
+				} catch (e) {
 					return;
 				}
 				throw new Error('assert.throws should have thrown an exception');
