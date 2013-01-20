@@ -1,5 +1,5 @@
 if (typeof define !== 'function') {var define = require('amdefine')(module)}
-define(['../assert', '../smpl.data'], function(assert, smpl) {
+define(['../src/assert', '../src/smpl.data'], function(assert, smpl) {
 	
 	// The method smpl.data.compare is not tested here. It is already tested by `assert.equals`
 	

@@ -6,22 +6,23 @@ config.fatal = true; //tell shelljs to fail on errors
 var dir = {};
 dir.base = path.normalize(__dirname + (path.sep || '/'));
 dir.src = dir.base + 'src/';
-dir.cov = dir.base + 'src-cov/';
 dir.test = dir.base + 'test/';
-dir.testCov = dir.cov + 'test/';
+dir.cov = dir.base + 'coverage/';
+dir.covTest = dir.cov + 'test/';
+dir.covSrc = dir.cov + 'src/';
 dir.bin = path.join(dir.base, 'node_modules', '.bin');
 
 task('default', [], function() {
-	amdefine(dir.src, dir.base);
+	cp('-fr', dir.src + '*', dir.base);
 });
 
 task('coverage', [], function() {
 	rm('-rf', dir.cov);
-	doCommand('jscoverage', ['--no-highlight', dir.src, dir.cov], function(result) {
-		amdefine(dir.cov, dir.cov);
-		cp('-r', dir.test, dir.testCov);
+	mkdir(dir.cov);
+	doCommand('jscoverage', ['--no-highlight', dir.src, dir.covSrc], function(result) {
+		cp('-r', dir.test, dir.covTest);
 		doCommand(path.join(dir.bin, 'mocha'), ['--reporter', 'html-cov'], function(result) {
-			var resultFile = path.join(dir.testCov, 'coverage.html');
+			var resultFile = path.join(dir.cov, 'coverage.html');
 			result.output.to(resultFile);
 			console.log('xdg-open ' + resultFile);
 		}, {
@@ -140,18 +141,6 @@ function runUnitTests(details) {
 	doCommand(path.join(dir.bin, 'mocha'), opts, complete, {
 		stdio: 'inherit',
 		customFds: [0, 1, 2] //customFds is deprecated but works on 0.6. stdio is introduced on 0.8
-	});
-}
-
-function amdefine(folder, destination) {
-	var HEADER = "if (typeof define !== 'function') {var define = require('amdefine')(module);}\n";
-	
-	var list = find(folder).filter(function(file) { return file.match(/\.js$/); });
-	list.forEach(function(srcPath) {
-		var filePath = srcPath.substr(folder.length);
-		var destDir = destination + path.dirname(filePath);
-		jake.mkdirP(destDir);
-		(HEADER + cat(srcPath)).to(path.join(destination, filePath));
 	});
 }
 

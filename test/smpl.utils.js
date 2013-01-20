@@ -1,5 +1,5 @@
 if (typeof define !== 'function') {var define = require('amdefine')(module)}
-define(['../assert', '../smpl.utils'], function(assert, smpl) {
+define(['../src/assert', '../src/smpl.utils'], function(assert, smpl) {
 
 	/**
 	* Test the smpl.utils.js file

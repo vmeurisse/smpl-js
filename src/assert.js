@@ -1,3 +1,4 @@
+if (typeof define !== 'function') {var define = require('amdefine')(module)}
 define(['./smpl.data', './smpl.utils'], function(smpl) {
 	
 	var AssertionError = function AssertionError(options) {

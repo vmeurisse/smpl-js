@@ -1,3 +1,4 @@
+if (typeof define !== 'function') {var define = require('amdefine')(module)}
 define(['./smpl.string', './smpl.utils', './smpl.dom'], function(smpl) {
 	smpl.tpl = {};
 	
