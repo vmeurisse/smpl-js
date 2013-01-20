@@ -30,86 +30,84 @@ define(['./smpl.core'], function(smpl) {
 	var stringify = function(value, path, stringifyStack, level) {
 		var i, k, l, str;
 		
+		var string = '<non js object>';
+		
 		if (value === undefined || value === null) {
-			return '' + value;
-		}
-		
-		if (typeof value === 'number') {
+			string = '' + value;
+		} else if (typeof value === 'number') {
 			if (value === 0 && 1 / value === -Infinity) {
-				return '-0';
+				string = '-0';
+			} else {
+				string = value.toString();
 			}
-			return value.toString();
-		}
-		
-		if (typeof value === 'function' || value instanceof RegExp) {
-			return value.toString();
-		}
-		
-		if (typeof value === 'string' || typeof value === 'boolean') {
-			return JSON.stringify(value);
-		}
-		
-		if (typeof value === 'object') {
+		} else if (typeof value === 'function' || value instanceof RegExp) {
+			string =  value.toString();
+		} else  if (typeof value === 'string' || typeof value === 'boolean') {
+			string = JSON.stringify(value);
+		} else if (typeof value === 'object') {
 			var objectType = Object.prototype.toString.call(value).slice(8, -1);
 			
 			if (objectType === 'Boolean' || objectType === 'Number' || objectType === 'String') {
-				return objectType + '(' + stringify(value.valueOf(), '', [], 0) + ')';
-			}
-			
-			if (objectType === 'Date') {
-				return 'Date("' + value.toString() + '")';
-			}
-			
-			i = stringifyStack.length;
-			while (i--) {
-				if (stringifyStack[i].value === value) {
-					return 'circular reference(' + stringifyStack[i].path + ')';
-				}
-			}
-			stringifyStack = stringifyStack.slice();
-			stringifyStack.push({
-				path: path,
-				value: value
-			});
-			
-			if (objectType === 'Array' || objectType === 'Arguments') {
-				var cleanArray = [];
-				var lastIndex = -1;
-				for (k in value) {
-					var index = +k;
-					//skip stupid non-array values stored in array. (eg. var a = []; a.stupid = true;)
-					if (!isNaN(index) && value[k] !== undefined) {
-						if (index > lastIndex + 1) {
-							cleanArray.push('undefined x ' + (index - lastIndex - 1));
-						}
-						cleanArray.push(stringify(value[k], path + '[' + index + ']', stringifyStack, level + '\t'));
-						lastIndex = index;
-					}
-				}
-				if (lastIndex < value.length - 1) {
-					cleanArray.push('undefined x ' + (value.length - lastIndex - 1));
-				}
-				str = indent(cleanArray, level, '[]');
-				if (objectType === 'Array') {
-					return str;
-				} else {
-					return objectType + '(' + str + ')';
-				}
+				string = objectType + '(' + stringify(value.valueOf(), '', [], 0) + ')';
+			} else if (objectType === 'Date') {
+				string = 'Date("' + value.toString() + '")';
 			} else {
-				str = [];
-				var keys = Object.keys(value).sort(); //Make sure we get reproducible results
-				for (i = 0, l = keys.length; i < l; i++) {
-					k = keys[i];
-					if (k !== '__proto__') {
-						var key = JSON.stringify(k);
-						var v = stringify(value[k], path + '[' + key + ']', stringifyStack, level + '\t');
-						str.push(key + ': ' + v);
+				i = stringifyStack.length;
+				while (i--) {
+					if (stringifyStack[i].value === value) {
+						string = 'circular reference(' + stringifyStack[i].path + ')';
+						break;
 					}
 				}
-				return indent(str, level, '{}');
+				
+				if (i === -1) {
+					stringifyStack = stringifyStack.slice();
+					stringifyStack.push({
+						path: path,
+						value: value
+					});
+					
+					if (objectType === 'Array' || objectType === 'Arguments') {
+						var cleanArray = [];
+						var lastIndex = -1;
+						for (k in value) {
+							var index = +k;
+							//skip stupid non-array values stored in array. (eg. var a = []; a.stupid = true;)
+							if (!isNaN(index) && value[k] !== undefined) {
+								if (index > lastIndex + 1) {
+									cleanArray.push('undefined x ' + (index - lastIndex - 1));
+								}
+								cleanArray.push(stringify(value[k], path + '[' + index + ']',
+								                stringifyStack, level + '\t'));
+								lastIndex = index;
+							}
+						}
+						if (lastIndex < value.length - 1) {
+							cleanArray.push('undefined x ' + (value.length - lastIndex - 1));
+						}
+						str = indent(cleanArray, level, '[]');
+						if (objectType === 'Array') {
+							string =  str;
+						} else {
+							string = objectType + '(' + str + ')';
+						}
+					} else {
+						str = [];
+						var keys = Object.keys(value).sort(); //Make sure we get reproducible results
+						for (i = 0, l = keys.length; i < l; i++) {
+							k = keys[i];
+							if (k !== '__proto__') {
+								var key = JSON.stringify(k);
+								var v = stringify(value[k], path + '[' + key + ']', stringifyStack, level + '\t');
+								str.push(key + ': ' + v);
+							}
+						}
+						string = indent(str, level, '{}');
+					}
+				}
 			}
 		}
-		return '' + value;
+		return string;
 	};
 	smpl.utils.stringify = function(object) {
 		return stringify(object, '$', [], '');

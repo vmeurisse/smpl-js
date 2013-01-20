@@ -5,6 +5,33 @@ define(['../src/assert', '../src/smpl.utils'], function(assert, smpl) {
 	* Test the smpl.utils.js file
 	*/
 	suite('smpl.utils', function() {
+		suite('uniq', function() {
+			test('uniq', function() {
+				var i = 100;
+				var values = [];
+				while (i--) {
+					var u = smpl.utils.uniq();
+					assert(typeof u === 'number' && isFinite(u) && Math.floor(u) >= 1,
+					       'smpl.utils.uniq() should return positive int');
+					values.push(u);
+				}
+				i = values.length;
+				while (--i) {
+					var j = i;
+					while (j--) {
+						assert(values[i] !== values[j], 'smpl.utils.uniq() should return unique values');
+					}
+				}
+			});
+		});
+		
+		suite('escapeJs', function() {
+			test('escapeJs', function() {
+				var escaped = smpl.utils.escapeJs('test\n\r\n\\\t\'"\u2028\u2029/');
+				assert.equals(escaped, 'test\\n\\\n\\n\\\\\t\\\'\\"\\n\\\n\\n\\\n\\/');
+			});
+		});
+		
 		/**
 		* Test the `smpl.utils.stringify` method
 		*/
