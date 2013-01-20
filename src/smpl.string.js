@@ -13,9 +13,9 @@ define(['./smpl.core'], function(smpl) {
 	 * @return {String} the result of the replacement
 	 */
 	smpl.string.supplant = function(string, object) {
-		return string.replace(/\{(\w+)\}/g, function(a, key) {
+		return string.replace(/\{(\w+)\}/g, function(match, key) {
 			var replacer = object[key];
-			return (replacer !== undefined) ? replacer : key;
+			return (replacer !== undefined) ? replacer : match;
 		});
 	};
 	
