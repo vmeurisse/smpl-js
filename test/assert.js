@@ -24,11 +24,28 @@ define(['../src/assert', '../src/smpl.utils'], function(assert, smpl) {
 					throw new Error('Incorrect error returned');
 				}
 			});
+			test('when throw with wrong type', function() {
+				var CustomError = function() {};
+				try {
+					assert.throws(function() {
+						throw new CustomError();
+					}, Error);
+				} catch (e) {
+					if (!e instanceof assert.AssertionError) {
+						throw new Error('Incorrect error returned');
+					}
+					return;
+				}
+				throw new Error('assert.throws should have thrown an exception');
+			});
 			test('when no throw', function() {
 				try {
 					assert.throws(function() {
 					});
 				} catch (e) {
+					if (!e instanceof assert.AssertionError) {
+						throw new Error('Incorrect error returned');
+					}
 					return;
 				}
 				throw new Error('assert.throws should have thrown an exception');
@@ -38,6 +55,41 @@ define(['../src/assert', '../src/smpl.utils'], function(assert, smpl) {
 					assert.throws(function() {
 					}, Error);
 				} catch (e) {
+					if (!e instanceof assert.AssertionError) {
+						throw new Error('Incorrect error returned');
+					}
+					return;
+				}
+				throw new Error('assert.throws should have thrown an exception');
+			});
+			test('with custom message', function() {
+				var CustomError = function() {};
+				try {
+					assert.throws(function() {
+						throw new CustomError();
+					}, Error, 'test message');
+				} catch (e) {
+					if (!e instanceof assert.AssertionError) {
+						throw new Error('Incorrect error returned');
+					}
+					if ('' + e !== 'AssertionError: test message') {
+						throw new Error('Wrong mesage thrown');
+					}
+					return;
+				}
+				throw new Error('assert.throws should have thrown an exception');
+			});
+			test('with custom message2', function() {
+				try {
+					assert.throws(function() {
+					}, 'test message');
+				} catch (e) {
+					if (!e instanceof assert.AssertionError) {
+						throw new Error('Incorrect error returned');
+					}
+					if ('' + e !== 'AssertionError: test message') {
+						throw new Error('Wrong mesage thrown');
+					}
 					return;
 				}
 				throw new Error('assert.throws should have thrown an exception');
@@ -114,6 +166,24 @@ define(['../src/assert', '../src/smpl.utils'], function(assert, smpl) {
 						throw new Error('Wrong error thrown');
 					}
 					if ('' + e !== 'AssertionError: ' + message) {
+						throw new Error('Wrong mesage thrown');
+					}
+					ok = true;
+				}
+				if (!ok) {
+					throw new Error('no error thrown');
+				}
+				
+			});
+			test('with no message', function() {
+				var ok;
+				try {
+					assert.fail();
+				} catch (e) {
+					if (e.constructor !== assert.AssertionError) {
+						throw new Error('Wrong error thrown');
+					}
+					if ('' + e !== 'AssertionError') {
 						throw new Error('Wrong mesage thrown');
 					}
 					ok = true;
@@ -235,6 +305,11 @@ define(['../src/assert', '../src/smpl.utils'], function(assert, smpl) {
 				inequals(a, b);
 				a[BIG_LENGTH - 1] = BIG_LENGTH;
 				equals(a, b);
+			});
+			
+			test('test returned message', function() {
+				var e = assert.throws(assert.equals.bind(assert, 'a', 3), assert.AssertionError);
+				assert('' + e === 'AssertionError: actual - "a" expected - 3', 'Wrong message');
 			});
 		});
 		suite('is', function() {

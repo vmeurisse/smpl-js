@@ -42,9 +42,6 @@ define(['./smpl.data', './smpl.utils'], function(smpl) {
 		};
 		if (arguments.length === 2) {
 			stackStartFunction = actual;
-		} else if (arguments.length === 3) {
-			stackStartFunction = expected;
-			options.actual = actual;
 		} else if (arguments.length === 4) {
 			options.actual = actual;
 			options.expected = expected;
@@ -126,7 +123,7 @@ define(['./smpl.data', './smpl.utils'], function(smpl) {
 		try {
 			fn();
 		} catch (e) {
-			if (type && !e instanceof type) {
+			if (type && !(e instanceof type)) {
 				fail(message || 'exception of wrong type thrown', assert.throws);
 			}
 			return e;
