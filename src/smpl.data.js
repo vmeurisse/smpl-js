@@ -5,6 +5,7 @@ define(['./smpl.core'], function(smpl) {
 		for (var p in updater) {
 			receiver[p] = updater[p];
 		}
+		return receiver;
 	};
 	
 	smpl.data.extendObject = function(receiver, extender) {
@@ -13,6 +14,7 @@ define(['./smpl.core'], function(smpl) {
 				receiver[p] = extender[p];
 			}
 		}
+		return receiver;
 	};
 	
 	/**
@@ -27,7 +29,7 @@ define(['./smpl.core'], function(smpl) {
 	 */
 	smpl.data.filter = function(list, property, value) {
 		var filteredList = [];
-		for (var i = 0, l = list.length; i < l; i++) {
+		for (var i = 0; i < list.length; i++) {
 			var item = list[i];
 			if (item[property] === value) {
 				filteredList.push(item);
@@ -36,6 +38,19 @@ define(['./smpl.core'], function(smpl) {
 		return filteredList;
 	};
 	
+	 /**
+	 * Sorter constructor to be used with `smpl.data.sort`.
+	 * @param {Object} args
+	 * @param {String} args.type            Type of the sorter. Default: 'default'. (optional). Supported values are:
+	 *                                       - 'default': 
+	 *                                       - 'number': 
+	 *                                       - 'enum': Compare values against a given order. Not found items are put at
+	 *                                                 the end.
+	 *                                       - 'text': To compare text in a case insensitive maner
+	 * @param {String} args.key             
+	 * @param {Number} args.dir             
+	 * @param {Array.<?>} args.enumArray    
+	 */
 	smpl.data.Sorter = function(sorter) {
 		this.type = sorter.type;
 		this.key = sorter.key;
@@ -46,8 +61,11 @@ define(['./smpl.core'], function(smpl) {
 		this.isEnum = (sorter.type === 'enum');
 		this.isText = (sorter.type === 'text');
 		
-		this.isCompositeKey = (this.key.indexOf('.') > -1);
-		this.keys = this.isCompositeKey ? this.key.split('.') : null;
+		if (!this.key) {
+			this.keys = [];
+		} else {
+			this.keys = (this.key.indexOf('.') > -1) ? this.key.split('.') : null;
+		}
 		
 		this.enumMap = null;
 		if (this.isEnum) {
@@ -57,11 +75,11 @@ define(['./smpl.core'], function(smpl) {
 			}
 		}
 		
-		this.needPreprocess = this.isNumber || this.isEnum || this.isText || this.isCompositeKey;
+		this.needPreprocess = this.isNumber || this.isEnum || this.isText || this.keys;
 		this.sortKey = false;
 	};
 	smpl.data.Sorter.prototype.sortValue = function(item) {
-		var value = this.isCompositeKey ? smpl.data.get(item, this.keys) : item[this.key];
+		var value = this.keys ? smpl.data.get(item, this.keys) : item[this.key];
 		if (this.isEnum) {
 			return this.enumMap[value] || Infinity;
 		} else if (this.isText && value.toLocaleLowerCase) {
@@ -71,18 +89,16 @@ define(['./smpl.core'], function(smpl) {
 		}
 	};
 	
-	smpl.data.SortItem = function(item) {
-		this.item = item;
-	};
-	
 	/**
-	* Sort an array of objects on the specified properties
-	* @param {Object[]} list  the list of object to sort
-	* @param {array} sorters  the sorting criterias as an array of object:
-	*           {string} key  the property the sort on
-	*           {number} dir  the sort direction: ascending (1, default) or descending (-1)
-	*/
+	 * Sort an array of objects on the specified properties
+	 * @param {Array<?>} list  the list of items to sort. The original list is modified
+	 * @param {Array.<smpl.data.Sorter|Object>} sorters  the sorting criterias as an array of object:
+	 * @param {Boolean} reverse  
+	 * @param {Boolean} reversed  
+	 * @return the sorted list.
+	 */
 	smpl.data.sort = function(list, sorters, reverse, reversed) {
+		if (!sorters) sorters = [{}];
 		if (!list.length || !sorters.length) return list;
 		
 		var sortList, transformed, originalList = list,
@@ -95,24 +111,21 @@ define(['./smpl.core'], function(smpl) {
 			transformed = true;
 			list = sortList;
 		}
-		/*if (single) {
-			//var sorter = sorters[0];
-			
-		} else */{
-			if (reverse && reversed) {
-				// We reverse the list before to have a stable sort
-				// (if the browser provide a stable sort)
-				list.reverse();
-			}
-			smpl.data._sorters = sorters;
-			smpl.data._transformed = transformed;
-			list.sort(smpl.data._sortMultipleKeys);
+		
+		if (reversed) {
+			// We reverse the list before to have a stable sort (if the browser provide a stable sort)
+			list.reverse();
 		}
+		smpl.data._sorters = sorters;
+		smpl.data._transformed = transformed;
+		list.sort(smpl.data._sortMultipleKeys);
+
 		if (reverse) {
 			list.reverse();
 		}
 		if (transformed) {
 			smpl.data._cleanData(originalList, list);
+			list = originalList;
 		}
 		return list;
 	};
@@ -147,8 +160,10 @@ define(['./smpl.core'], function(smpl) {
 				for (var j = 0; j < m; j++) {
 					var item = list[j];
 					if (needInit) {
-						if (i > initIndex) {
-							sortList[j] = new smpl.data.SortItem(item);
+						if (j >= initIndex) {
+							sortList[j] = {
+								item: item
+							};
 						} else {
 							sortList[j].item = item;
 						}
@@ -165,14 +180,8 @@ define(['./smpl.core'], function(smpl) {
 	smpl.data._cleanData = function(originalList, sortedList) {
 		for (var i = 0, l = originalList.length; i < l; i++) {
 			originalList[i] = sortedList[i].item;
-			delete sortedList[i].item;
+			sortedList[i].item = undefined; //Avoid memory leaks
 		}
-	};
-	
-	smpl.data._sortNumbers = function(a, b) {
-		var va = a.sorter0;
-		var vb = b.sorter0;
-		return (va === vb) ? 0 : ((va < vb) ? -1 : 1);
 	};
 	
 	smpl.data._sortMultipleKeys = function(a, b) {
