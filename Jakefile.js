@@ -128,11 +128,20 @@ task('lint', [], function() {
 });
 
 task('test', ['lint'], {async: true}, function() {
-	doCommand(path.join(dir.bin, 'mocha'), [], complete, {
+	runUnitTests();
+});
+
+task('unit', [], {async: true}, function() {
+	runUnitTests(true);
+});
+
+function runUnitTests(details) {
+	var opts = details ? ['-R', 'spec'] : [];
+	doCommand(path.join(dir.bin, 'mocha'), opts, complete, {
 		stdio: 'inherit',
 		customFds: [0, 1, 2] //customFds is deprecated but works on 0.6. stdio is introduced on 0.8
 	});
-});
+}
 
 function amdefine(folder, destination) {
 	var HEADER = "if (typeof define !== 'function') {var define = require('amdefine')(module);}\n";

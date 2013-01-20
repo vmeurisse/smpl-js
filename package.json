@@ -23,6 +23,7 @@
 	"scripts": {
 		"install": "jake",
 		"test": "jake test",
+		"unit": "jake unit",
 		"coverage": "jake coverage",
 		"lint": "jake lint"
 	},
