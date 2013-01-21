@@ -14,12 +14,13 @@
 		"shelljs": "0.1.x"
 	},
 	"devDependencies": {
-		"jshint": "https://github.com/jshint/jshint/archive/1.0.0-rc3.tar.gz",
+		"jshint": "https://github.com/jshint/jshint/archive/1.0.0-rc4.tar.gz",
 		"mocha": "1.4.x",
 		"requirejs": "2.1.x",
 		"es5-shim": "2.0.x",
 		"JSON": "1.0.x",
-		"jscover": "0.2.x"
+		"jscover": "0.2.x",
+		"jsdom": "0.3.x"
 	},
 	"scripts": {
 		"install": "jake",
