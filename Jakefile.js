@@ -19,7 +19,7 @@ task('default', [], function() {
 task('coverage', [], function() {
 	rm('-rf', dir.cov);
 	mkdir(dir.cov);
-	doCommand('jscoverage', ['--no-highlight', dir.src, dir.covSrc], function(result) {
+	doCommand(path.join(dir.bin, 'jscover'), [path.relative(__dirname, dir.src), path.relative(__dirname, dir.covSrc)], function(result) {
 		cp('-r', dir.test, dir.covTest);
 		doCommand(path.join(dir.bin, 'mocha'), ['--reporter', 'html-cov'], function(result) {
 			var resultFile = path.join(dir.cov, 'coverage.html');

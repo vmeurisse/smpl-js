@@ -18,7 +18,8 @@
 		"mocha": "1.4.x",
 		"requirejs": "2.1.x",
 		"es5-shim": "2.0.x",
-		"JSON": "1.0.x"
+		"JSON": "1.0.x",
+		"jscover": "0.2.x"
 	},
 	"scripts": {
 		"install": "jake",
