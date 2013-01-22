@@ -25,7 +25,7 @@
 	"scripts": {
 		"install": "jake",
 		"test": "jake test",
-		"unit": "jake unit",
+		"unit": "mocha -R spec",
 		"coverage": "jake coverage",
 		"lint": "jake lint"
 	},

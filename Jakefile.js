@@ -19,14 +19,17 @@ task('default', [], function() {
 task('coverage', [], function() {
 	rm('-rf', dir.cov);
 	mkdir(dir.cov);
-	doCommand(path.join(dir.bin, 'jscover'), [path.relative(__dirname, dir.src), path.relative(__dirname, dir.covSrc)], function(result) {
+	var jscoverCmd = path.join(dir.bin, 'jscover');
+	var jscoverArgs =  path.relative(__dirname, dir.src) + ' ' + path.relative(__dirname, dir.covSrc);
+	
+	doCommand(jscoverCmd + ' ' + jscoverArgs, function() {
 		cp('-r', dir.test, dir.covTest);
-		doCommand(path.join(dir.bin, 'mocha'), ['--reporter', 'html-cov'], function(result) {
+		doCommand(path.join(dir.bin, 'mocha') + ' --reporter html-cov', {
+			cwd: dir.cov
+		}, function(result) {
 			var resultFile = path.join(dir.cov, 'coverage.html');
 			result.output.to(resultFile);
 			console.log('xdg-open ' + resultFile);
-		}, {
-			cwd: dir.cov
 		});
 	});
 });
@@ -137,41 +140,53 @@ task('unit', [], {async: true}, function() {
 });
 
 function runUnitTests(details) {
-	var opts = details ? ['-R', 'spec'] : [];
-	doCommand(path.join(dir.bin, 'mocha'), opts, complete, {
-		stdio: 'inherit',
-		customFds: [0, 1, 2] //customFds is deprecated but works on 0.6. stdio is introduced on 0.8
-	});
+	var opts = details ? ' -R spec' : '';
+	doCommand(path.join(dir.bin, 'mocha') + opts, {silent: false}, complete);
 }
 
-function doCommand(cmd, args, cb, opt) {
+function doCommand(cmd, opts, cb) {
 	var result = {
 		exitCode: 0,
 		output: '',
 		err: ''
 	};
 	
-	var proc = child_process.spawn(cmd, args || [], opt);
-	proc.on('exit', function(code) {
-		result.exitCode = code;
-		if (code) {
-			var msg = 'Command failed: <' + cmd + ' ' + (args || []).join(' ') + '>\n';
-			msg += 'Exit code:' + result.exitCode + '\n';
-			msg += result.err + '\n';
-			if (result.exitCode == 127) msg += '\nVerify that ' + cmd + ' is installed.';
-			console.error(msg);
-			exit(1);
-
-		} else {
-			cb(result);
-		}
-	});
-	if (proc.stdout) {
-		proc.stdout.on('data', function(data) {
-			result.output += data;
-		});
-		proc.stderr.on('data', function(data) {
-			result.err += data;
-		});
+	if (typeof opts === 'function') {
+		cb = opts;
+		opts = {};
 	}
+	if (opts.silent !== false) opts.silent = true;
+	var options = {
+		env: process.env,
+		cwd: opts.cwd || dir.base
+	};
+	
+	var proc = child_process.exec(cmd, options, function(err) {
+		result.exitCode = err ? err.code : 0;
+		if (err) {
+			var msg = 'Command failed: <' + cmd + '>\n';
+			msg += 'Exit code:' + err.code + '\n';
+			msg += result.err + '\n';
+			if (err.code == 127) msg += '\nVerify that ' + cmd.split(' ')[0] + ' is installed.';
+			process.stdout.write(msg);
+			exit(1);
+		} else {
+			if (cb) {
+				cb(result);
+			}
+		}
+		
+	});
+	proc.stdout.on('data', function(data) {
+		result.output += data;
+		 if (!opts.silent) {
+			process.stdout.write(data);
+		 }
+	});
+	proc.stderr.on('data', function(data) {
+		result.err += data;
+		 if (!opts.silent) {
+			process.stderr.write(data);
+		 }
+	});
 }
