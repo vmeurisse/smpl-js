@@ -21,7 +21,30 @@
 	<script>mocha.setup('tdd')</script>
 	<script>
 		require(['./smpl'], function () {
-			mocha.run();
+			var runner = mocha.run();
+
+			var failed = [];
+			var ok = 0;
+			runner.on('fail', function(test, err){
+				failed.push({
+					title: test.title,
+					fullTitle: test.fullTitle(),
+					error: {
+						message: err.message,
+						stack: err.stack
+					}
+				});
+			});
+
+			runner.on('pass', function(test, err){
+				ok++;
+			});
+			runner.on('end', function(){
+				window.mochaResults = {
+					failed: failed.length,
+					ok: ok
+				};
+			});
 		});
 	</script>
 </body>

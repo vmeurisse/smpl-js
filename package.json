@@ -20,14 +20,18 @@
 		"es5-shim": "2.0.x",
 		"JSON": "1.0.x",
 		"jscover": "0.2.x",
-		"jsdom": "0.3.x"
+		"jsdom": "0.3.x",
+		"node-static": "0.6.x",
+		"wd": "0.0.x",
+		"sauce-connect-launcher": "https://github.com/vmeurisse/sauce-connect-launcher/archive/master.tar.gz"
 	},
 	"scripts": {
 		"install": "jake",
 		"test": "jake test",
 		"unit": "mocha -R spec",
 		"coverage": "jake coverage",
-		"lint": "jake lint"
+		"lint": "jake lint",
+		"remote": "jake remote"
 	},
 	"repository": {
 		"type": "git",
@@ -39,5 +43,10 @@
 		"README.md",
 		"src"
 	],
-	"main": "smpl.js"
+	"main": "smpl.js",
+	"config": {
+		"port": "8080",
+		"sauceLabs_user": "vmeurisse",
+		"sauceLabs_key": "9ff75aa8-abb3-4572-b63a-9cff5889e671"
+	}
 }

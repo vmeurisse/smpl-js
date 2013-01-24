@@ -1,4 +1,5 @@
 var path = require('path');
+var request = require('request');
 var child_process = require('child_process');
 require('shelljs/global');
 config.fatal = true; //tell shelljs to fail on errors
@@ -138,6 +139,157 @@ task('test', ['lint'], {async: true}, function() {
 task('unit', [], {async: true}, function() {
 	runUnitTests(true);
 });
+
+task('remote', [], function() {
+	var PORT = process.env.npm_package_config_port;
+	var remote = new Remote({
+		port: PORT,
+		user: process.env.npm_package_config_sauceLabs_user,
+		key: process.env.npm_package_config_sauceLabs_key,
+		name: 'smpl test suite',
+		browsers: [
+			{name: 'chrome', os: 'Linux'},
+			{name: 'opera', version: 12, os: 'Linux'},
+			{name: 'firefox', os: 'Linux'},
+			{name: 'safari', version: 6, os: 'Mac 10.8'},
+			{name: 'internet explorer', version: 10, os: 'Windows 2012'},
+			{name: 'internet explorer', version: 9, os: 'Windows 2008'},
+			{name: 'internet explorer', version: 8, os: 'Windows 2003'}
+		],
+		url: 'http://localhost:' + PORT + '/test/test.html'
+	});
+	remote.startServer();
+	remote.startSauceConnect(function() {
+		remote.run(function(browser, cb) {
+			browser.get(remote.config.url, function() {
+				browser.waitForCondition('!!window.mochaResults', 30000, 100, function(err, res) {
+					browser.eval('window.mochaResults', function(err, res) {
+						cb(res && !res.failed);
+					});
+				});
+			});
+		});
+	});
+});
+
+var Remote = function(config) {
+	this.config = config;
+};
+Remote.prototype.startServer = function() {
+	var static = require('node-static');
+	var file = new static.Server();
+	this.server = require('http').createServer(function (request, response) {
+		request.addListener('end', function () {
+			file.serve(request, response);
+		});
+	});
+	this.server.listen(this.config.port);
+	
+	console.log('server ready: ' + this.config.url);
+};
+
+Remote.prototype.stopServer = function() {
+	this.server.close();
+	console.log('server stoped');
+};
+
+Remote.prototype.startSauceConnect = function(cb) {
+	var options = {
+		username: this.config.user,
+		accessKey: this.config.key,
+		verbose: false,
+		logger: console.log,
+		no_progress: true // optionally hide progress bar
+	};
+	var sauceConnectLauncher = require('sauce-connect-launcher');
+	var self = this;
+	sauceConnectLauncher(options, function (err, sauceConnectProcess) {
+		if (err) {
+			if (!(err+'').match(/Exit code 143/)) {
+				console.log(err);
+			}
+			return;
+		}
+		self.sauceConnect = sauceConnectProcess;
+		cb();
+	});
+};
+
+Remote.prototype.stopSauceConnect = function() {
+	this.sauceConnect.close();
+};
+
+Remote.prototype.run = function(test) {
+	this.nbTests = this.config.browsers.length;
+	this.config.browsers.forEach(this.startBrowser.bind(this, test));
+};
+
+Remote.prototype.startBrowser = function(test, b) {
+	var webdriver = require('wd');
+
+	var browser = webdriver.remote('ondemand.saucelabs.com', 80, this.config.user, this.config.key);
+	var name = this.getBrowserName(b);
+	var desired = {
+		name: this.config.name + ' - ' + name,
+		browserName: b.name,
+		platform: b.os,
+		version: b.version
+	};
+	browser.on('status', function(info){
+		console.log('%s : \x1b[36m%s\x1b[0m', name, info);
+	});
+
+	browser.on('command', function(meth, path){
+		console.log('%s : > \x1b[33m%s\x1b[0m: %s', name, meth, path);
+	});
+
+	var self = this;
+	browser.init(desired, function(err, sessionID) {
+		test(browser, self.testDone.bind(self, browser, name, sessionID));
+	});
+};
+
+Remote.prototype.getBrowserName = function(browser) {
+	var name = browser.name;
+	if (browser.version) name += ' ' + browser.version;
+	if (browser.os) name += ' (' + browser.os + ')';
+	return name;
+};
+
+Remote.prototype.testDone = function(browser, name, id, success) {
+	browser.quit();
+	this.report(id, success, name, this.finish.bind(this));
+};
+
+Remote.prototype.finish = function() {
+	if (0 === --this.nbTests) {
+		this.stopSauceConnect();
+		this.stopServer();
+	}
+};
+
+Remote.prototype.report = function(jobId, success, name, done) {
+	success = !!success;
+	var httpOpts = {
+		url: 'http://' + this.config.user + ':' + this.config.key + '@saucelabs.com/rest/v1/' + this.config.user + '/jobs/' + jobId,
+		method: 'PUT',
+		headers: {
+			'Content-Type': 'text/json'
+		},
+		body: JSON.stringify({
+			passed: success
+		})
+	};
+
+	request(httpOpts, function(err, res) {
+		if(err) {
+			console.log(err);
+		} else {
+			console.log('%s : > job: %s marked as %s', name, jobId, success ? 'passed' : 'failed'); 
+		}
+		done(err);
+	});
+};
 
 function runUnitTests(details) {
 	var opts = details ? ' -R spec' : '';
