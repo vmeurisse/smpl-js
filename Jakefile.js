@@ -1,5 +1,4 @@
 var path = require('path');
-var request = require('request');
 var child_process = require('child_process');
 require('shelljs/global');
 config.fatal = true; //tell shelljs to fail on errors
@@ -269,6 +268,8 @@ Remote.prototype.finish = function() {
 };
 
 Remote.prototype.report = function(jobId, success, name, done) {
+	var request = require('request');
+	
 	success = !!success;
 	var httpOpts = {
 		url: 'http://' + this.config.user + ':' + this.config.key + '@saucelabs.com/rest/v1/' + this.config.user + '/jobs/' + jobId,

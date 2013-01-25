@@ -23,7 +23,8 @@
 		"jsdom": "0.3.x",
 		"node-static": "0.6.x",
 		"wd": "0.0.x",
-		"sauce-connect-launcher": "https://github.com/vmeurisse/sauce-connect-launcher/archive/master.tar.gz"
+		"sauce-connect-launcher": "https://github.com/vmeurisse/sauce-connect-launcher/archive/master.tar.gz",
+		"request": "2.12.x"
 	},
 	"scripts": {
 		"install": "jake",
