@@ -279,7 +279,8 @@ Remote.prototype.report = function(jobId, success, name, done) {
 		},
 		body: JSON.stringify({
 			passed: success
-		})
+		}),
+		jar: false /* disable cookies: they break next request */
 	};
 
 	request(httpOpts, function(err, res) {
