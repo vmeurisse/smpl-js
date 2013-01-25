@@ -12,6 +12,12 @@ dir.covTest = dir.cov + 'test/';
 dir.covSrc = dir.cov + 'src/';
 dir.bin = path.join(dir.base, 'node_modules', '.bin');
 
+var EXIT_CODES = {
+	command: 1,
+	lintFailed: 2,
+	remoteTests: 3
+};
+
 task('default', [], function() {
 	cp('-fr', dir.src + '*', dir.base);
 });
@@ -124,22 +130,29 @@ task('lint', [], function() {
 		}
 	});
 	if (hasErrors) {
-		echo('FAIL !!!');
-		exit(1);
+		fail('FAIL !!!', EXIT_CODES.lintFailed);
 	} else {
 		echo('ok');
 	}
 });
 
 task('test', ['lint'], {async: true}, function() {
-	runUnitTests();
+	runUnitTests(function() {
+		var remote = jake.Task['remote'];
+		remote.addListener('complete', function() {
+			complete();
+		});
+		remote.execute();
+	});
 });
 
 task('unit', [], {async: true}, function() {
-	runUnitTests(true);
+	runUnitTests(function() {
+		complete();
+	}, true);
 });
 
-task('remote', [], function() {
+task('remote', [], {async: true}, function() {
 	var PORT = process.env.npm_package_config_port;
 	var remote = new Remote({
 		port: PORT,
@@ -148,14 +161,18 @@ task('remote', [], function() {
 		name: 'smpl test suite',
 		browsers: [
 			{name: 'chrome', os: 'Linux'},
-			{name: 'opera', version: 12, os: 'Linux'},
 			{name: 'firefox', os: 'Linux'},
-			{name: 'safari', version: 6, os: 'Mac 10.8'},
+			{name: 'opera', version: 12, os: 'Linux'},
 			{name: 'internet explorer', version: 10, os: 'Windows 2012'},
 			{name: 'internet explorer', version: 9, os: 'Windows 2008'},
-			{name: 'internet explorer', version: 8, os: 'Windows 2003'}
+			{name: 'internet explorer', version: 8, os: 'Windows 2003'},
+			{name: 'safari', version: 6, os: 'Mac 10.8'}
 		],
-		url: 'http://localhost:' + PORT + '/test/test.html'
+		url: 'http://localhost:' + PORT + '/test/test.html',
+		onEnd: function(fails) {
+//			if (fails) fail(EXIT_CODES.remoteTests);
+			complete();
+		}
 	});
 	remote.startServer();
 	remote.startSauceConnect(function() {
@@ -163,7 +180,7 @@ task('remote', [], function() {
 			browser.get(remote.config.url, function() {
 				browser.waitForCondition('!!window.mochaResults', 30000, 100, function(err, res) {
 					browser.eval('window.mochaResults', function(err, res) {
-						cb(res && !res.failed);
+						cb(res);
 					});
 				});
 			});
@@ -180,7 +197,9 @@ var Remote = function(config) {
 	} else {
 		this.tags.push('custom', '' + Math.floor(Math.random() * 100000000));
 	}
+	this.status = {};
 };
+
 Remote.prototype.startServer = function() {
 	var static = require('node-static');
 	var file = new static.Server();
@@ -264,22 +283,27 @@ Remote.prototype.getBrowserName = function(browser) {
 	return name;
 };
 
-Remote.prototype.testDone = function(browser, name, id, success) {
+Remote.prototype.testDone = function(browser, name, id, status) {
 	browser.quit();
-	this.report(id, success, name, this.finish.bind(this));
+	this.status[name] = status;
+	this.report(id, status, name, this.finish.bind(this));
 };
 
 Remote.prototype.finish = function() {
 	if (0 === --this.nbTests) {
 		this.stopSauceConnect();
 		this.stopServer();
+		var self = this;
+		setTimeout(function() {
+			self.displayResults();
+		}, 1000);
 	}
 };
 
-Remote.prototype.report = function(jobId, success, name, done) {
+Remote.prototype.report = function(jobId, status, name, done) {
 	var request = require('request');
 	
-	success = !!success;
+	var success = !!(status && status.ok && status.failed && status.ok.length && !status.failed.length);
 	var httpOpts = {
 		url: 'http://' + this.config.user + ':' + this.config.key + '@saucelabs.com/rest/v1/' + this.config.user + '/jobs/' + jobId,
 		method: 'PUT',
@@ -294,17 +318,65 @@ Remote.prototype.report = function(jobId, success, name, done) {
 
 	request(httpOpts, function(err, res) {
 		if(err) {
-			console.log(err);
+			console.log('%s : > job %s: unable to set status:', name, jobId, err); 
 		} else {
-			console.log('%s : > job: %s marked as %s', name, jobId, success ? 'passed' : 'failed'); 
+			console.log('%s : > job %s marked as %s', name, jobId, success ? 'passed' : 'failed'); 
 		}
-		done(err);
+		done();
 	});
 };
 
-function runUnitTests(details) {
+Remote.prototype.displayResults = function() {
+	var failures = 0;
+	var self = this;
+	console.log();
+	console.log();
+	console.log('**********************************');
+	console.log('*             Status             *');
+	console.log('**********************************');
+	console.log();
+	console.log();
+	this.config.browsers.forEach(function(browser) {
+		var name = self.getBrowserName(browser);
+		var status = self.status[name];
+		
+		var ok = status && status.ok && status.ok.length;
+		var failed = status && status.failed && status.failed.length;
+
+		if (!ok && !failed) {
+			console.log('    %s: \033[31mno results\033[m', name);
+		} else if (failed) {
+			console.log('    %s: \033[31m%d/%d failed\033[m', name, failed, ok + failed);
+		} else {
+			console.log('    %s: \033[90m%d passed\033[m', name, ok);
+		}
+		
+		if (failed) {
+			failures++;
+			failed = status.failed;
+			var n = 0;
+			failed.forEach(function(test) {
+				var err = test.error;
+				var msg = err.message || '';
+				var stack = err.stack || msg;
+				var i = stack.indexOf(msg) + msg.length;
+				msg = stack.slice(0, i);
+				console.log();
+				console.log('      %d) %s', ++n, test.fullTitle);
+				console.log('\033[31m%s\033[m', stack.replace(/^/gm, '        '));
+			});
+			console.log();
+			console.log();
+		}
+	});
+	console.log();
+	console.log();
+	if (this.config.onEnd) this.config.onEnd(failures);
+};
+
+function runUnitTests(cb, details) {
 	var opts = details ? ' -R spec' : '';
-	doCommand(path.join(dir.bin, 'mocha') + opts, {silent: false}, complete);
+	doCommand(path.join(dir.bin, 'mocha') + opts, {silent: false}, cb);
 }
 
 function doCommand(cmd, opts, cb) {
@@ -332,7 +404,7 @@ function doCommand(cmd, opts, cb) {
 			msg += result.err + '\n';
 			if (err.code == 127) msg += '\nVerify that ' + cmd.split(' ')[0] + ' is installed.';
 			process.stdout.write(msg);
-			exit(1);
+			fail('subcommand execution error', EXIT_CODES.command);
 		} else {
 			if (cb) {
 				cb(result);

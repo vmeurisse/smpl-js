@@ -37,7 +37,7 @@
 			var runner = mocha.run();
 			
 			var failed = [];
-			var ok = 0;
+			var ok = [];
 			runner.on('fail', function(test, err){
 				failed.push({
 					title: test.title,
@@ -50,11 +50,14 @@
 			});
 
 			runner.on('pass', function(test, err){
-				ok++;
+				ok.push({
+					title: test.title,
+ 					fullTitle: test.fullTitle()
+				});
 			});
 			runner.on('end', function(){
 				window.mochaResults = {
-					failed: failed.length,
+					failed: failed,
 					ok: ok
 				};
 			});
