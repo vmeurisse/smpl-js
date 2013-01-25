@@ -173,6 +173,13 @@ task('remote', [], function() {
 
 var Remote = function(config) {
 	this.config = config;
+	this.id = process.env.TRAVIS_JOB_ID;
+	this.tags = [];
+	if (this.id) {
+		this.tags.push('travis');
+	} else {
+		this.tags.push('custom', '' + Math.floor(Math.random() * 100000000));
+	}
 };
 Remote.prototype.startServer = function() {
 	var static = require('node-static');
@@ -232,7 +239,9 @@ Remote.prototype.startBrowser = function(test, b) {
 		name: this.config.name + ' - ' + name,
 		browserName: b.name,
 		platform: b.os,
-		version: b.version
+		version: b.version,
+		build: this.id,
+		tags: this.tags
 	};
 	browser.on('status', function(info){
 		console.log('%s : \x1b[36m%s\x1b[0m', name, info);
