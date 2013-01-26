@@ -370,14 +370,15 @@ Remote.prototype.displayResults = function() {
 
 		if (!ok && !failed) {
 			console.log('    %s: \033[31mno results\033[m', name);
+			failures++;
 		} else if (failed) {
 			console.log('    %s: \033[31m%d/%d failed\033[m', name, failed, ok + failed);
+			failures++;
 		} else {
 			console.log('    %s: \033[90m%d passed\033[m', name, ok);
 		}
 		
 		if (failed) {
-			failures++;
 			failed = status.failed;
 			var n = 0;
 			failed.forEach(function(test) {
