@@ -16,7 +16,8 @@ var EXIT_CODES = {
 	command: 1,
 	lintFailed: 2,
 	remoteTests: 3,
-	sauceLabsCredentials: 4
+	sauceLabsCredentials: 4,
+	sauceConnect: 5
 };
 
 task('default', [], function() {
@@ -251,6 +252,7 @@ Remote.prototype.startSauceConnect = function(cb) {
 		if (err) {
 			if (!(err+'').match(/Exit code 143/)) {
 				console.log(err);
+				fail('Error launching sauce connect', EXIT_CODES.sauceConnect)
 			}
 			return;
 		}
