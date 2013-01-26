@@ -245,7 +245,7 @@ Remote.prototype.startSauceConnect = function(cb) {
 	var options = {
 		username: this.config.user,
 		accessKey: this.config.key,
-		verbose: false,
+		verbose: true,
 		logger: console.log,
 		no_progress: true // optionally hide progress bar
 	};
