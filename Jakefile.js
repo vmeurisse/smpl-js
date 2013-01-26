@@ -166,7 +166,10 @@ task('remote', [], {async: true}, function() {
 			{name: 'internet explorer', version: 10, os: 'Windows 2012'},
 			{name: 'internet explorer', version: 9, os: 'Windows 2008'},
 			{name: 'internet explorer', version: 8, os: 'Windows 2003'},
-			{name: 'safari', version: 6, os: 'Mac 10.8'}
+			{name: 'internet explorer', version: 7, os: 'Windows 2003'},
+			{name: 'iPad', version: 6, os: 'Mac 10.8'},
+			{name: 'safari', version: 6, os: 'Mac 10.8'},
+			{name: 'safari', version: 5, os: 'Mac 10.6'}
 		],
 		url: 'http://localhost:' + PORT + '/test/test.html',
 		onEnd: function(fails) {
