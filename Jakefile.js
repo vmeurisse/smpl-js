@@ -265,12 +265,13 @@ Remote.prototype.stopSauceConnect = function() {
 
 Remote.prototype.run = function(test) {
 	this.nbTests = this.config.browsers.length;
-	this.config.browsers.forEach(this.startBrowser.bind(this, test));
+	this.startBrowser(test, 0);
 };
 
-Remote.prototype.startBrowser = function(test, b) {
+Remote.prototype.startBrowser = function(test, index) {
 	var webdriver = require('wd');
 
+	var b = this.config.browsers[index];
 	var browser = webdriver.remote('ondemand.saucelabs.com', 80, this.config.user, this.config.key);
 	var name = this.getBrowserName(b);
 	var desired = {
@@ -292,6 +293,11 @@ Remote.prototype.startBrowser = function(test, b) {
 	var self = this;
 	browser.init(desired, function(err, sessionID) {
 		test(browser, self.testDone.bind(self, browser, name, sessionID));
+		if (self.config.browsers[index + 1]) {
+			process.nextTick(function() {
+				self.startBrowser(test, index + 1);
+			});
+		}
 	});
 };
 
