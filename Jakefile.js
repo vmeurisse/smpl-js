@@ -198,7 +198,7 @@ task('remote', [], {async: true}, function() {
 
 var Remote = function(config) {
 	this.config = config;
-	this.id = process.env.TRAVIS_JOB_ID;
+	this.id = process.env.TRAVIS_BUILD_NUMBER;
 	this.tags = [];
 	if (this.id) {
 		this.tags.push('travis');
