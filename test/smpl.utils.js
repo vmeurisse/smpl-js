@@ -129,12 +129,14 @@ define(['../src/assert', '../src/smpl.utils'], function(assert, smpl) {
 					'{\n\t"a": [\n\t\t0,\n\t\t1,\n\t\t{\n\t\t\t"c": circular reference($["a"][2])\n\t\t}\n\t]\n}');
 			});
 			
-			
-			test('arguments as array', function() {
-				(function() {
-					assert.equals(smpl.utils.stringify(arguments), 'Arguments([\n\t1,\n\t2\n])');
-				})(1, 2);
-			});
+			// this test fail on IE <= 8 as arguments objects are not distinctive from standard objects.
+			if ('' + arguments !== '[object Object]') {
+				test('arguments as array', function() {
+					(function() {
+						assert.equals(smpl.utils.stringify(arguments), 'Arguments([\n\t1,\n\t2\n])');
+					})(1, 2);
+				});
+			}
 		});
 	});
 });

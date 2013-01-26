@@ -170,7 +170,7 @@ task('remote', [], {async: true}, function() {
 		],
 		url: 'http://localhost:' + PORT + '/test/test.html',
 		onEnd: function(fails) {
-//			if (fails) fail(EXIT_CODES.remoteTests);
+			if (fails) fail(EXIT_CODES.remoteTests);
 			complete();
 		}
 	});
