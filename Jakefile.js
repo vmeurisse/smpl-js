@@ -138,6 +138,11 @@ task('lint', [], function() {
 
 task('test', ['lint'], {async: true}, function() {
 	runUnitTests(function() {
+		if (process.env.TRAVIS_NODE_VERSION && process.env.TRAVIS_NODE_VERSION !== '0.8') {
+			// For travis build, only start remote tests once
+			complete();
+			return;
+		}
 		var remote = jake.Task['remote'];
 		remote.addListener('complete', function() {
 			complete();
