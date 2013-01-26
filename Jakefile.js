@@ -15,7 +15,8 @@ dir.bin = path.join(dir.base, 'node_modules', '.bin');
 var EXIT_CODES = {
 	command: 1,
 	lintFailed: 2,
-	remoteTests: 3
+	remoteTests: 3,
+	sauceLabsCredentials: 4
 };
 
 task('default', [], function() {
@@ -158,9 +159,19 @@ task('unit', [], {async: true}, function() {
 });
 
 task('remote', [], {async: true}, function() {
-	var PORT = process.env.npm_package_config_port;
+	var port = process.env.npm_package_config_port;
+	var user, key;
+	if (process.env.SAUCELABS_USER && process.env.SAUCELABS_KEY) {
+		user = process.env.SAUCELABS_USER;
+		key = process.env.SAUCELABS_KEY;
+	} else if (process.env.npm_package_config_sauceLabs_user && process.env.npm_package_config_sauceLabs_key) {
+		user = process.env.npm_package_config_sauceLabs_user;
+		key = process.env.npm_package_config_sauceLabs_key;
+	} else {
+		fail('Unable to find sauceLabs credentials', EXIT_CODES.sauceLabsCredentials)
+	}
 	var remote = new Remote({
-		port: PORT,
+		port: port,
 		user: process.env.npm_package_config_sauceLabs_user,
 		key: process.env.npm_package_config_sauceLabs_key,
 		name: 'smpl test suite',
@@ -176,7 +187,7 @@ task('remote', [], {async: true}, function() {
 			{name: 'safari', version: 6, os: 'Mac 10.8'},
 			{name: 'safari', version: 5, os: 'Mac 10.6'}
 		],
-		url: 'http://localhost:' + PORT + '/test/test.html',
+		url: 'http://localhost:' + port + '/test/test.html',
 		onEnd: function(fails) {
 			if (fails) fail(EXIT_CODES.remoteTests);
 			complete();

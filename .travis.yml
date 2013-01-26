@@ -2,3 +2,6 @@ language: node_js
 node_js:
   - 0.8
   - 0.6
+env:
+  global:
+    - secure: "WnwFL2f/DyfSE1fmhRCajfCVAD5EsrAw6EvJS4vTR3ykLKP8UvDFONWd3HJOgamKac1bLYe1UjYRvbgRiY3jrZ/feoC8nLGJcHtDHcmAJGow2VtrexSpvv8rmzE/aRwI9jR8I2GZSuMQRciSezI2FONC1qRgxuPP6faEizMMjIY="

@@ -47,7 +47,7 @@
 	"main": "smpl.js",
 	"config": {
 		"port": "8080",
-		"sauceLabs_user": "vmeurisse",
-		"sauceLabs_key": "9ff75aa8-abb3-4572-b63a-9cff5889e671"
+		"sauceLabs_user": "",
+		"sauceLabs_key": ""
 	}
 }
