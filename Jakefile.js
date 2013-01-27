@@ -1,3 +1,7 @@
+/* jshint node: true, camelcase: false, latedef: false */
+/* globals jake: false, task: false, fail: false, complete: false */ // Globals exposed by jake
+/* globals config: false, cp: false, rm: false, mkdir: false, echo: false,
+           cat: false, find: false */ // Globals exposed by shelljs
 var path = require('path');
 var child_process = require('child_process');
 require('shelljs/global');
@@ -47,9 +51,12 @@ task('lint', [], function() {
 	var OPTIONS = JSON.parse(cat(dir.base + 'jshint.json'));
 	
 	var files = find(dir.src, dir.test).filter(function (file) {
-		return file.match(/\.js$/);
+		return file.match(/\.js(?:on)?$/);
 	});
-
+	files.push(dir.base + 'Jakefile.js');
+	files.push(dir.base + 'jshint.json');
+	files.push(dir.base + 'package.json');
+	
 	echo('Linting files...');
 
 	var hasErrors = false;
@@ -69,13 +76,15 @@ task('lint', [], function() {
 				if (!err) {
 					return;
 				}
+				var line = err.evidence.replace(/\t/g, '    ');
+				
 				// ignore trailing spaces on indentation only lines
 				if (err.code === 'W102' && err.evidence.match(/^\t+$/)) {
 					return;
 				}
 				// required { for one line blocks
 				if (err.code === 'W116' && err.a === '{' &&
-					err.evidence.match(/^\t* *(if|for|while) ?\(.*;(\s*\/\/.*)?$/)) {
+					err.evidence.match(/^\t* *(?:(?:(?:if|for|while) ?\()|else).*;(?:\s*\/\/.*)?$/)) {
 					return;
 				}
 				// Allow double quote string if they contain single quotes
@@ -84,19 +93,19 @@ task('lint', [], function() {
 					if (err.character === 0) {
 						return;
 					}
-					var line = err.evidence.replace(/\t/g, '    ');
 					var i = err.character - 2; //JSHINT use base 1 for column and return the char after the end
-					var single = 0, double = 0;
+					var singleQuotes = 0;
+					var doubleQuotes = 0;
 					while (i--) {
-						if (line[i] === "'") single++;
+						if (line[i] === "'") singleQuotes++;
 						else if (line[i] === '"') {
 							var nb = 0;
 							while (i-- && line[i] === '\\') nb++;
-							if (nb % 2) double++;
+							if (nb % 2) doubleQuotes++;
 							else break;
 						}
 					}
-					if (single > double) {
+					if (singleQuotes > doubleQuotes) {
 						return;
 					}
 				}
@@ -106,10 +115,9 @@ task('lint', [], function() {
 					return;
 				}
 				
-				// jslint bug: `while(i--);` require a space before `;`
-				if (err.code === 'W013') {
-					var line = err.evidence.replace(/\t/g, '    ');
-					if (line[err.character - 1] === ';') return;
+				// bug in jslint: `while(i--);` require a space before `;`
+				if (err.code === 'W013' && line[err.character - 1] === ';') {
+					return;
 				}
 				
 				// Indentation. White option turn this on
@@ -120,14 +128,14 @@ task('lint', [], function() {
 					passed = false;
 					hasErrors = true;
 				}
-				var line = '[L' + err.line + ':' + err.code + ']';
+				line = '[L' + err.line + ':' + err.code + ']';
 				while (line.length < 15) {
 					line += ' ';
 				}
 
 				echo(line, err.reason);
 				console.log(err.evidence.replace(/\t/g, '    '));
-				console.log(Array(err.character).join(' ') + '^');
+				console.log(new Array(err.character).join(' ') + '^');
 			});
 		}
 	});
@@ -145,7 +153,7 @@ task('test', ['lint'], {async: true}, function() {
 			complete();
 			return;
 		}
-		var remote = jake.Task['remote'];
+		var remote = jake.Task.remote;
 		remote.addListener('complete', function() {
 			complete();
 		});
@@ -169,7 +177,7 @@ task('remote', [], {async: true}, function() {
 		user = process.env.npm_package_config_sauceLabs_user;
 		key = process.env.npm_package_config_sauceLabs_key;
 	} else {
-		fail('Unable to find sauceLabs credentials', EXIT_CODES.sauceLabsCredentials)
+		fail('Unable to find sauceLabs credentials', EXIT_CODES.sauceLabsCredentials);
 	}
 	console.log('testing on sauceLabs with user <%s>', user);
 	var remote = new Remote({
@@ -199,7 +207,8 @@ task('remote', [], {async: true}, function() {
 	remote.startSauceConnect(function() {
 		remote.run(function(browser, cb) {
 			browser.get(remote.config.url, function() {
-				browser.waitForCondition('!!window.mochaResults', 30000, 100, function(err, res) {
+				browser.waitForCondition('!!window.mochaResults', 30000, 100, function() {
+					/* jshint evil: true */
 					browser.eval('window.mochaResults', function(err, res) {
 						cb(res);
 					});
@@ -222,8 +231,8 @@ var Remote = function(config) {
 };
 
 Remote.prototype.startServer = function() {
-	var static = require('node-static');
-	var file = new static.Server();
+	var nodeStatic = require('node-static');
+	var file = new nodeStatic.Server();
 	this.server = require('http').createServer(function (request, response) {
 		request.addListener('end', function () {
 			file.serve(request, response);
@@ -251,9 +260,9 @@ Remote.prototype.startSauceConnect = function(cb) {
 	var self = this;
 	sauceConnectLauncher(options, function (err, sauceConnectProcess) {
 		if (err) {
-			if (!(err+'').match(/Exit code 143/)) {
+			if (!(err + '').match(/Exit code 143/)) {
 				console.log(err);
-				fail('Error launching sauce connect', EXIT_CODES.sauceConnect)
+				fail('Error launching sauce connect', EXIT_CODES.sauceConnect);
 			}
 			return;
 		}
@@ -285,11 +294,11 @@ Remote.prototype.startBrowser = function(test, index) {
 		build: this.id,
 		tags: this.tags
 	};
-	browser.on('status', function(info){
+	browser.on('status', function(info) {
 		console.log('%s : \x1b[36m%s\x1b[0m', name, info);
 	});
 
-	browser.on('command', function(meth, path){
+	browser.on('command', function(meth, path) {
 		console.log('%s : > \x1b[33m%s\x1b[0m: %s', name, meth, path);
 	});
 
@@ -332,8 +341,10 @@ Remote.prototype.report = function(jobId, status, name, done) {
 	var request = require('request');
 	
 	var success = !!(status && status.ok && status.failed && status.ok.length && !status.failed.length);
+	var user = this.config.user;
+	var key = this.config.key;
 	var httpOpts = {
-		url: 'http://' + this.config.user + ':' + this.config.key + '@saucelabs.com/rest/v1/' + this.config.user + '/jobs/' + jobId,
+		url: 'http://' + user + ':' + key + '@saucelabs.com/rest/v1/' + user + '/jobs/' + jobId,
 		method: 'PUT',
 		headers: {
 			'Content-Type': 'text/json'
@@ -343,12 +354,12 @@ Remote.prototype.report = function(jobId, status, name, done) {
 		}),
 		jar: false /* disable cookies: they break next request */
 	};
-
-	request(httpOpts, function(err, res) {
-		if(err) {
-			console.log('%s : > job %s: unable to set status:', name, jobId, err); 
+	
+	request(httpOpts, function(err) {
+		if (err) {
+			console.log('%s : > job %s: unable to set status:', name, jobId, err);
 		} else {
-			console.log('%s : > job %s marked as %s', name, jobId, success ? 'passed' : 'failed'); 
+			console.log('%s : > job %s marked as %s', name, jobId, success ? 'passed' : 'failed');
 		}
 		done();
 	});
@@ -431,7 +442,7 @@ function doCommand(cmd, opts, cb) {
 			var msg = 'Command failed: <' + cmd + '>\n';
 			msg += 'Exit code:' + err.code + '\n';
 			msg += result.err + '\n';
-			if (err.code == 127) msg += '\nVerify that ' + cmd.split(' ')[0] + ' is installed.';
+			if (err.code === 127) msg += '\nVerify that ' + cmd.split(' ')[0] + ' is installed.';
 			process.stdout.write(msg);
 			fail('subcommand execution error', EXIT_CODES.command);
 		} else {
