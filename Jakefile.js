@@ -171,13 +171,11 @@ task('remote', [], {async: true}, function() {
 	} else {
 		fail('Unable to find sauceLabs credentials', EXIT_CODES.sauceLabsCredentials)
 	}
-	console.log('testing on sauceLabs with user <%s> and key <sha1.%s>',
-	            user,
-	            require('crypto').createHash('sha1').update(key).digest('hex'));
+	console.log('testing on sauceLabs with user <%s>', user);
 	var remote = new Remote({
 		port: port,
-		user: process.env.npm_package_config_sauceLabs_user,
-		key: process.env.npm_package_config_sauceLabs_key,
+		user: user,
+		key: key,
 		name: 'smpl test suite',
 		browsers: [
 			{name: 'chrome', os: 'Linux'},
@@ -245,7 +243,7 @@ Remote.prototype.startSauceConnect = function(cb) {
 	var options = {
 		username: this.config.user,
 		accessKey: this.config.key,
-		verbose: true,
+		verbose: false,
 		logger: console.log,
 		no_progress: true // optionally hide progress bar
 	};
