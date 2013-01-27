@@ -1,8 +1,11 @@
 language: node_js
 node_js:
-  - 0.8
   - 0.6
+  - 0.8
+  - 0.9
 env:
   global:
     - secure: "sTgX/2Ox7mZ3Xuv6CbYU4QPG0EjctuUOW4m/rdsHeS51DHUa3WHV0Ev3iiEh\n/64DH8Wz1YlK1mSFXd6olWxaME7zG2eTjXy4dmLplp3WtEJCaVhMKwSo9++g\nd/UjYAANhCq8PD+fQyw6z2gHd3DFhSzvJbWEoaAsUX+tVffUhS0="
-
+matrix:
+  allow_failures:
+    - node_js: 0.9
