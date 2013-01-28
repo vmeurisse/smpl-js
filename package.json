@@ -15,7 +15,7 @@
 	},
 	"devDependencies": {
 		"jshint": "https://github.com/jshint/jshint/archive/1.0.0-rc4.tar.gz",
-		"mocha": "1.4.x",
+		"mocha": "1.8.x",
 		"requirejs": "2.1.x",
 		"es5-shim": "2.0.x",
 		"JSON": "1.0.x",
