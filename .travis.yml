@@ -6,6 +6,7 @@ node_js:
 env:
   global:
     - secure: "sTgX/2Ox7mZ3Xuv6CbYU4QPG0EjctuUOW4m/rdsHeS51DHUa3WHV0Ev3iiEh\n/64DH8Wz1YlK1mSFXd6olWxaME7zG2eTjXy4dmLplp3WtEJCaVhMKwSo9++g\nd/UjYAANhCq8PD+fQyw6z2gHd3DFhSzvJbWEoaAsUX+tVffUhS0="
+after_script: "npm install npmedge && ./node_modules/.bin/npmedge"
 matrix:
   allow_failures:
     - node_js: 0.9
