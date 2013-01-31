@@ -389,7 +389,7 @@ Remote.prototype.displayResults = function() {
 			console.log('    %s: \033[31m%d/%d failed\033[m', name, failed, ok + failed);
 			failures++;
 		} else {
-			console.log('    %s: \033[90m%d passed\033[m', name, ok);
+			console.log('    %s: \033[32m%d passed\033[m', name, ok);
 		}
 		
 		if (failed) {
