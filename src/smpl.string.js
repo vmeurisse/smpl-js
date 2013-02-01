@@ -26,7 +26,17 @@ define(['./smpl.core'], function(smpl) {
 	 * @return {Boolean} true if `string` starts with `start`. False otherwise
 	 */
 	smpl.string.startsWith = function(string, start) {
-		return string.substr(0, start.length) === start;
+		return string.slice(0, start.length) === start;
+	};
+	
+	/**
+	 * Test if a string ends with the given substring
+	 * @param {String} string The string to test
+	 * @param {String} end  The substring to search
+	 * @return {Boolean} true if `string` ends with `end`. False otherwise
+	 */
+	smpl.string.endsWith = function (string, end) {
+		return string.slice(string.length - end.length) === end;
 	};
 	
 	return smpl;
