@@ -19,7 +19,7 @@ define(['./smpl.string', './smpl.utils', './smpl.dom'], function(smpl) {
 		if (!partial) {
 			for (var blkId in blocks) {
 				if (typeof blocks[blkId]  === 'string') {
-					this.blocks[blkId] = new Function('smpl', '"use strict";' + blocks[blkId]);
+					this.blocks[blkId] = new Function('smpl', 'data', '"use strict";' + blocks[blkId]);
 				}
 			}
 		}
@@ -57,7 +57,7 @@ define(['./smpl.string', './smpl.utils', './smpl.dom'], function(smpl) {
 	};
 
 	smpl.tpl.Template.prototype.parseBlock = function(blkId) {
-		var str = this.blocks[blkId].call(this, smpl);
+		var str = this.blocks[blkId].call(this, smpl, this.data);
 		this.parsedBlocks[blkId] = this.parsedBlocks[blkId] || [];
 		this.parsedBlocks[blkId].push(str);
 	};
@@ -265,7 +265,7 @@ define(['./smpl.string', './smpl.utils', './smpl.dom'], function(smpl) {
 		var at = /^\$?@/.test(input);
 		input = input.substring(+noDolar + at);
 		if (!noDolar) {
-			input = input.replace(/\$/g, 'this.data.');
+			input = input.replace(/\$/g, 'data.');
 		}
 		if (at) {
 			var id = /^[\-\w]+(?::[\-\w]+)*\s/.exec(input);
