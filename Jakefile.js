@@ -1,7 +1,6 @@
 /* jshint node: true, camelcase: false, latedef: false */
 /* globals jake: false, task: false, fail: false, complete: false */ // Globals exposed by jake
-/* globals config: false, cp: false, rm: false, mkdir: false, echo: false,
-           cat: false, find: false */ // Globals exposed by shelljs
+/* globals config: false, cp: false, rm: false, mkdir: false, find: false */ // Globals exposed by shelljs
 var path = require('path');
 var child_process = require('child_process');
 require('shelljs/global');
@@ -47,103 +46,23 @@ task('coverage', [], function() {
 });
 
 task('lint', [], function() {
-	var jshint = require('jshint').JSHINT;
-	var OPTIONS = JSON.parse(cat(dir.base + 'jshint.json'));
-	
+	require('smpl-build-test');
 	var files = find(dir.src, dir.test).filter(function (file) {
 		return file.match(/\.js(?:on)?$/);
 	});
 	files.push(dir.base + 'Jakefile.js');
-	files.push(dir.base + 'jshint.json');
 	files.push(dir.base + 'package.json');
+
+	var globals = {
+		require: false,
+		define: true,
+		module: false,
+		suite: false,
+		test: false,
+		setup: false
+	};
 	
-	echo('Linting files...');
-
-	var hasErrors = false;
-	files.forEach(function (file) {
-		jshint(cat(file), OPTIONS, {
-			require: false,
-			define: true,
-			module: false,
-			suite: false,
-			test: false,
-			setup: false
-		});
-		var passed = true;
-		var errors = jshint.data().errors;
-		if (errors) {
-			errors.forEach(function(err) {
-				if (!err) {
-					return;
-				}
-				var line = err.evidence.replace(/\t/g, '    ');
-				
-				// ignore trailing spaces on indentation only lines
-				if (err.code === 'W102' && err.evidence.match(/^\t+$/)) {
-					return;
-				}
-				// required { for one line blocks
-				if (err.code === 'W116' && err.a === '{' &&
-					err.evidence.match(/^\t* *(?:(?:(?:if|for|while) ?\()|else).*;(?:\s*\/\/.*)?$/)) {
-					return;
-				}
-				// Allow double quote string if they contain single quotes
-				if (err.code === 'W109') {
-					// https://github.com/jshint/jshint/issues/824
-					if (err.character === 0) {
-						return;
-					}
-					var i = err.character - 2; //JSHINT use base 1 for column and return the char after the end
-					var singleQuotes = 0;
-					var doubleQuotes = 0;
-					while (i--) {
-						if (line[i] === "'") singleQuotes++;
-						else if (line[i] === '"') {
-							var nb = 0;
-							while (i-- && line[i] === '\\') nb++;
-							if (nb % 2) doubleQuotes++;
-							else break;
-						}
-					}
-					if (singleQuotes > doubleQuotes) {
-						return;
-					}
-				}
-				
-				// Missing space after function
-				if (err.code === 'W013' && err.a === 'function') {
-					return;
-				}
-				
-				// bug in jslint: `while(i--);` require a space before `;`
-				if (err.code === 'W013' && line[err.character - 1] === ';') {
-					return;
-				}
-				
-				// Indentation. White option turn this on
-				if (err.code === 'W015') return;
-				
-				if (passed) {
-					echo('\n', file);
-					passed = false;
-					hasErrors = true;
-				}
-				line = '[L' + err.line + ':' + err.code + ']';
-				while (line.length < 15) {
-					line += ' ';
-				}
-
-				echo(line, err.reason);
-				console.log(err.evidence.replace(/\t/g, '    '));
-				console.log(new Array(err.character).join(' ') + '^');
-			});
-		}
-	});
-	if (hasErrors) {
-		fail('FAIL !!!', EXIT_CODES.lintFailed);
-	} else {
-		echo('ok');
-	}
+	jake.Task['smpl-build-test:lint'].invoke(files, globals);
 });
 
 task('test', ['lint'], {async: true}, function() {
