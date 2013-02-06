@@ -17,10 +17,8 @@ dir.bin = path.join(dir.base, 'node_modules', '.bin');
 
 var EXIT_CODES = {
 	command: 1,
-	lintFailed: 2,
 	remoteTests: 3,
-	sauceLabsCredentials: 4,
-	sauceConnect: 5
+	sauceLabsCredentials: 4
 };
 
 task('default', [], function() {
@@ -87,6 +85,7 @@ task('unit', [], {async: true}, function() {
 });
 
 task('remote', [], {async: true}, function() {
+	var Remote = require('smpl-build-test').Remote;
 	var port = process.env.npm_package_config_port;
 	var user, key;
 	if (process.env.SAUCELABS_USER && process.env.SAUCELABS_KEY) {
@@ -102,8 +101,10 @@ task('remote', [], {async: true}, function() {
 	var remote = new Remote({
 		port: port,
 		user: user,
+		path: dir.base,
 		key: key,
 		name: 'smpl test suite',
+		sauceConnect: true,
 		browsers: [
 			{name: 'chrome', os: 'Linux'},
 			{name: 'firefox', os: 'Linux'},
@@ -120,218 +121,19 @@ task('remote', [], {async: true}, function() {
 		onEnd: function(fails) {
 			if (fails) fail(EXIT_CODES.remoteTests);
 			complete();
-		}
-	});
-	remote.startServer();
-	remote.startSauceConnect(function() {
-		remote.run(function(browser, cb) {
-			browser.get(remote.config.url, function() {
-				browser.waitForCondition('!!window.mochaResults', 30000, 100, function() {
-					/* jshint evil: true */
-					browser.eval('window.mochaResults', function(err, res) {
-						cb(res);
-					});
+		},
+		onTest: function(browser, cb) {
+			browser.waitForCondition('!!window.mochaResults', 30000, 100, function() {
+				/* jshint evil: true */
+				browser.eval('window.mochaResults', function(err, res) {
+					cb(res);
 				});
 			});
-		});
+		}
 	});
+	
+	remote.run();
 });
-
-var Remote = function(config) {
-	this.config = config;
-	this.id = process.env.TRAVIS_BUILD_NUMBER;
-	this.tags = [];
-	if (this.id) {
-		this.tags.push('travis');
-	} else {
-		this.tags.push('custom', '' + Math.floor(Math.random() * 100000000));
-	}
-	this.status = {};
-};
-
-Remote.prototype.startServer = function() {
-	var nodeStatic = require('node-static');
-	var file = new nodeStatic.Server();
-	this.server = require('http').createServer(function (request, response) {
-		request.addListener('end', function () {
-			file.serve(request, response);
-		});
-	});
-	this.server.listen(this.config.port);
-	
-	console.log('server ready: ' + this.config.url);
-};
-
-Remote.prototype.stopServer = function() {
-	this.server.close();
-	console.log('server stoped');
-};
-
-Remote.prototype.startSauceConnect = function(cb) {
-	var options = {
-		username: this.config.user,
-		accessKey: this.config.key,
-		verbose: false,
-		logger: console.log,
-		no_progress: true // optionally hide progress bar
-	};
-	var sauceConnectLauncher = require('sauce-connect-launcher');
-	var self = this;
-	sauceConnectLauncher(options, function (err, sauceConnectProcess) {
-		if (err) {
-			if (!(err + '').match(/Exit code 143/)) {
-				console.log(err);
-				fail('Error launching sauce connect', EXIT_CODES.sauceConnect);
-			}
-			return;
-		}
-		self.sauceConnect = sauceConnectProcess;
-		cb();
-	});
-};
-
-Remote.prototype.stopSauceConnect = function() {
-	this.sauceConnect.close();
-};
-
-Remote.prototype.run = function(test) {
-	this.nbTests = this.config.browsers.length;
-	this.startBrowser(test, 0);
-};
-
-Remote.prototype.startBrowser = function(test, index) {
-	var webdriver = require('wd');
-
-	var b = this.config.browsers[index];
-	var browser = webdriver.remote('ondemand.saucelabs.com', 80, this.config.user, this.config.key);
-	var name = this.getBrowserName(b);
-	var desired = {
-		name: this.config.name + ' - ' + name,
-		browserName: b.name,
-		platform: b.os,
-		version: b.version,
-		build: this.id,
-		tags: this.tags
-	};
-	browser.on('status', function(info) {
-		console.log('%s : \x1b[36m%s\x1b[0m', name, info);
-	});
-
-	browser.on('command', function(meth, path) {
-		console.log('%s : > \x1b[33m%s\x1b[0m: %s', name, meth, path);
-	});
-
-	var self = this;
-	browser.init(desired, function(err, sessionID) {
-		test(browser, self.testDone.bind(self, browser, name, sessionID));
-		if (self.config.browsers[index + 1]) {
-			process.nextTick(function() {
-				self.startBrowser(test, index + 1);
-			});
-		}
-	});
-};
-
-Remote.prototype.getBrowserName = function(browser) {
-	var name = browser.name;
-	if (browser.version) name += ' ' + browser.version;
-	if (browser.os) name += ' (' + browser.os + ')';
-	return name;
-};
-
-Remote.prototype.testDone = function(browser, name, id, status) {
-	browser.quit();
-	this.status[name] = status;
-	this.report(id, status, name, this.finish.bind(this));
-};
-
-Remote.prototype.finish = function() {
-	if (0 === --this.nbTests) {
-		this.stopSauceConnect();
-		this.stopServer();
-		var self = this;
-		setTimeout(function() {
-			self.displayResults();
-		}, 1000);
-	}
-};
-
-Remote.prototype.report = function(jobId, status, name, done) {
-	var request = require('request');
-	
-	var success = !!(status && status.ok && status.failed && status.ok.length && !status.failed.length);
-	var user = this.config.user;
-	var key = this.config.key;
-	var httpOpts = {
-		url: 'http://' + user + ':' + key + '@saucelabs.com/rest/v1/' + user + '/jobs/' + jobId,
-		method: 'PUT',
-		headers: {
-			'Content-Type': 'text/json'
-		},
-		body: JSON.stringify({
-			passed: success
-		}),
-		jar: false /* disable cookies: they break next request */
-	};
-	
-	request(httpOpts, function(err) {
-		if (err) {
-			console.log('%s : > job %s: unable to set status:', name, jobId, err);
-		} else {
-			console.log('%s : > job %s marked as %s', name, jobId, success ? 'passed' : 'failed');
-		}
-		done();
-	});
-};
-
-Remote.prototype.displayResults = function() {
-	var failures = 0;
-	var self = this;
-	console.log();
-	console.log();
-	console.log('**********************************');
-	console.log('*             Status             *');
-	console.log('**********************************');
-	console.log();
-	console.log();
-	this.config.browsers.forEach(function(browser) {
-		var name = self.getBrowserName(browser);
-		var status = self.status[name];
-		
-		var ok = status && status.ok && status.ok.length;
-		var failed = status && status.failed && status.failed.length;
-
-		if (!ok && !failed) {
-			console.log('    %s: \033[31mno results\033[m', name);
-			failures++;
-		} else if (failed) {
-			console.log('    %s: \033[31m%d/%d failed\033[m', name, failed, ok + failed);
-			failures++;
-		} else {
-			console.log('    %s: \033[32m%d passed\033[m', name, ok);
-		}
-		
-		if (failed) {
-			failed = status.failed;
-			var n = 0;
-			failed.forEach(function(test) {
-				var err = test.error;
-				var msg = err.message || '';
-				var stack = err.stack || msg;
-				var i = stack.indexOf(msg) + msg.length;
-				msg = stack.slice(0, i);
-				console.log();
-				console.log('      %d) %s', ++n, test.fullTitle);
-				console.log('\033[31m%s\033[m', stack.replace(/^/gm, '        '));
-			});
-			console.log();
-			console.log();
-		}
-	});
-	console.log();
-	console.log();
-	if (this.config.onEnd) this.config.onEnd(failures);
-};
 
 function runUnitTests(cb, details) {
 	var opts = details ? ' -R spec' : '';
