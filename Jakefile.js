@@ -2,7 +2,7 @@
 /* globals jake: false, task: false, fail: false, complete: false */ // Globals exposed by jake
 /* globals config: false, cp: false, rm: false, mkdir: false, find: false */ // Globals exposed by shelljs
 var path = require('path');
-var child_process = require('child_process');
+var smpl_build = require('smpl-build');
 require('shelljs/global');
 config.fatal = true; //tell shelljs to fail on errors
 
@@ -31,14 +31,17 @@ task('coverage', [], function() {
 	var jscoverCmd = path.join(dir.bin, 'jscover');
 	var jscoverArgs =  path.relative(__dirname, dir.src) + ' ' + path.relative(__dirname, dir.covSrc);
 	
-	doCommand(jscoverCmd + ' ' + jscoverArgs, function() {
+	smpl_build.run(jscoverCmd + ' ' + jscoverArgs, function(result) {
+		if (result.exitCode) fail();
 		cp('-r', dir.test, dir.covTest);
-		doCommand(path.join(dir.bin, 'mocha') + ' --reporter html-cov', {
-			cwd: dir.cov
-		}, function(result) {
-			var resultFile = path.join(dir.cov, 'coverage.html');
-			result.output.to(resultFile);
-			console.log('xdg-open ' + resultFile);
+		smpl_build.run(path.join(dir.bin, 'mocha') + ' --reporter html-cov', {
+			cwd: dir.cov,
+			cb: function(result) {
+				if (result.exitCode) fail();
+				var resultFile = path.join(dir.cov, 'coverage.html');
+				result.output.to(resultFile);
+				console.log('xdg-open ' + resultFile);
+			}
 		});
 	});
 });
@@ -87,14 +90,9 @@ task('unit', [], {async: true}, function() {
 task('remote', [], {async: true}, function() {
 	var Remote = require('smpl-build-test').Remote;
 	var port = process.env.npm_package_config_port;
-	var user, key;
-	if (process.env.SAUCELABS_USER && process.env.SAUCELABS_KEY) {
-		user = process.env.SAUCELABS_USER;
-		key = process.env.SAUCELABS_KEY;
-	} else if (process.env.npm_package_config_sauceLabs_user && process.env.npm_package_config_sauceLabs_key) {
-		user = process.env.npm_package_config_sauceLabs_user;
-		key = process.env.npm_package_config_sauceLabs_key;
-	} else {
+	var user = process.env.SAUCELABS_USER || process.env.npm_package_config_sauceLabs_user;
+	var key = process.env.SAUCELABS_KEY || process.env.npm_package_config_sauceLabs_key;
+	if (!user || !key) {
 		fail('Unable to find sauceLabs credentials', EXIT_CODES.sauceLabsCredentials);
 	}
 	console.log('testing on sauceLabs with user <%s>', user);
@@ -137,52 +135,11 @@ task('remote', [], {async: true}, function() {
 
 function runUnitTests(cb, details) {
 	var opts = details ? ' -R spec' : '';
-	doCommand(path.join(dir.bin, 'mocha') + opts, {silent: false}, cb);
-}
-
-function doCommand(cmd, opts, cb) {
-	var result = {
-		exitCode: 0,
-		output: '',
-		err: ''
-	};
-	
-	if (typeof opts === 'function') {
-		cb = opts;
-		opts = {};
-	}
-	if (opts.silent !== false) opts.silent = true;
-	var options = {
-		env: process.env,
-		cwd: opts.cwd || dir.base
-	};
-	
-	var proc = child_process.exec(cmd, options, function(err) {
-		result.exitCode = err ? err.code : 0;
-		if (err) {
-			var msg = 'Command failed: <' + cmd + '>\n';
-			msg += 'Exit code:' + err.code + '\n';
-			msg += result.err + '\n';
-			if (err.code === 127) msg += '\nVerify that ' + cmd.split(' ')[0] + ' is installed.';
-			process.stdout.write(msg);
-			fail('subcommand execution error', EXIT_CODES.command);
-		} else {
-			if (cb) {
-				cb(result);
-			}
+	smpl_build.run(path.join(dir.bin, 'mocha') + opts, {
+		silent: false,
+		cb: function(result) {
+			if (result.exitCode) fail();
+			cb();
 		}
-		
-	});
-	proc.stdout.on('data', function(data) {
-		result.output += data;
-		 if (!opts.silent) {
-			process.stdout.write(data);
-		 }
-	});
-	proc.stderr.on('data', function(data) {
-		result.err += data;
-		 if (!opts.silent) {
-			process.stderr.write(data);
-		 }
 	});
 }
