@@ -15,5 +15,16 @@ define(['./smpl.core'], function(smpl) {
 		return number;
 	};
 	
+	/**
+	 * Constrains a number inside the given interval
+	 * @param {Number} number the original number
+	 * @param {Number} min the lower bound
+	 * @param {Number} max the upper bound
+	 * @return {Number} The constrained number
+	 */
+	smpl.number.constrain = function(number, min, max) {
+		return (number < min) ? min : ((number > max) ? max : number);
+	};
+	
 	return smpl;
 });
