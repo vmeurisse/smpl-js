@@ -2,24 +2,27 @@ if (typeof define !== 'function') {var define = require('amdefine')(module)}
 define(['./smpl.string', './smpl.utils', './smpl.dom'], function(smpl) {
 	smpl.tpl = {};
 	
-	smpl.tpl.Template = function (name, blocks) {
-		this.name = name;
-		this.blocks = {
-			toInit: blocks
-		};
+	smpl.tpl.Template = function (name, blocks, parents) {
+		this.__name = name || '';
+		this.__blocks = blocks;
+		this.__parents = parents;
+	};
+	
+	smpl.tpl.Template.prototype.getInstance = function() {
+		var tpl = Object.create(this);
+		tpl.__data = null;
+		return tpl;
 	};
 
-	smpl.tpl.Template.prototype.init = function(blocks, partial) {
+	smpl.tpl.Template.prototype.init = function(html, partial) {
 		/* jshint evil: true */
-		delete this.blocks.toInit;
-		if (typeof blocks === 'string') {
-			smpl.tpl.utils.make(this, blocks);
-			blocks = this.blocks;
+		if (typeof html === 'string') {
+			smpl.tpl.utils.make(this, html);
 		}
-		if (!partial) {
-			for (var blkId in blocks) {
-				if (typeof blocks[blkId]  === 'string') {
-					this.blocks[blkId] = new Function('smpl', 'data', '"use strict";' + blocks[blkId]);
+		if (!partial && typeof this.__blocks[smpl.tpl.utils.MAIN]  === 'string') {
+			for (var blkId in this.__blocks) {
+				if (typeof this.__blocks[blkId]  === 'string') {
+					this.__blocks[blkId] = new Function('smpl', '$', '"use strict";' + this.__blocks[blkId]);
 				}
 			}
 		}
@@ -30,15 +33,36 @@ define(['./smpl.string', './smpl.utils', './smpl.dom'], function(smpl) {
 		}
 	};
 
-	smpl.tpl.Template.prototype.set = function(key, value) {
-		this.data[key] = value;
+	smpl.tpl.Template.prototype.set = function(block, key, value) {
+		if (arguments.length === 2) {
+			value = key;
+			key = block;
+			block = smpl.tpl.utils.MAIN;
+		}
+		this.getData(block)[key] = value;
 	};
-
+	
+	smpl.tpl.Template.prototype.get = function(block, key) {
+		if (arguments.length === 1) {
+			key = block;
+			block = smpl.tpl.utils.MAIN;
+		}
+		return this.getData(block)[key];
+	};
+	
+	smpl.tpl.Template.prototype.getData = function(blockId) {
+		if (this.__data[blockId]) return this.__data[blockId];
+		var parent = this.getData(this.__parents[blockId]);
+		var data = Object.create(parent);
+		this.__data[blockId] = data;
+		return data;
+	};
+	
 	smpl.tpl.Template.prototype.retrieve = function(blkId) {
 		blkId = blkId || smpl.tpl.utils.MAIN;
-		var blk = this.parsedBlocks[blkId];
+		var blk = this.__parsedBlocks[blkId];
 		if (blk) {
-			delete this.parsedBlocks[blkId];
+			delete this.__parsedBlocks[blkId];
 			return blk.join('');
 		} else {
 			return '';
@@ -46,20 +70,22 @@ define(['./smpl.string', './smpl.utils', './smpl.dom'], function(smpl) {
 	};
 
 	smpl.tpl.Template.prototype.reset = function() {
-		if (!this.blocks[smpl.tpl.utils.MAIN]) {
-			this.init(this.blocks.toInit);
+		if (!this.__data) {
+			this.init();
 		}
-		this.data = {
+		this.__data = {};
+		this.__data[smpl.tpl.utils.MAIN] = {
 			me: this.__globalKey
 		};
-		this.parsedBlocks = {};
+		this.__parsedBlocks = {};
 		return this;
 	};
 
 	smpl.tpl.Template.prototype.parseBlock = function(blkId) {
-		var str = this.blocks[blkId].call(this, smpl, this.data);
-		this.parsedBlocks[blkId] = this.parsedBlocks[blkId] || [];
-		this.parsedBlocks[blkId].push(str);
+		var str = this.__blocks[blkId].call(this, smpl, this.getData(blkId));
+		delete this.__data[blkId];
+		this.__parsedBlocks[blkId] = this.__parsedBlocks[blkId] || [];
+		this.__parsedBlocks[blkId].push(str);
 	};
 
 	smpl.tpl.Template.prototype.parse = function() {
@@ -94,11 +120,9 @@ define(['./smpl.string', './smpl.utils', './smpl.dom'], function(smpl) {
 		if (key) {
 			smpl.tpl.globalKey = key;
 			smpl.tpl.globalObj = obj;
-		} else {
-			if (typeof window === 'object' && window.smpl === smpl) {
-				smpl.tpl.globalKey = 'window.tpl.globalRepo';
-				smpl.tpl.globalObj = window.tpl.globalRepo;
-			}
+		} else if (typeof window === 'object' && window.smpl === smpl) {
+			smpl.tpl.globalKey = 'window.tpl.globalRepo';
+			smpl.tpl.globalObj = window.tpl.globalRepo;
 		}
 		return !!smpl.tpl.globalKey;
 	};
@@ -122,7 +146,8 @@ define(['./smpl.string', './smpl.utils', './smpl.dom'], function(smpl) {
 			startPos = 0,
 			stack = [],
 			newpos;
-		tpl.blocks = {};
+		tpl.__blocks = {};
+		tpl.__parents = {};
 		this.processToken(tpl, stack, {type: 'BEGIN', txt: this.MAIN});
 		while (pos < l) {
 			var chr = txt.charAt(pos++);
@@ -162,7 +187,7 @@ define(['./smpl.string', './smpl.utils', './smpl.dom'], function(smpl) {
 		switch (token.type) {
 			case 'BEGIN':
 				stack.push(token.txt);
-				tpl.blocks[token.txt] = [];
+				tpl.__blocks[token.txt] = [];
 				break;
 			case 'END':
 				var closed = stack.pop();
@@ -170,7 +195,8 @@ define(['./smpl.string', './smpl.utils', './smpl.dom'], function(smpl) {
 					console.error(smpl.string.supplant('Incorrect block closed <{0}>. Openned block was <{1}>.',
 					                                   [token.txt, closed]));
 				}
-				tpl.blocks[closed] = 'return ' + tpl.blocks[closed].join(' + ');
+				tpl.__blocks[closed] = 'return ' + tpl.__blocks[closed].join(' + ');
+				tpl.__parents[closed] = stack[stack.length - 1];
 				processed = "(this.retrieve('" + closed + "') || '')";
 				break;
 			case 'html':
@@ -182,7 +208,7 @@ define(['./smpl.string', './smpl.utils', './smpl.dom'], function(smpl) {
 				break;
 		}
 		if (processed && stack.length) {
-			tpl.blocks[stack[stack.length - 1]].push(processed);
+			tpl.__blocks[stack[stack.length - 1]].push(processed);
 		}
 	};
 
@@ -265,7 +291,7 @@ define(['./smpl.string', './smpl.utils', './smpl.dom'], function(smpl) {
 		var at = /^\$?@/.test(input);
 		input = input.substring(+noDolar + at);
 		if (!noDolar) {
-			input = input.replace(/\$/g, 'data.');
+			input = input.replace(/\$(?!\.)/g, '$.');
 		}
 		if (at) {
 			var id = /^[\-\w]+(?::[\-\w]+)*\s/.exec(input);
@@ -277,6 +303,18 @@ define(['./smpl.string', './smpl.utils', './smpl.dom'], function(smpl) {
 			input = 'smpl.dom.escapeHTML(' + input + "||'')";
 		}
 		return input;
+	};
+	
+	smpl.tpl.utils.precompile = function(html) {
+		var tpl = new smpl.tpl.Template();
+		tpl.init(html, true);
+		var js = 'define(["module", "smpl/smpl.tpl"], function(module, smpl) {';
+		js += 'return new smpl.tpl.Template(module.id,';
+		js += JSON.stringify(tpl.__blocks);
+		js += ',';
+		js += JSON.stringify(tpl.__parents);
+		js += ');});';
+		return js;
 	};
 	
 	return smpl;
