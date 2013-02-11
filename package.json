@@ -1,6 +1,6 @@
 {
 	"name": "smpl",
-	"version": "0.0.1beta",
+	"version": "0.0.1",
 	"author": "Vincent Meurisse <dev@meurisse.org>",
 	"description": "A simple javascrit library used to build complex web applications",
 	"keywords": ["simple",  "template", "ajax", "library", "data", "toolkit", "amd", "light", "lightweight", "mvc"],
@@ -10,6 +10,7 @@
 	},
 	"dependencies": {
 		"jake": "0.5.x",
+		"smpl-build": "0.0.x",
 		"amdefine": "0.0.x",
 		"shelljs": "0.1.x"
 	},

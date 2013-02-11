@@ -1,4 +1,4 @@
-Copyright 2012 Vincent Meurisse
+Copyright Vincent Meurisse
 https://github.com/vmeurisse/
 
 Permission is hereby granted, free of charge, to any person obtaining

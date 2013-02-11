@@ -52,19 +52,21 @@ define(['./smpl.core'], function(smpl) {
 		}
 		return false;
 	};
-
-	smpl.dom.addEventListener = function(ele, ev, fn) {
-		/* jshint browser:true */
-		if (ele.addEventListener) {
-			return ele.addEventListener(ev, fn);
+	
+	/**
+	 * Simple method to stop an event.
+	 */
+	smpl.dom.stopEvent = function(e) {
+		e.preventDefault();
+		if (e.stopImmediatePropagation) {
+			e.stopImmediatePropagation();
 		} else {
-			return ele.attachEvent('on' + ev, function(e) {
-				e = e || window.event;
-				e.preventDefault  = e.preventDefault  || function() { e.returnValue = false; };
-				e.stopPropagation = e.stopPropagation || function() { e.cancelBubble = true; };
-				fn.call(ele, e);
-			});
+			e.stopPropagation();
 		}
+	};
+	
+	smpl.dom.stopEventPropagation = function(e) {
+		e.stopPropagation();
 	};
 	
 	/**
