@@ -14,7 +14,7 @@ define(['../src/assert', '../src/smpl.string'], function(assert, smpl) {
 				assert(smpl.string.startsWith('abc', 'ab'));
 				assert(smpl.string.startsWith('abc', 'abc'));
 			});
-			test('don\'t starts with', function() {
+			test("don't starts with", function() {
 				assert(!smpl.string.startsWith('abc', 'abcd'));
 				assert(!smpl.string.startsWith('abc', 'bc'));
 				assert(!smpl.string.startsWith('abc', 'x'));
@@ -27,7 +27,7 @@ define(['../src/assert', '../src/smpl.string'], function(assert, smpl) {
 				assert(smpl.string.endsWith('abc', 'bc'));
 				assert(smpl.string.endsWith('abc', 'abc'));
 			});
-			test('don\'t ends with', function() {
+			test("don't ends with", function() {
 				assert(!smpl.string.endsWith('abc', 'zabc'));
 				assert(!smpl.string.endsWith('abc', 'ab'));
 				assert(!smpl.string.endsWith('abc', 'x'));
