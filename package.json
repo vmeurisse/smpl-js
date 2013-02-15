@@ -21,7 +21,7 @@
 		"es5-shim": "2.0.x",
 		"JSON": "1.0.x",
 		"jscover": "0.2.x",
-		"jsdom": "0.3.x"
+		"jsdom": "0.5.x"
 	},
 	"scripts": {
 		"install": "jake",
