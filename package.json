@@ -11,6 +11,7 @@
 	"dependencies": {
 		"amdefine": "0.0.x"
 	},
+	"//": "jscover 0.2.2 embed JSCover 0.2.0 which is not backward compatible",
 	"devDependencies": {
 		"shelljs": "0.1.x",
 		"jake": "0.5.x",
@@ -20,7 +21,7 @@
 		"requirejs": "2.1.x",
 		"es5-shim": "2.0.x",
 		"JSON": "1.0.x",
-		"jscover": "0.2.x",
+		"jscover": "0.2.1",
 		"jsdom": "0.5.x"
 	},
 	"scripts": {
