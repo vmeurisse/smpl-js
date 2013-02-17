@@ -1,5 +1,4 @@
-if (typeof define !== 'function') {var define = require('amdefine')(module)}
-define(['../src/smpl',
+define(['smpl',
         './assert',
         './smpl.data',
         './smpl.dom',

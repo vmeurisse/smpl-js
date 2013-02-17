@@ -1,5 +1,4 @@
-if (typeof define !== 'function') {var define = require('amdefine')(module)}
-define(['../src/assert', '../src/smpl.dom'], function(assert, smpl) {
+define(['smpl/assert', 'smpl/smpl.dom'], function(assert, smpl) {
 	/* jshint browser: true, node: true */
 	if (typeof window === 'undefined' || typeof document === 'undefined') {
 		var jsdom = require('jsdom').jsdom;

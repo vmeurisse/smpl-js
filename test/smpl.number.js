@@ -1,5 +1,4 @@
-if (typeof define !== 'function') {var define = require('amdefine')(module)}
-define(['../src/assert', '../src/smpl.number'], function(assert, smpl) {
+define(['smpl/assert', 'smpl/smpl.number'], function(assert, smpl) {
 	suite('smpl.number', function() {
 		test('zeroPad', function() {
 			assert.equals(smpl.number.zeroPad(0), '00');

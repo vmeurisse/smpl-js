@@ -1,8 +1,6 @@
 /build
 /node_modules
 /coverage
-/smpl*.js
-/assert.js
 /npm-shrinkwrap.json
 /docs
 /npm-debug.log

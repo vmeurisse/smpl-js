@@ -1,8 +1,9 @@
 /* jshint node: true, camelcase: false, latedef: false */
 /* globals jake: false, task: false, fail: false, complete: false */ // Globals exposed by jake
-/* globals config: false, cp: false, rm: false, mkdir: false, find: false */ // Globals exposed by shelljs
+/* globals config: false, rm: false, mkdir: false, find: false */ // Globals exposed by shelljs
 var path = require('path');
 var smpl_build = require('smpl-build');
+var smpl_build_test = require('smpl-build-test');
 require('shelljs/global');
 config.fatal = true; //tell shelljs to fail on errors
 
@@ -21,10 +22,6 @@ var EXIT_CODES = {
 	sauceLabsCredentials: 4
 };
 
-task('default', [], function() {
-	cp('-fr', dir.src + '*', dir.base);
-});
-
 task('coverage', [], function() {
 	rm('-rf', dir.cov);
 	mkdir(dir.cov);
@@ -33,10 +30,10 @@ task('coverage', [], function() {
 	
 	smpl_build.run(jscoverCmd + ' ' + jscoverArgs, function(result) {
 		if (result.exitCode) fail();
-		cp('-r', dir.test, dir.covTest);
-		smpl_build.run(path.join(dir.bin, 'mocha') + ' --reporter html-cov', {
-			cwd: dir.cov,
+		process.env.SMPL_COVERAGE = '1';
+		smpl_build.run(path.join(dir.bin, 'mocha') + ' --reporter html-cov ./test/testRunnerNode.js', {
 			cb: function(result) {
+				process.env.SMPL_COVERAGE = '';
 				if (result.exitCode) fail();
 				var resultFile = path.join(dir.cov, 'coverage.html');
 				result.output.to(resultFile);
@@ -47,7 +44,6 @@ task('coverage', [], function() {
 });
 
 task('lint', [], function() {
-	require('smpl-build-test');
 	var files = find(dir.src, dir.test).filter(function (file) {
 		return file.match(/\.js(?:on)?$/);
 	});
@@ -88,7 +84,7 @@ task('unit', [], {async: true}, function() {
 });
 
 task('remote', [], {async: true}, function() {
-	var Remote = require('smpl-build-test').Remote;
+	var Remote = smpl_build_test.Remote;
 	var port = process.env.npm_package_config_port;
 	var user = process.env.SAUCELABS_USER || process.env.npm_package_config_sauceLabs_user;
 	var key = process.env.SAUCELABS_KEY || process.env.npm_package_config_sauceLabs_key;
@@ -115,7 +111,7 @@ task('remote', [], {async: true}, function() {
 			{name: 'safari', version: 6, os: 'Mac 10.8'},
 			{name: 'safari', version: 5, os: 'Mac 10.6'}
 		],
-		url: 'http://localhost:' + port + '/test/test.html',
+		url: 'http://localhost:' + port + '/test/index.html',
 		onEnd: function(fails) {
 			if (fails) fail(EXIT_CODES.remoteTests);
 			complete();
@@ -135,6 +131,7 @@ task('remote', [], {async: true}, function() {
 
 function runUnitTests(cb, details) {
 	var opts = details ? ' -R spec' : '';
+	opts += ' ./test/testRunnerNode.js';
 	smpl_build.run(path.join(dir.bin, 'mocha') + opts, {
 		silent: false,
 		cb: function(result) {

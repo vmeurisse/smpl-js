@@ -20,7 +20,14 @@
 	<script src="../node_modules/mocha/mocha.js"></script>
 	<script>mocha.setup('tdd')</script>
 	<script>
-		require(['./smpl'], function () {
+		requirejs.config({
+			packages: [{
+				name: 'smpl',
+				location: '../src',
+				main: '../src/smpl.js'
+			}]
+		});
+		require(['./testRunner'], function () {
 			
 			if (window.ActiveXObject || !window.postMessage) {
 				(function() {

@@ -1,5 +1,4 @@
-if (typeof define !== 'function') {var define = require('amdefine')(module)}
-define(['../src/assert', '../src/smpl.Ecb'], function(assert, smpl) {
+define(['smpl/assert', 'smpl/smpl.Ecb'], function(assert, smpl) {
 	suite('smpl.Ecb', function() {
 		'use strict';
 		

@@ -9,12 +9,12 @@
 		"url": "https://github.com/vmeurisse/smpl-js/issues"
 	},
 	"dependencies": {
-		"jake": "0.5.x",
-		"smpl-build": "0.0.x",
-		"amdefine": "0.0.x",
-		"shelljs": "0.1.x"
+		"amdefine": "0.0.x"
 	},
 	"devDependencies": {
+		"shelljs": "0.1.x",
+		"jake": "0.5.x",
+		"smpl-build": "0.0.x",
 		"smpl-build-test": "~0.0.2",
 		"mocha": "1.8.x",
 		"requirejs": "2.1.x",
@@ -24,9 +24,8 @@
 		"jsdom": "0.5.x"
 	},
 	"scripts": {
-		"install": "jake",
 		"test": "jake test",
-		"unit": "mocha -R spec",
+		"unit": "mocha -R spec test/testRunnerNode.js",
 		"coverage": "jake coverage",
 		"lint": "jake lint",
 		"remote": "jake remote"
@@ -41,10 +40,13 @@
 		"README.md",
 		"src"
 	],
-	"main": "smpl.js",
+	"main": "src/smpl.js",
 	"config": {
 		"port": "8080",
 		"sauceLabs_user": "",
 		"sauceLabs_key": ""
+	},
+	"directories": {
+		"lib": "src"
 	}
 }
