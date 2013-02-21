@@ -1,6 +1,6 @@
 /* jshint node: true, camelcase: false, latedef: false */
 /* globals jake: false, task: false, fail: false, complete: false */ // Globals exposed by jake
-/* globals config: false, rm: false, mkdir: false, find: false */ // Globals exposed by shelljs
+/* globals config: false, find: false */ // Globals exposed by shelljs
 var path = require('path');
 var smpl_build = require('smpl-build');
 var smpl_build_test = require('smpl-build-test');
@@ -12,7 +12,6 @@ dir.base = path.normalize(__dirname + (path.sep || '/'));
 dir.src = dir.base + 'src/';
 dir.test = dir.base + 'test/';
 dir.cov = dir.base + 'coverage/';
-dir.covTest = dir.cov + 'test/';
 dir.covSrc = dir.cov + 'src/';
 dir.bin = path.join(dir.base, 'node_modules', '.bin');
 
@@ -23,23 +22,16 @@ var EXIT_CODES = {
 };
 
 task('coverage', [], function() {
-	rm('-rf', dir.cov);
-	mkdir(dir.cov);
-	var jscoverCmd = path.join(dir.bin, 'jscover');
-	var jscoverArgs =  path.relative(__dirname, dir.src) + ' ' + path.relative(__dirname, dir.covSrc);
-	
-	smpl_build.run(jscoverCmd + ' ' + jscoverArgs, function(result) {
-		if (result.exitCode) fail();
-		process.env.SMPL_COVERAGE = '1';
-		smpl_build.run(path.join(dir.bin, 'mocha') + ' --reporter html-cov ./test/testRunnerNode.js', {
-			cb: function(result) {
-				process.env.SMPL_COVERAGE = '';
-				if (result.exitCode) fail();
-				var resultFile = path.join(dir.cov, 'coverage.html');
-				result.output.to(resultFile);
-				console.log('xdg-open ' + resultFile);
-			}
-		});
+	var t = jake.Task['smpl-build-test:coverage'];
+	t.invoke({
+		src: dir.src,
+		dest: dir.covSrc,
+		minCoverage: {
+			statements: 50,
+			branches: 50,
+			functions: 50,
+			lines: 50
+		}
 	});
 });
 
