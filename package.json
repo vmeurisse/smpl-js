@@ -12,10 +12,8 @@
 		"amdefine": "0.0.x"
 	},
 	"devDependencies": {
-		"shelljs": "0.1.x",
 		"jake": "0.5.x",
-		"smpl-build": "0.0.x",
-		"smpl-build-test": "~0.0.3",
+		"smpl-build-test": "0.1.x",
 		"mocha": "1.8.x",
 		"requirejs": "2.1.x",
 		"es5-shim": "2.0.x",

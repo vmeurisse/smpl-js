@@ -1,5 +1,4 @@
-define(['smpl',
-        './assert',
+define(['./assert',
         './smpl.data',
         './smpl.dom',
         './smpl.Ecb',
