@@ -268,13 +268,13 @@ define(['./smpl.string', './smpl.utils', './smpl.dom'], function(smpl) {
 		return pos;
 	};
 
-	smpl.tpl.utils.findUnescaped = function(input, char, pos) {
+	smpl.tpl.utils.findUnescaped = function(input, character, pos) {
 		var l = input.length;
 		while (pos < l) {
 			var chr = input.charAt(pos++);
 			if (chr === '\\') {
 				++pos;
-			} else if (chr === char) {
+			} else if (chr === character) {
 				break;
 			}
 		}

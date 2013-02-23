@@ -1,11 +1,24 @@
 define(['smpl/assert', 'smpl/smpl.dom'], function(assert, smpl) {
-	/* jshint browser: true, node: true */
-	if (typeof window === 'undefined' || typeof document === 'undefined') {
-		var jsdom = require('jsdom').jsdom;
-		GLOBAL.document = jsdom();
-		GLOBAL.window = document.createWindow();
-	}
 	suite('smpl.dom', function() {
+		/* jshint browser: true, node: true */
+		
+		var needClean = false;
+		suiteSetup(function() {
+			if (typeof window === 'undefined' || typeof document === 'undefined') {
+				needClean = true;
+				var jsdom = require('jsdom').jsdom;
+				GLOBAL.document = jsdom();
+				GLOBAL.window = document.createWindow();
+			}
+		});
+		suiteTeardown(function() {
+			if (needClean) {
+				delete GLOBAL.document;
+				delete GLOBAL.window;
+			}
+		});
+		
+		
 		test('hasClass', function() {
 			var elem = document.createElement('div');
 			assert(!smpl.dom.hasClass(elem, 'test'));

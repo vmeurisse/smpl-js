@@ -11,7 +11,7 @@ define(['./smpl.core'], function(smpl) {
 	smpl.number.zeroPad = function(number, length) {
 		number = '' + number;
 		length = length || 2;
-		while (number.length < length) number = "0" + number;
+		while (number.length < length) number = '0' + number;
 		return number;
 	};
 	

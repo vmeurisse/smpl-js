@@ -1,7 +1,7 @@
-/* jshint node: true, camelcase: false, latedef: false */
+/* jshint node: true, camelcase: false, latedef: false, es5: true */
 /* globals jake: false, task: false, fail: false, complete: false */ // Globals exposed by jake
 var path = require('path');
-require('smpl-build-test');
+var smplBuild = require('smpl-build-test');
 
 var dir = {};
 dir.base = path.normalize(__dirname + (path.sep || '/'));
@@ -13,20 +13,25 @@ var EXIT_CODES = {
 	sauceLabsCredentials: 4
 };
 
-task('coverage', [], function() {
-	jake.invokeTask('smpl-build-test:coverage', [{
+var callback = function(err) {
+	if (err) fail(err);
+	else complete();
+};
+
+var coverage = function(cb) {
+	smplBuild.coverage({
 		baseDir: dir.base,
 		tests: [path.join(dir.test, 'testRunnerNode.js')],
-		minCoverage: {
-			statements: 50,
-			branches: 50,
-			functions: 50,
-			lines: 50
-		}
-	}], complete);
+		minCoverage: 50,
+		globals: ['window', 'document']
+	}, cb);
+};
+
+task('coverage', [], {async: true}, function() {
+	coverage(callback);
 });
 
-task('lint', [], function() {
+task('lint', [], {async: true}, function() {
 	var files = jake.readdirR(dir.src).concat(jake.readdirR(dir.test)).filter(function (file) {
 		return file.match(/\.js(?:on)?$/);
 	});
@@ -39,33 +44,19 @@ task('lint', [], function() {
 		module: false,
 		suite: false,
 		test: false,
-		setup: false
+		setup: false,
+		teardown: false,
+		suiteSetup: false,
+		suiteTeardown: false
 	};
 	
-	jake.Task['smpl-build-test:lint'].invoke(files, globals);
+	smplBuild.lint({
+		files: files,
+		globals: globals
+	}, callback);
 });
 
-task('test', ['lint'], {async: true}, function() {
-	jake.invokeTask('smpl-build-test:test', [{
-		tests: [path.join(dir.test, 'testRunnerNode.js')],
-	}], function() {
-		if (process.env.TRAVIS_NODE_VERSION && process.env.TRAVIS_NODE_VERSION !== '0.8') {
-			// For travis build, only start remote tests once
-			complete();
-			return;
-		}
-		jake.invokeTask('remote', complete);
-	});
-});
-
-task('unit', [], {async: true}, function() {
-	jake.invokeTask('smpl-build-test:test', [{
-		tests: [path.join(dir.test, 'testRunnerNode.js')],
-		reporter: 'spec'
-	}], complete);
-});
-
-task('remote', [], {async: true}, function() {
+var remote = function(cb) {
 	var port = process.env.npm_package_config_port;
 	var user = process.env.SAUCELABS_USER || process.env.npm_package_config_sauceLabs_user;
 	var key = process.env.SAUCELABS_KEY || process.env.npm_package_config_sauceLabs_key;
@@ -73,7 +64,7 @@ task('remote', [], {async: true}, function() {
 		fail('Unable to find sauceLabs credentials', EXIT_CODES.sauceLabsCredentials);
 	}
 	console.log('testing on sauceLabs with user <%s>', user);
-	jake.invokeTask('smpl-build-test:remote', [{
+	smplBuild.remote({
 		port: port,
 		user: user,
 		path: dir.base,
@@ -101,5 +92,35 @@ task('remote', [], {async: true}, function() {
 				});
 			});
 		}
-	}], complete);
+	}, cb);
+};
+
+task('remote', [], {async: true}, function() {
+	remote(callback);
+});
+
+task('test', ['lint'], {async: true}, function() {
+	smplBuild.test({
+		tests: [path.join(dir.test, 'testRunnerNode.js')],
+		globals: ['window', 'document']
+	}, function(err) {
+		if (err) return fail(err);
+		coverage(function(err) {
+			if (err) return fail(err);
+			if (process.env.TRAVIS_NODE_VERSION && process.env.TRAVIS_NODE_VERSION !== '0.8') {
+				// For travis build, only start remote tests once
+				complete();
+				return;
+			}
+			remote(callback);
+		});
+	});
+});
+
+task('unit', [], {async: true}, function() {
+	smplBuild.test({
+		tests: [path.join(dir.test, 'testRunnerNode.js')],
+		reporter: 'spec',
+		globals: ['window', 'document']
+	}, complete);
 });
