@@ -1,4 +1,9 @@
 if (typeof define !== 'function') {var define = require('amdefine')(module)}
+/**
+ * @module assert
+ * @class assert
+ * @static
+ */
 define(['./smpl.data', './smpl.utils'], function(smpl) {
 	
 	var AssertionError = function AssertionError(options) {
@@ -53,7 +58,11 @@ define(['./smpl.data', './smpl.utils'], function(smpl) {
 	
 	/**
 	 * Assert that a `value` is truthy. If the value is falsy, throw an `AssertionError`.
-	 * @param {?} value        The value to test
+	 * 
+	 * @method assert
+	 * @static
+	 * 
+	 * @param {any} value        The value to test
 	 * @param {String} message Message to be used in the `AssertionError`.
 	 *                         If no message is provided, an automatic one will be used (optional)
 	 */
@@ -68,6 +77,9 @@ define(['./smpl.data', './smpl.utils'], function(smpl) {
 	
 	/**
 	 * throw an `AssertionError`
+	 * 
+	 * @method fail
+	 * 
 	 * @param {String} message Message to be used in the `AssertionError`
 	 */
 	assert.fail = function(message) {
@@ -76,8 +88,11 @@ define(['./smpl.data', './smpl.utils'], function(smpl) {
 	
 	/**
 	 * Assert that `value` and `expected` are equals. Use `smpl.data.compare` to compare the values.
-	 * @param {?} value        Value to test
-	 * @param {?} expected     Expected value
+	 * 
+	 * @method equals
+	 * 
+	 * @param {any} value        Value to test
+	 * @param {any} expected     Expected value
 	 * @param {String} message Message to be used in the `AssertionError`.
 	 *                         If no message is provided, an automatic one will be used (optional)
 	 */
@@ -90,8 +105,11 @@ define(['./smpl.data', './smpl.utils'], function(smpl) {
 	/**
 	 * Assert that `value` and `expected` are the same.
 	 * This is the same as the triple equal operator exept that -0 and 0 are considered different and that NaN is NaN.
-	 * @param {?} value        Value to test
-	 * @param {?} expected     Expected value
+	 * 
+	 * @method is
+	 * 
+	 * @param {any} value        Value to test
+	 * @param {any} expected     Expected value
 	 * @param {String} message Message to be used in the `AssertionError`.
 	 *                         If no message is provided, an automatic one will be used (optional)
 	 */
@@ -110,6 +128,9 @@ define(['./smpl.data', './smpl.utils'], function(smpl) {
 	};
 	/**
 	 * Assert that a function throws an exception when called
+	 * 
+	 * @method throws
+	 * 
 	 * @param {Function} fn    Function to test
 	 * @param {Function} type  Type of the expected exception. (optional)
 	 * @param {String} message Message to be used in the `AssertionError`.

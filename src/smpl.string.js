@@ -1,4 +1,10 @@
 if (typeof define !== 'function') {var define = require('amdefine')(module)}
+/**
+ * @module smpl
+ * @submodule smpl.string
+ * @class smpl.string
+ * @static
+ */
 define(['./smpl.core'], function(smpl) {
 	smpl.string = {};
 	
@@ -8,6 +14,8 @@ define(['./smpl.core'], function(smpl) {
 	 *     smpl.string.supplant('test {method}', {method: 'supplant'}); // => 'test supplant'
 	 *     smpl.string.supplant('{0} {1} {2}', ['work', 'with', 'arrays']); // => 'work with arrays'
 	 *
+	 * @method supplant
+	 * 
 	 * @param {String} string The string to operate on
 	 * @param {Object} object The object where the replacement are taken from
 	 * @return {String} the result of the replacement
@@ -21,6 +29,9 @@ define(['./smpl.core'], function(smpl) {
 	
 	/**
 	 * Test if a string starts with the given substring
+	 *
+	 * @method startsWith
+	 * 
 	 * @param {String} string The string to test
 	 * @param {String} start  The substring to search
 	 * @return {Boolean} true if `string` starts with `start`. False otherwise
@@ -31,6 +42,9 @@ define(['./smpl.core'], function(smpl) {
 	
 	/**
 	 * Test if a string ends with the given substring
+	 *
+	 * @method endsWith
+	 * 
 	 * @param {String} string The string to test
 	 * @param {String} end  The substring to search
 	 * @return {Boolean} true if `string` ends with `end`. False otherwise

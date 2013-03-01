@@ -1,9 +1,18 @@
 if (typeof define !== 'function') {var define = require('amdefine')(module)}
+
+/**
+ * @module smpl
+ * @submodule smpl.ajax
+ * @class smpl.ajax
+ * @static
+ */
 define(['./smpl.data'], function(smpl) {
 	/*jshint browser: true */
 	/**
 	 * Make an ajax call to a server
 	 *
+	 * @method smpl.ajax
+	 * 
 	 * @param {Object} args
 	 * @param {String} args.method                       Method to use to connect to the server. Default: 'GET'.
 	 *                                                   (optional)
@@ -52,6 +61,8 @@ define(['./smpl.data'], function(smpl) {
 	
 	/**
 	 * Store default values for configuration.
+	 * 
+	 * @property defaultConfig
 	 */
 	smpl.ajax.defaultConfig = {
 		method: 'GET',
@@ -75,6 +86,10 @@ define(['./smpl.data'], function(smpl) {
 	
 	/**
 	 * Request object. Allows the user to cancel an ongoing ajax call
+	 * 
+	 * @class smpl.ajax.Request
+	 * @constructor
+	 * @private
 	 */
 	smpl.ajax.Request = function(config) {
 		this.config = config;
@@ -83,6 +98,8 @@ define(['./smpl.data'], function(smpl) {
 	
 	/**
 	 * Create the `XMLHttpRequest` object and send the call
+	 * 
+	 * @method send
 	 * @private
 	 */
 	smpl.ajax.Request.prototype.send = function(data) {
@@ -110,6 +127,9 @@ define(['./smpl.data'], function(smpl) {
 	/**
 	 * abort the call. If the call is already terminated, has no effect.
 	 * The callbacks associated to the ajax call will be called as for any error case.
+	 * 
+	 * @method abort
+	 * 
 	 * @return {boolean} `true` if the call was aborted, `false` if it was already finished
 	 */
 	smpl.ajax.Request.prototype.abort = function() {
@@ -125,6 +145,8 @@ define(['./smpl.data'], function(smpl) {
 	/**
 	 * Check the state of the call and call `handleTransactionResponse` if needed
 	 * Should never be called directly (only through xhr.onreadystatechange)
+	 * 
+	 * @method checkReadyState
 	 * @private
 	 */
 	smpl.ajax.Request.prototype.checkReadyState = function() {
@@ -135,6 +157,8 @@ define(['./smpl.data'], function(smpl) {
 	
 	/**
 	 * Called at the end of the call. Takes care of creating the `smpl.ajax.Response` and calling the callbacks.
+	 * 
+	 * @method handleTransactionResponse
 	 * @private
 	 */
 	smpl.ajax.Request.prototype.handleTransactionResponse = function() {
@@ -155,37 +179,54 @@ define(['./smpl.data'], function(smpl) {
 	
 	/**
 	 * Hold the response of the server
+	 * 
+	 * @class smpl.ajax.Response
+	 * @constructor
+	 * @private
 	 */
 	smpl.ajax.Response = function(xhr, passThrough) {
 		this.setStatus(xhr);
 		
 		/**
 		 * `passThrough` object as passed to `smpl.ajax`
+		 * @property passThrough
+		 * @type any
 		 */
 		this.passThrough = passThrough;
 		
 		/**
 		 * Response text returned by the server
+		 * @property responseText
+		 * @type DOMString
 		 */
 		this.responseText = xhr.responseText;
 		
 		/**
 		 * XML Response returned by the server if any
+		 * @property responseXML
+		 * @type XmlDocument
 		 */
 		this.responseXML = xhr.responseXML;
 	};
 	
 	/**
 	 * Read the `status` and `statusText` of the `xhr` object.
+	 * 
+	 * @method setStatus
+	 * @private
 	 */
 	smpl.ajax.Response.prototype.setStatus = function(xhr) {
 		/**
 		 * HTTP status of the call
+		 * @property status
+		 * @type number
 		 */
 		this.status = 0;
 		
 		/**
 		 * Text associated to the HTTP status
+		 * @property statusText
+		 * @type String
 		 */
 		this.statusText = 'fail';
 

@@ -13,7 +13,7 @@
 	},
 	"devDependencies": {
 		"jake": "0.5.x",
-		"smpl-build-test": "~0.2.0",
+		"smpl-build-test": "~0.3.0",
 		"mocha": "1.8.x",
 		"requirejs": "2.1.x",
 		"es5-shim": "2.0.x",
@@ -25,7 +25,8 @@
 		"unit": "mocha -R spec test/testRunnerNode.js",
 		"coverage": "jake coverage",
 		"lint": "jake lint",
-		"remote": "jake remote"
+		"remote": "jake remote",
+		"doc": "jake doc"
 	},
 	"repository": {
 		"type": "git",

@@ -1,11 +1,20 @@
 if (typeof define !== 'function') {var define = require('amdefine')(module)}
+/**
+ * @module smpl
+ * @submodule smpl.Ecb
+ * @class smpl.Ecb
+ * @static
+ */
+
 define(['./smpl.core'], function(smpl) {
 	'use strict';
 	
 	/**
 	 * smpl.Ecb is a simple Event Communication Bus
 	 * It provide a simple addListener/fire messaging system
-	 * @return a new instance of smpl.Ecb.
+	 * 
+	 * @class smpl.Ecb
+	 * @constructor
 	 */
 	smpl.Ecb = function() {
 		this.reset();
@@ -13,6 +22,8 @@ define(['./smpl.core'], function(smpl) {
 	
 	/**
 	 * Reset the ecb. All listener are removed, pending fire are deleted and the ecb is resumed.
+	 * 
+	 * @method reset
 	 */
 	smpl.Ecb.prototype.reset = function() {
 		this.callbacks = {};
@@ -22,6 +33,8 @@ define(['./smpl.core'], function(smpl) {
 	
 	/**
 	 * Add a listener to an event
+	 * 
+	 * @method addListener
 	 *
 	 * @param {String} event Name of the event to listen to
 	 * @param {Function} fn  Function to be called
@@ -39,6 +52,9 @@ define(['./smpl.core'], function(smpl) {
 	
 	/**
 	 * Remove one or multiple listeners.
+	 * 
+	 * @method removeListener
+	 * 
 	 * @param {String} event Name of the event
 	 * @param {Function} fn  Remove only listeners whose function is equal to `fn`.
 	 *                       Ignored is equal to undefined (optional)
@@ -67,6 +83,8 @@ define(['./smpl.core'], function(smpl) {
 	 *     ecb.addListener('log', console.log, console);
 	 *     ecb.fire('log', 1, 2); // => 'log' 1 2
 	 *
+	 * @method fire
+	 * 
 	 * @param {String} event Name of the event
 	 */
 	smpl.Ecb.prototype.fire = function(event) {
@@ -86,6 +104,8 @@ define(['./smpl.core'], function(smpl) {
 	/**
 	 * Pause the Ecb. Any call to fire will be delayed until a call to `resume`.
 	 * If pause is called multiple time, the same number of call must be done to `resume` to actually resume the Ecb.
+	 * 
+	 * @method pause
 	 */
 	smpl.Ecb.prototype.pause = function() {
 		this.paused++;
@@ -93,6 +113,8 @@ define(['./smpl.core'], function(smpl) {
 	
 	/**
 	 * Resume the Ecb. (@see smpl.Ecb.prototype.pause)
+	 * 
+	 * @method resume
 	 */
 	smpl.Ecb.prototype.resume = function() {
 		if (this.paused) {

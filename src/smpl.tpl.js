@@ -1,4 +1,10 @@
 if (typeof define !== 'function') {var define = require('amdefine')(module)}
+/**
+ * @module smpl
+ * @submodule smpl.tpl
+ * @class smpl.tpl
+ * @static
+ */
 define(['./smpl.string', './smpl.utils', './smpl.dom'], function(smpl) {
 	smpl.tpl = {};
 	

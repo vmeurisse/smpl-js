@@ -1,4 +1,10 @@
 if (typeof define !== 'function') {var define = require('amdefine')(module)}
+/**
+ * @module smpl
+ * @submodule smpl.data
+ * @class smpl.data
+ * @static
+ */
 define(['./smpl.core'], function(smpl) {
 	smpl.data = smpl.data || {};
 	
@@ -23,6 +29,8 @@ define(['./smpl.core'], function(smpl) {
 	 *
 	 *     smpl.data.filter([{o:1,a:1},{o:2,a:2},{o:3,a:1}], 'a', 1) // => [{o:1,a:1},{o:3,a:1}]
 	 *
+	 * @method filter
+	 * 
 	 * @param {Array.<Object>} list The list to filter. The original list is not modified.
 	 * @param {String} property The property to search in each object.
 	 * @param {?} property The property to search in each object. Equality is tested using the === operator.
@@ -41,6 +49,10 @@ define(['./smpl.core'], function(smpl) {
 	
 	 /**
 	 * Sorter constructor to be used with `smpl.data.sort`.
+	 * 
+	 * @class smpl.data.Sorter
+	 * @constructor
+	 * 
 	 * @param {Object} args
 	 * @param {String} args.type            Type of the sorter. Default: 'default'. (optional). Supported values are:
 	 *                                       - 'default': 
@@ -92,6 +104,9 @@ define(['./smpl.core'], function(smpl) {
 	
 	/**
 	 * Sort an array of objects on the specified properties
+	 * 
+	 * @method sort
+	 * 
 	 * @param {Array<?>} list  the list of items to sort. The original list is modified
 	 * @param {Array.<smpl.data.Sorter|Object>} sorters  the sorting criterias as an array of object:
 	 * @param {Boolean} reverse  
@@ -213,6 +228,8 @@ define(['./smpl.core'], function(smpl) {
 	 *     smpl.data.get({a:{b:{c:2}}}, 'a.b.c') // => 2
 	 *     smpl.data.get({a:{b:{c:2}}}, ['a', 'b', 'c']) // => 2
 	 *
+	 * @method get
+	 * 
 	 * @param {Object} obj The object to search in.
 	 * @param {String|Array.<String>} keys The keys to search in object. String and array notation are equivalent:
 	 *                                     'a.b.c' <=> ['a', 'b', 'c']. Use array notation in performance critcal

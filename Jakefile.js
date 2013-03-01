@@ -52,7 +52,12 @@ task('lint', [], {async: true}, function() {
 	
 	smplBuild.lint({
 		files: files,
-		globals: globals
+		js: {
+			globals: globals,
+			options: {
+				lastsemic: true
+			}
+		}
 	}, callback);
 });
 
@@ -122,5 +127,15 @@ task('unit', [], {async: true}, function() {
 		tests: [path.join(dir.test, 'testRunnerNode.js')],
 		reporter: 'spec',
 		globals: ['window', 'document']
-	}, complete);
+	}, callback);
+});
+task('doc', [], {async: true}, function() {
+	smplBuild.document({
+		paths: [__dirname + '/src'],
+		outdir: __dirname + '/docs',
+		basePath: __dirname,
+		project: {
+			dir: __dirname
+		}
+	}, callback);
 });

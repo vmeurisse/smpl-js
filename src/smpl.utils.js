@@ -1,9 +1,17 @@
 if (typeof define !== 'function') {var define = require('amdefine')(module)}
+/**
+ * @module smpl
+ * @submodule smpl.utils
+ * @class smpl.utils
+ * @static
+ */
 define(['./smpl.core'], function(smpl) {
 	smpl.utils = {};
 
 	/**
 	* simple method to get a unique number
+	* 
+	* @method uniq
 	*/
 	smpl.utils.uniq = function() {
 		smpl.utils.uniq.last = smpl.utils.uniq.last + 1 || 1;

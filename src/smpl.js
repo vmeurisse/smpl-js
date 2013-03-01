@@ -1,4 +1,8 @@
 if (typeof define !== 'function') {var define = require('amdefine')(module)}
+/**
+ * Module agregator for the smpl librairy
+ * @module smpl
+ */
 define([
         './smpl.ajax',
         './smpl.data',
