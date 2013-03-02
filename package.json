@@ -22,7 +22,7 @@
 	},
 	"scripts": {
 		"test": "jake test",
-		"unit": "mocha -R spec test/testRunnerNode.js",
+		"unit": "mocha --ui tdd --globals window,document -R spec test/testRunnerNode.js",
 		"coverage": "jake coverage",
 		"lint": "jake lint",
 		"remote": "jake remote",
