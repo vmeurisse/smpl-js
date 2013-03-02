@@ -154,19 +154,19 @@ define(['./smpl.string', './smpl.utils', './smpl.dom'], function(smpl) {
 			newpos;
 		tpl.__blocks = {};
 		tpl.__parents = {};
-		this.processToken(tpl, stack, {type: 'BEGIN', txt: this.MAIN});
+		this.processToken(tpl, stack, {type: 'BLOCK', txt: this.MAIN});
 		while (pos < l) {
 			var chr = txt.charAt(pos++);
 			if (chr === '\\' && '\\{'.indexOf(txt.charAt(pos)) !== -1) { // skip escaped \ and {
 				++pos;
 			} else if (chr === '<' && txt.charAt(pos) === '!' && txt.charAt(pos + 1) === '-' &&
-				       txt.charAt(pos + 2) === '-') { // <!-- (BEGIN|END): [-\w]+ --> block
+				       txt.charAt(pos + 2) === '-') { // <!-- (BLOCK|/BLOCK): [-\w]+ --> block
 				newpos = txt.indexOf('-->', pos + 3);
 				if (newpos !== -1) {
-					var m = /^\s+(BEGIN|END):\s+([\-\w]+)\s+$/.exec(txt.substring(pos + 3, newpos));
+					var m = /^\s*(BLOCK|\/BLOCK):\s*([\-\w]+)\s*$/i.exec(txt.substring(pos + 3, newpos));
 					if (m) {
 						this.processToken(tpl, stack, {type: 'html', txt: txt.substring(startPos, pos - 1)});
-						this.processToken(tpl, stack, {type: m[1], txt: m[2]});
+						this.processToken(tpl, stack, {type: m[1].toUpperCase(), txt: m[2]});
 						pos = newpos + 3;
 						startPos = pos;
 					}
@@ -184,18 +184,18 @@ define(['./smpl.string', './smpl.utils', './smpl.dom'], function(smpl) {
 			}
 		}
 		this.processToken(tpl, stack, {type: 'html', txt: txt.substring(startPos, pos)});
-		this.processToken(tpl, stack, {type: 'END', txt: this.MAIN});
+		this.processToken(tpl, stack, {type: '/BLOCK', txt: this.MAIN});
 	};
 
 	smpl.tpl.utils.processToken = function(tpl, stack, token) {
 		/* global console: false */
 		var processed;
 		switch (token.type) {
-			case 'BEGIN':
+			case 'BLOCK':
 				stack.push(token.txt);
 				tpl.__blocks[token.txt] = [];
 				break;
-			case 'END':
+			case '/BLOCK':
 				var closed = stack.pop();
 				if (closed !== token.txt && typeof console !== 'undefined') {
 					console.error(smpl.string.supplant('Incorrect block closed <{0}>. Openned block was <{1}>.',

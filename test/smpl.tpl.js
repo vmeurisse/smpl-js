@@ -31,7 +31,7 @@ define(['smplAssert/assert', 'smplTpl/smpl.tpl'], function(assert, smpl) {
 				this.parseBlock('a');
 				this.parseBlock('a');
 			};
-			tpl.init('{$a} <!-- BEGIN: a -->block:{$a}; <!-- END: a --><!-- BEGIN: b -->I\m not parsed<!-- END: b -->{$a}');
+			tpl.init('{$a} <!--block: a-->block:{$a}; <!--/block: a--><!--block: b-->I\m not parsed<!--/block: b-->{$a}');
 			tpl.parse();
 			assert.equals(tpl.retrieve(), '1 block:2; block:1; 1');
 		});
@@ -43,7 +43,7 @@ define(['smplAssert/assert', 'smplTpl/smpl.tpl'], function(assert, smpl) {
 				this.parseBlock('b');
 				this.parseBlock('a');
 			};
-			tpl.init('m<!-- BEGIN: a -->a<!-- BEGIN: b -->b<!-- END: b -->a<!-- END: a -->m');
+			tpl.init('m<!-- BLOCK: a -->a<!-- BLOCK: b -->b<!-- /BLOCK: b -->a<!-- /BLOCK: a -->m');
 			tpl.parse();
 			assert.equals(tpl.retrieve(), 'mabbam');
 		});
