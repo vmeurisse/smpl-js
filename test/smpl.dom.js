@@ -1,4 +1,4 @@
-define(['smpl/assert', 'smpl/smpl.dom'], function(assert, smpl) {
+define(['smplAssert/assert', 'smplDom/smpl.dom'], function(assert, smpl) {
 	suite('smpl.dom', function() {
 		/* jshint browser: true, node: true */
 		
@@ -19,6 +19,9 @@ define(['smpl/assert', 'smpl/smpl.dom'], function(assert, smpl) {
 		});
 		
 		
+		test('dependencies', function() {
+			assert.equals(Object.keys(smpl), ['dom']);
+		});
 		test('hasClass', function() {
 			var elem = document.createElement('div');
 			assert(!smpl.dom.hasClass(elem, 'test'));

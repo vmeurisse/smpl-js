@@ -1,5 +1,4 @@
-define(['smpl/assert', 'smpl/smpl.utils'], function(assert, smpl) {
-
+define(['smplAssert/assert', 'smplUtils/smpl.utils'], function(assert, smpl) {
 	suite('assert', function() {
 		suite('throws', function() {
 			test('when throw', function() {

@@ -1,8 +1,9 @@
-define(['smpl/assert', 'smpl/smpl.data'], function(assert, smpl) {
-	
+define(['smplAssert/assert', 'smplData/smpl.data'], function(assert, smpl) {
 	// The method smpl.data.compare is not tested here. It is already tested by `assert.equals`
-	
 	suite('smpl.data', function() {
+		test('dependencies', function() {
+			assert.equals(Object.keys(smpl), ['data']);
+		});
 		suite('updateObject', function() {
 			test('updateObject', function() {
 				assert.equals(smpl.data.updateObject({

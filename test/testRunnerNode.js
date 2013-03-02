@@ -1,18 +1,25 @@
 /* jshint node: true */
 
-// Delete `requirejs` from node cache. It will reload it so `requirejs` will loose its own cache.
-// Otherwise, tests are not reimported
-require.cache[require.resolve('requirejs')] = null;
-
-var requirejs = require('requirejs');
-requirejs.config({
+var srcPath = process.env.SMPL_COVERAGE ? '../coverage/src' : '../src';
+var requirejsConfig = {
 	baseUrl: __dirname,
 	nodeRequire: require,
 	packages: [{
 		name: 'smpl',
-		location: process.env.SMPL_COVERAGE ? '../coverage/src' : '../src',
+		location: srcPath,
 		main: 'smpl.js'
 	}]
-});
+};
 
+// Delete `requirejs` from node cache to loose its own cache.
+// Otherwise, tests are not reimported
+require.cache[require.resolve('requirejs')] = null;
+var requirejs = require('requirejs');
+requirejs.config(requirejsConfig);
+
+// Test the full import with requirejs
+requirejs(srcPath + '/smpl');
+// Test the full import with requirejs
+require(srcPath + '/smpl');
+// Actual tests
 requirejs('./testRunner');

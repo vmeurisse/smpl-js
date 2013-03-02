@@ -1,6 +1,8 @@
-define(['smpl/assert', 'smpl/smpl.string'], function(assert, smpl) {
-
+define(['smplAssert/assert', 'smplString/smpl.string'], function(assert, smpl) {
 	suite('smpl.string', function() {
+		test('dependencies', function() {
+			assert.equals(Object.keys(smpl), ['string']);
+		});
 		suite('supplant', function() {
 			test('supplant', function() {
 				assert.equals(smpl.string.supplant('{a}{b}', {a: 1}), '1{b}');

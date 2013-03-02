@@ -1,4 +1,4 @@
-define(['smpl/assert', 'smpl/smpl.Ecb'], function(assert, smpl) {
+define(['smplAssert/assert', 'smplEcb/smpl.Ecb'], function(assert, smpl) {
 	suite('smpl.Ecb', function() {
 		'use strict';
 		
@@ -37,8 +37,12 @@ define(['smpl/assert', 'smpl/smpl.Ecb'], function(assert, smpl) {
 			ecb = new smpl.Ecb();
 			calls = [];
 		});
-
-			
+		
+		
+		test('dependencies', function() {
+			assert.equals(Object.keys(smpl), ['Ecb']);
+		});
+		
 		test('standard usage', function() {
 			ecb.addListener('test', getListener('a'));
 			ecb.fire('test');

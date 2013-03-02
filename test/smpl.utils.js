@@ -1,9 +1,11 @@
-define(['smpl/assert', 'smpl/smpl.utils'], function(assert, smpl) {
-
+define(['smplAssert/assert', 'smplUtils/smpl.utils'], function(assert, smpl) {
 	/**
 	* Test the smpl.utils.js file
 	*/
 	suite('smpl.utils', function() {
+		test('dependencies', function() {
+			assert.equals(Object.keys(smpl), ['utils']);
+		});
 		suite('uniq', function() {
 			test('uniq', function() {
 				var i = 100;

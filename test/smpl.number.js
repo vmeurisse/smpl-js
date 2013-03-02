@@ -1,5 +1,8 @@
-define(['smpl/assert', 'smpl/smpl.number'], function(assert, smpl) {
+define(['smplAssert/assert', 'smplNumber/smpl.number'], function(assert, smpl) {
 	suite('smpl.number', function() {
+		test('dependencies', function() {
+			assert.equals(Object.keys(smpl), ['number']);
+		});
 		test('zeroPad', function() {
 			assert.equals(smpl.number.zeroPad(0), '00');
 			assert.equals(smpl.number.zeroPad(1), '01');

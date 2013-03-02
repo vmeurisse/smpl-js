@@ -1,5 +1,4 @@
 if (typeof define !== 'function') {var define = require('amdefine')(module)}
-
 /**
  * @module smpl
  * @submodule smpl.ajax
@@ -7,6 +6,7 @@ if (typeof define !== 'function') {var define = require('amdefine')(module)}
  * @static
  */
 define(['./smpl.data'], function(smpl) {
+	
 	/*jshint browser: true */
 	/**
 	 * Make an ajax call to a server
