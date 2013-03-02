@@ -5,7 +5,7 @@
 					'../coverage/src' :
 					'../src';
 	
-	var tests = ['smplAssert', 'smplData', 'smplDom', 'smplEcb', 'smplNumber', 'smplString', 'smplUtils'];
+	var tests = ['smplAssert', 'smplData', 'smplDom', 'smplEcb', 'smplNumber', 'smplString', 'smplTpl', 'smplUtils'];
 	var config = {
 		packages: []
 	};
@@ -32,4 +32,5 @@ define(['./assert',
         './smpl.Ecb',
         './smpl.number',
         './smpl.string',
+        './smpl.tpl',
         './smpl.utils'], '');
