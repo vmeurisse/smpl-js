@@ -135,6 +135,7 @@ define(['./smpl.data', './smpl.utils'], function(smpl) {
 	 * @param {Function} type  Type of the expected exception. (optional)
 	 * @param {String} message Message to be used in the `AssertionError`.
 	 *                         If no message is provided, an automatic one will be used (optional)
+	 * @return {Error} the error that was trown
 	 */
 	assert.throws = function(fn, type, message) {
 		if (typeof type === 'string') {

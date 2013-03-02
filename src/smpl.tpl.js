@@ -9,7 +9,7 @@ define(['./smpl.string', './smpl.utils', './smpl.dom'], function(smpl) {
 	smpl.tpl = {};
 	
 	smpl.tpl.Template = function (name, blocks, parents) {
-		this.__name = name || '';
+		this.__name = name || 'anonymous';
 		this.__blocks = blocks;
 		this.__parents = parents;
 	};
@@ -88,10 +88,15 @@ define(['./smpl.string', './smpl.utils', './smpl.dom'], function(smpl) {
 	};
 
 	smpl.tpl.Template.prototype.parseBlock = function(blkId) {
-		var str = this.__blocks[blkId].call(this, smpl, this.getData(blkId));
-		delete this.__data[blkId];
-		this.__parsedBlocks[blkId] = this.__parsedBlocks[blkId] || [];
-		this.__parsedBlocks[blkId].push(str);
+		if (this.__blocks[blkId]) {
+			var str = this.__blocks[blkId].call(this, smpl, this.getData(blkId));
+			delete this.__data[blkId];
+			this.__parsedBlocks[blkId] = this.__parsedBlocks[blkId] || [];
+			this.__parsedBlocks[blkId].push(str);
+		} else {
+			throw new Error(smpl.string.supplant('Template <{0}>: tried to parse non-existing block <{1}>',
+			                                     [this.__name, blkId]));
+		}
 	};
 
 	smpl.tpl.Template.prototype.parse = function() {
@@ -163,7 +168,7 @@ define(['./smpl.string', './smpl.utils', './smpl.dom'], function(smpl) {
 				       txt.charAt(pos + 2) === '-') { // <!-- (BLOCK|/BLOCK): [-\w]+ --> block
 				newpos = txt.indexOf('-->', pos + 3);
 				if (newpos !== -1) {
-					var m = /^\s*(BLOCK|\/BLOCK):\s*([\-\w]+)\s*$/i.exec(txt.substring(pos + 3, newpos));
+					var m = /^\s*(\/?BLOCK):\s*([\-\w]+)\s*$/i.exec(txt.substring(pos + 3, newpos));
 					if (m) {
 						this.processToken(tpl, stack, {type: 'html', txt: txt.substring(startPos, pos - 1)});
 						this.processToken(tpl, stack, {type: m[1].toUpperCase(), txt: m[2]});

@@ -31,7 +31,7 @@ define(['smplAssert/assert', 'smplTpl/smpl.tpl'], function(assert, smpl) {
 				this.parseBlock('a');
 				this.parseBlock('a');
 			};
-			tpl.init('{$a} <!--block: a-->block:{$a}; <!--/block: a--><!--block: b-->I\m not parsed<!--/block: b-->{$a}');
+			tpl.init('{$a} <!--block: a-->block:{$a}; <!--/block: a--><!--block: b-->not parsed<!--/block: b-->{$a}');
 			tpl.parse();
 			assert.equals(tpl.retrieve(), '1 block:2; block:1; 1');
 		});
@@ -46,6 +46,17 @@ define(['smplAssert/assert', 'smplTpl/smpl.tpl'], function(assert, smpl) {
 			tpl.init('m<!-- BLOCK: a -->a<!-- BLOCK: b -->b<!-- /BLOCK: b -->a<!-- /BLOCK: a -->m');
 			tpl.parse();
 			assert.equals(tpl.retrieve(), 'mabbam');
+		});
+		
+		test('non-existing block', function() {
+			var tpl = new smpl.tpl.Template('non-existing block');
+			tpl.onParse = function () {
+				this.parseBlock('a');
+			};
+			tpl.init('test<!-- BLOCK: b -->b<!-- /BLOCK: b -->');
+			
+			var e = assert.throws(tpl.parse.bind(tpl), Error);
+			assert.equals(e.message, 'Template <non-existing block>: tried to parse non-existing block <a>');
 		});
 	});
 });
