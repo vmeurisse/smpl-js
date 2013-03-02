@@ -1,8 +1,6 @@
 // We create a separate instance of smpl for each test suite
-(function(requirejs) {
-	if (typeof requirejs === 'undefined') {
-		requirejs = require('requirejs');
-	}
+(function() {
+	/* globals process, __dirname, requirejs */
 	var srcPath = (typeof process !== 'undefined' && process && process.env && process.env.SMPL_COVERAGE) ?
 					'../coverage/src' :
 					'../src';
@@ -17,7 +15,7 @@
 		config.packages.push({
 			name: test,
 			// Change the location so each require get a different instance
-			location: srcPath + Array(++configId).join('/../src'),
+			location: srcPath + new Array(++configId).join('/../src'),
 			main: 'smpl.js'
 		});
 	});
@@ -26,7 +24,7 @@
 		config.nodeRequire = require;
 	}
 	requirejs.config(config);
-})(requirejs);
+})();
 
 define(['./assert',
         './smpl.data',
