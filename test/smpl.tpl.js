@@ -1,7 +1,7 @@
 define(['smplAssert/assert', 'smplTpl/smpl.tpl', 'smplTplWL/smpl.tpl.WidgetLib'], function(assert, smpl, smplWL) {
 	suite('smpl.tpl', function() {
 		test('dependencies', function() {
-			assert.equals(Object.keys(smpl), ['string', 'utils', 'dom', 'tpl']);
+			assert.equals(Object.keys(smpl).sort(), ['string', 'utils', 'dom', 'tpl'].sort());
 		});
 		
 		test('base', function() {
