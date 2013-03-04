@@ -3,7 +3,6 @@ if (typeof define !== 'function') {var define = require('amdefine')(module)}
  * @module smpl
  * @submodule smpl.Ecb
  * @class smpl.Ecb
- * @static
  */
 
 define(['./smpl.core'], function(smpl) {

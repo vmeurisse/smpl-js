@@ -5,7 +5,14 @@
 					'../coverage/src' :
 					'../src';
 	
-	var tests = ['smplAssert', 'smplData', 'smplDom', 'smplEcb', 'smplNumber', 'smplString', 'smplTpl', 'smplUtils'];
+	var tests = ['smplAssert',
+                 'smplData',
+                 'smplDom',
+                 'smplEcb',
+                 'smplNumber',
+                 'smplString',
+                 'smplTpl', 'smplTplWL',
+                 'smplUtils'];
 	var config = {
 		packages: []
 	};
