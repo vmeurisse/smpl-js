@@ -13,7 +13,7 @@ define(['./smpl.string', './smpl.utils', './smpl.dom'], function(smpl) {
 	};
 	var REGEX = {
 		block: /^\s*(\/?BLOCK):\s*([-\w]+)\s*$/i,
-		widget: /^\s*(\/?WIDGET):\s*([-\w]+)(?:@([-\w]+):([:-\w]+))?\s*([-\w]+=".*?"+\s*)*(\/?\s*)$/i
+		widget: /^\s*(\/?WIDGET):\s*([-\w]+)(?:@([-\w]+):([-:\w]+))?\s*([-\w]+=".*?"+\s*)*(\/?\s*)$/i
 	};
 	smpl.tpl = {};
 	
