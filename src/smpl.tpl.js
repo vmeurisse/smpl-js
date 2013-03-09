@@ -5,7 +5,7 @@ if (typeof define !== 'function') {var define = require('amdefine')(module)}
  * @class smpl.tpl
  * @static
  */
-define(['./smpl.string', './smpl.utils', './smpl.dom'], function(smpl) {
+define(['./smpl.string', './smpl.utils'], function(smpl) {
 	var MESSAGES = {
 		wrongClosed: 'Incorrect element closed <{0}.{1}>. Openned one was <{2}.{3}>.',
 		wrongParsed: 'Template <{0}>: tried to parse non-existing {1} <{2}>.',
@@ -43,7 +43,7 @@ define(['./smpl.string', './smpl.utils', './smpl.dom'], function(smpl) {
 			}
 		}
 		if (smpl.tpl.globalObj) {
-			this.__globalKey = '_' + smpl.utils.uniq();
+			this.__globalKey = this.__name + '_' + smpl.utils.uniq();
 			smpl.tpl.globalObj[this.__globalKey] = this;
 			this.__globalKey = smpl.tpl.globalKey + '.' + this.__globalKey;
 		}
@@ -282,7 +282,7 @@ define(['./smpl.string', './smpl.utils', './smpl.dom'], function(smpl) {
 				break;
 			case 'html':
 				token.txt = token.txt.replace(token.beforeJs ? /(\\*)\1\\(\{|$)/g : /(\\*)\1\\(\{)/g, '$1$2');
-				processed = "'" + smpl.utils.escapeJs(token.txt) + "'";
+				processed = "'" + smpl.string.escapeJs(token.txt) + "'";
 				break;
 			case 'js':
 				processed = this.compileJs(token.txt);
@@ -378,7 +378,7 @@ define(['./smpl.string', './smpl.utils', './smpl.dom'], function(smpl) {
 		if (noEscape) {
 			input = '((' + input + ")||'')";
 		} else {
-			input = 'smpl.dom.escapeHTML(' + input + "||'')";
+			input = 'smpl.string.escapeHTML(' + input + "||'')";
 		}
 		return input;
 	};

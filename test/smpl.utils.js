@@ -26,13 +26,6 @@ define(['smplAssert/assert', 'smplUtils/smpl.utils'], function(assert, smpl) {
 			});
 		});
 		
-		suite('escapeJs', function() {
-			test('escapeJs', function() {
-				var escaped = smpl.utils.escapeJs('test\n\r\n\\\t\'"\u2028\u2029/');
-				assert.equals(escaped, 'test\\n\\\n\\n\\\\\t\\\'\\"\\n\\\n\\n\\\n\\/');
-			});
-		});
-		
 		/**
 		* Test the `smpl.utils.stringify` method
 		*/

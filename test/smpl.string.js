@@ -35,5 +35,12 @@ define(['smplAssert/assert', 'smplString/smpl.string'], function(assert, smpl) {
 				assert(!smpl.string.endsWith('abc', ' '));
 			});
 		});
+		
+		suite('escapeJs', function() {
+			test('escapeJs', function() {
+				var escaped = smpl.string.escapeJs('test\n\r\n\\\t\'"\u2028\u2029/');
+				assert.equals(escaped, 'test\\n\\\n\\n\\\\\t\\\'\\"\\n\\\n\\n\\\n\\/');
+			});
+		});
 	});
 });

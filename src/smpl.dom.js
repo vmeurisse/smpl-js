@@ -89,20 +89,5 @@ define(['./smpl.core'], function(smpl) {
 		e.stopPropagation();
 	};
 	
-	/**
-	 * Escape a string so that it is safe to include it in HTML
-	 *
-	 * @method escapeHTML
-	 * 
-	 * @param {String} string string to escape
-	 * @return {String} the escaped string
-	 */
-	smpl.dom.escapeHTML = function(string) {
-		return String(string).replace(/&/g, '&amp;')
-		                     .replace(/"/g, '&quot;')
-		                     .replace(/'/g, '&#39;')
-		                     .replace(/</g, '&lt;')
-		                     .replace(/>/g, '&gt;');
-	};
 	return smpl;
 });

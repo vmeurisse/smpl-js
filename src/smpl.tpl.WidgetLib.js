@@ -2,16 +2,15 @@ if (typeof define !== 'function') {var define = require('amdefine')(module)}
 /**
  * @module smpl
  * @submodule smpl.tpl.WidgetLib
- * @class smpl.tpl.WidgetLib
  */
 define(['./smpl.tpl'], function(smpl) {
 	smpl.tpl = smpl.tpl || {};
 	
 	/**
-	 * smpl.Ecb is a simple Event Communication Bus
-	 * It provide a simple addListener/fire messaging system
 	 * 
-	 * @class smpl.Ecb
+	 * 
+	 * 
+	 * @class smpl.tpl.WidgetLib
 	 * @constructor
 	 */
 	smpl.tpl.WidgetLib = function(name) {
