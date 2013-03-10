@@ -5,7 +5,8 @@
 					'../coverage/src' :
 					'../src';
 	
-	var tests = ['smplAssert',
+	var tests = ['smpl',
+                 'smplAssert',
                  'smplData',
                  'smplDom',
                  'smplEcb',

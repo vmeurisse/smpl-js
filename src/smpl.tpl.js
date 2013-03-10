@@ -242,7 +242,7 @@ define(['./smpl.string', './smpl.utils'], function(smpl) {
 			var re = /([-\w]+)="(.*?)"/g;
 			var arg;
 			while ((arg = re.exec(argsText)) !== null) {
-				args[arg[1]] = arg[2]; //TODO: unescape value
+				args[arg[1]] = smpl.string.unescapeHTML(arg[2]);
 			}
 		}
 		return args;

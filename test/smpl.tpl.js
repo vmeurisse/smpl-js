@@ -1,4 +1,5 @@
-define(['smplAssert/assert', 'smplTpl/smpl.tpl', 'smplTplWL/smpl.tpl.WidgetLib'], function(assert, smpl, smplWL) {
+define(['smplAssert/assert', 'smplTpl/smpl.tpl', 'smplTplWL/smpl.tpl.WidgetLib', 'smpl/smpl.string'],
+			function(assert, smpl, smplWL, smplTest) {
 	suite('smpl.tpl', function() {
 		test('dependencies', function() {
 			assert.equals(Object.keys(smpl).sort(), ['string', 'utils', 'tpl'].sort());
@@ -67,7 +68,8 @@ define(['smplAssert/assert', 'smplTpl/smpl.tpl', 'smplTplWL/smpl.tpl.WidgetLib']
 				Section.prototype.getHTML = function(config, content) {
 					this.config = config;
 					var html = '<section';
-					if (config.name) html += ' name="' + config.name + '"';
+					if (config.name) html += ' name="' + smplTest.string.escapeHTML(config.name) + '"';
+					if (config.value) html += ' value="' + smplTest.string.escapeHTML(config.value) + '"';
 					html += '>' + content + '</section>';
 					return html;
 				};
@@ -87,6 +89,7 @@ define(['smplAssert/assert', 'smplTpl/smpl.tpl', 'smplTplWL/smpl.tpl.WidgetLib']
 				
 				tpl.parse();
 				assert.equals(tpl.retrieve(), 'm<section name="test">b</section>m');
+				assert.equals(tpl.w.sayHello(), 'hello from test');
 			});
 			test('autoclose', function() {
 				var tpl = new smpl.tpl.Template('autoclose');
@@ -110,6 +113,23 @@ define(['smplAssert/assert', 'smplTpl/smpl.tpl', 'smplTplWL/smpl.tpl.WidgetLib']
 				
 				tpl.parse();
 				assert.equals(tpl.retrieve(), 'm<section name="test"></section>m');
+			});
+			
+			test('escape', function() {
+				var tpl = new smpl.tpl.Template('autoclose');
+				tpl.onParse = function () {
+					this.w = this.parseWidget('a', {
+						value: '<aa'
+					});
+				};
+				tpl.init('m<!--widget: a@test:section name="&quot;test&quot;"/-->m');
+				
+				tpl.parse();
+				assert.equals(tpl.retrieve(), 'm<section name="&quot;test&quot;" value="&lt;aa"></section>m');
+				assert.equals(tpl.w.config, {
+					name: '"test"',
+					value: '<aa'
+				});
 			});
 		});
 	});
