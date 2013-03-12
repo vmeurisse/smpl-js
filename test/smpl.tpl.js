@@ -2,7 +2,7 @@ define(['smplAssert/assert', 'smplTpl/smpl.tpl', 'smplTplWL/smpl.tpl.WidgetLib',
 			function(assert, smpl, smplWL, smplTest) {
 	suite('smpl.tpl', function() {
 		test('dependencies', function() {
-			assert.equals(Object.keys(smpl).sort(), ['string', 'utils', 'tpl'].sort());
+			assert.equals(Object.keys(smpl).sort(), ['global', 'string', 'utils', 'tpl'].sort());
 		});
 		
 		test('base', function() {

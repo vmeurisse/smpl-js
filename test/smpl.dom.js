@@ -20,7 +20,7 @@ define(['smplAssert/assert', 'smplDom/smpl.dom'], function(assert, smpl) {
 		
 		
 		test('dependencies', function() {
-			assert.equals(Object.keys(smpl), ['dom']);
+			assert.equals(Object.keys(smpl).sort(), ['dom', 'global']);
 		});
 		test('hasClass', function() {
 			var elem = document.createElement('div');

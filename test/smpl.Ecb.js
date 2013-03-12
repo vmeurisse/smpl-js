@@ -40,7 +40,7 @@ define(['smplAssert/assert', 'smplEcb/smpl.Ecb'], function(assert, smpl) {
 		
 		
 		test('dependencies', function() {
-			assert.equals(Object.keys(smpl), ['Ecb']);
+			assert.equals(Object.keys(smpl).sort(), ['Ecb', 'global']);
 		});
 		
 		test('standard usage', function() {

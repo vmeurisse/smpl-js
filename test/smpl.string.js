@@ -1,7 +1,7 @@
 define(['smplAssert/assert', 'smplString/smpl.string'], function(assert, smpl) {
 	suite('smpl.string', function() {
 		test('dependencies', function() {
-			assert.equals(Object.keys(smpl), ['string']);
+			assert.equals(Object.keys(smpl).sort(), ['global', 'string']);
 		});
 		suite('supplant', function() {
 			test('supplant', function() {

@@ -4,7 +4,7 @@ define(['smplAssert/assert', 'smplUtils/smpl.utils'], function(assert, smpl) {
 	*/
 	suite('smpl.utils', function() {
 		test('dependencies', function() {
-			assert.equals(Object.keys(smpl), ['utils']);
+			assert.equals(Object.keys(smpl).sort(), ['global', 'utils']);
 		});
 		suite('uniq', function() {
 			test('uniq', function() {
