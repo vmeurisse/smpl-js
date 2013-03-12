@@ -6,6 +6,8 @@ if (typeof define !== 'function') {var define = require('amdefine')(module)}
  * @static
  */
 define(['./smpl.string', './smpl.utils'], function(smpl) {
+	'use strict';
+	
 	var MESSAGES = {
 		wrongClosed: 'Incorrect element closed <{0}.{1}>. Openned one was <{2}.{3}>.',
 		wrongParsed: 'Template <{0}>: tried to parse non-existing {1} <{2}>.',
@@ -168,9 +170,9 @@ define(['./smpl.string', './smpl.utils'], function(smpl) {
 		if (key) {
 			smpl.tpl.globalKey = key;
 			smpl.tpl.globalObj = obj;
-		} else if (typeof window === 'object' && window.smpl === smpl) {
-			smpl.tpl.globalKey = 'window.tpl.globalRepo';
-			smpl.tpl.globalObj = window.tpl.globalRepo;
+		} else if (smpl.global.smpl === smpl) {
+			smpl.tpl.globalKey = 'smpl.tpl.globalRepo';
+			smpl.tpl.globalObj = smpl.tpl.globalRepo;
 		}
 		return !!smpl.tpl.globalKey;
 	};
