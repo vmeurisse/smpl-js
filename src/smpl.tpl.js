@@ -60,14 +60,6 @@ define(['./smpl.string', './smpl.utils'], function(smpl) {
 		this.getData(block)[key] = value;
 	};
 	
-	smpl.tpl.Template.prototype.get = function(block, key) {
-		if (arguments.length === 1) {
-			key = block;
-			block = smpl.tpl.utils.MAIN;
-		}
-		return this.getData(block)[key];
-	};
-	
 	smpl.tpl.Template.prototype.getData = function(blockId) {
 		if (this.__data[blockId]) return this.__data[blockId];
 		var parent = this.getData(this.__parents[blockId]);
