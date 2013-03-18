@@ -7,6 +7,7 @@ define([
         './smpl.ajax',
         './smpl.data',
         './smpl.data.DataDispatcher',
+        './smpl.date',
         './smpl.dom',
         './smpl.Ecb',
         './smpl.number',
