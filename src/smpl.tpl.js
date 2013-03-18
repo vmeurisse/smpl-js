@@ -47,7 +47,7 @@ define(['./smpl.string', './smpl.utils'], function(smpl) {
 		if (smpl.tpl.globalObj) {
 			this.__globalKey = this.__name + '_' + smpl.utils.uniq();
 			smpl.tpl.globalObj[this.__globalKey] = this;
-			this.__globalKey = smpl.tpl.globalKey + '.' + this.__globalKey;
+			this.__globalKey = smpl.tpl.globalKey + '["' + this.__globalKey + '"]';
 		}
 	};
 	
