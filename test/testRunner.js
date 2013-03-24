@@ -2,18 +2,19 @@
 (function() {
 	/* globals process, __dirname, requirejs */
 	var srcPath = (typeof process !== 'undefined' && process && process.env && process.env.SMPL_COVERAGE) ?
-					'../coverage/src' :
-					'../src';
+	               '../coverage/src' :
+	               '../src';
 	
 	var tests = ['smpl',
-                 'smplAssert',
-                 'smplData',
-                 'smplDom',
-                 'smplEcb',
-                 'smplNumber',
-                 'smplString',
-                 'smplTpl', 'smplTplWL',
-                 'smplUtils'];
+	             'smplAssert',
+	             'smplData',
+	             'smplDate',
+	             'smplDom',
+	             'smplEcb',
+	             'smplNumber',
+	             'smplString',
+	             'smplTpl', 'smplTplWL',
+	             'smplUtils'];
 	var config = {
 		packages: []
 	};
@@ -36,6 +37,7 @@
 
 define(['./assert',
         './smpl.data',
+        './smpl.date',
         './smpl.dom',
         './smpl.Ecb',
         './smpl.number',

@@ -97,4 +97,5 @@ define(['./smpl.core'], function(smpl) {
 		return date;
 	};
 	
+	return smpl;
 });
