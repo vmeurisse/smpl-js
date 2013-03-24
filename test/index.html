@@ -3,7 +3,6 @@
 <head>
 	<meta charset="utf-8">
 	<title>smpl.js unit tests</title>
-	<link rel="stylesheet" href="../node_modules/mocha/mocha.css" />
 </head>
 <body>
 	<div id="mocha"></div>
@@ -17,56 +16,20 @@
 		}
 	</script>
 	<script src="../node_modules/requirejs/require.js"></script>
-	<script src="../node_modules/mocha/mocha.js"></script>
-	<script>mocha.setup('tdd')</script>
 	<script>
 		requirejs.config({
 			packages: [{
 				name: 'smpl',
 				location: '../src',
 				main: 'smpl.js'
+			}, {
+				name: 'smpl-build',
+				location: '../node_modules/smpl-build-test'
 			}]
 		});
-		require(['./testRunner'], function () {
-			
-			if (window.ActiveXObject || !window.postMessage) {
-				(function() {
-					var timeouts = [];
-					process.nextTick = function(fn) {
-						timeouts.push(fn);
-						setTimeout(function() {
-							if (timeouts.length) timeouts.shift()();
-						}, 0);
-					}
-				})();
-			}
-			
-			var runner = mocha.run();
-			
-			var failed = [];
-			var ok = [];
-			runner.on('fail', function(test, err){
-				failed.push({
-					title: test.title,
-					fullTitle: test.fullTitle(),
-					error: {
-						message: err.message,
-						stack: err.stack
-					}
-				});
-			});
-
-			runner.on('pass', function(test, err){
-				ok.push({
-					title: test.title,
- 					fullTitle: test.fullTitle()
-				});
-			});
-			runner.on('end', function(){
-				window.mochaResults = {
-					failed: failed,
-					ok: ok
-				};
+		require(['smpl-build/mocha'], function (mocha) {
+			require(['./testRunner'], function () {
+				mocha.run();
 			});
 		});
 	</script>
