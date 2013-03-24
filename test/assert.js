@@ -314,10 +314,12 @@ define(['smplAssert/assert', 'smplUtils/smpl.utils'], function(assert, smpl) {
 			var is = function(a, b) {
 				var message = '<' + smpl.utils.stringify(a) + '> should be <' + smpl.utils.stringify(b) + '>';
 				assert.is(a, b, message);
+				assert.throws(assert.isNot.bind(assert, a, b, ' '), assert.AssertionError, message);
 			};
 			var isnot = function(a, b) {
 				var message = '<' + smpl.utils.stringify(a) + '> should not be <' + smpl.utils.stringify(b) + '>';
 				assert.throws(assert.is.bind(assert, a, b, ' '), assert.AssertionError, message);
+				assert.isNot(a, b, message);
 			};
 			test('simple is', function() {
 				is(null, null);

@@ -102,9 +102,19 @@ define(['./smpl.data', './smpl.utils'], function(smpl) {
 		}
 	};
 	
+	var is = function(value, expected) {
+		if (value === expected) {
+			// We must take care that comparing 0 and -0 should return false;
+			return (value !== 0 || 1 / value === 1 / expected);
+		} else {
+			// take care of the NaN value
+			return (value !== value && expected !== expected);
+		}
+	};
+	
 	/**
 	 * Assert that `value` and `expected` are the same.
-	 * This is the same as the triple equal operator exept that -0 and 0 are considered different and that NaN is NaN.
+	 * This is the same as the triple equal operator except that -0 and 0 are considered different and that NaN is NaN.
 	 * 
 	 * @method is
 	 * 
@@ -114,18 +124,28 @@ define(['./smpl.data', './smpl.utils'], function(smpl) {
 	 *                         If no message is provided, an automatic one will be used (optional)
 	 */
 	assert.is = function(value, expected, message) {
-		var is;
-		if (value === expected) {
-			// We must take care that comparing 0 and -0 should return false;
-			is = (value !== 0 || 1 / value === 1 / expected);
-		} else {
-			// take care of the NaN value
-			is = (value !== value && expected !== expected);
-		}
-		if (!is) {
+		if (!is(value, expected)) {
 			fail(message, value, expected, assert.equals);
 		}
 	};
+	
+	/**
+	 * Assert that `value` and `expected` are not the same.
+	 * This is the same as `!==` except that -0 and 0 are considered different and that NaN is NaN.
+	 * 
+	 * @method isNot
+	 * 
+	 * @param {any} value        Value to test
+	 * @param {any} expected     Expected value
+	 * @param {String} message Message to be used in the `AssertionError`.
+	 *                         If no message is provided, an automatic one will be used (optional)
+	 */
+	assert.isNot = function(value, expected, message) {
+		if (is(value, expected)) {
+			fail(message, value, expected, assert.equals);
+		}
+	};
+	
 	/**
 	 * Assert that a function throws an exception when called
 	 * 
