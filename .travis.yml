@@ -1,12 +1,12 @@
 language: node_js
 node_js:
-  - 0.6
-  - 0.8
-  - 0.9
+  - "0.6"
+  - "0.8"
+  - "0.10"
 env:
   global:
     - secure: "fetrkHRLvBR1uJ7czjvw0rU0TPrxHqPLJiNdkQt90MxMxAnPb09WDY4erNYv\nvLaMBrxCtzWJpfoYPdqU5EHHFI9+a4Mfr1t7yQfxaOcU9lxZ3LsaNbYhsVct\n3bNrdj+rnVkZesQryMkO+ExALgONNsJxWJS8Ug9htbuTzusOPEc="
 after_script: "npm install npmedge && ./node_modules/.bin/npmedge"
 matrix:
   allow_failures:
-    - node_js: 0.9
+    - node_js: "0.10"
