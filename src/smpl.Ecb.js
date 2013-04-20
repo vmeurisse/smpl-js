@@ -92,6 +92,7 @@ define(['./smpl.core'], function(smpl) {
 		} else {
 			var callbacks = this.callbacks[event];
 			if (callbacks) {
+				callbacks = callbacks.slice();
 				for (var i = 0, l = callbacks.length; i < l; i++) {
 					var cb = callbacks[i];
 					cb.fn.apply(cb.scope, arguments);

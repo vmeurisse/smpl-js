@@ -111,6 +111,23 @@ define(['smplAssert/assert', 'smplEcb/smpl.Ecb'], function(assert, smpl) {
 			assert.equals(calls, expectedCalls);
 		});
 		
+		test('removeListener during fire', function() {
+			var listener = function() {
+				ecb.removeListener('test', listener);
+				getListener('a').apply(this, arguments);
+			};
+			
+			ecb.addListener('test', listener);
+			ecb.addListener('test', getListener('b'));
+			ecb.fire('test');
+			ecb.fire('test');
+			assert.equals(calls, [
+				{key: 'a', args: ['test'], scope: defaultScope},
+				{key: 'b', args: ['test'], scope: defaultScope},
+				{key: 'b', args: ['test'], scope: defaultScope}
+			]);
+		});
+		
 		test('pause', function() {
 			ecb.addListener('test', getListener('a'));
 			ecb.pause();
