@@ -8,10 +8,11 @@ define(['smplAssert/assert', 'smplEcb/smpl.Ecb'], function(assert, smpl) {
 			defaultScope,
 			scopes = {};
 		
+		//`defaultScope` will be undefined in implementations supporting strict mode and equal to global scope in others
 		(function() {
 			defaultScope = this;
 		}).call(undefined);
-
+		
 		var getListener = function(key) {
 			if (!listeners[key]) {
 				listeners[key] = function() {
