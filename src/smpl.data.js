@@ -8,22 +8,6 @@ if (typeof define !== 'function') {var define = require('amdefine')(module)}
 define(['./smpl.core'], function(smpl) {
 	smpl.data = smpl.data || {};
 	
-	smpl.data.updateObject = function(receiver, updater) {
-		for (var p in updater) {
-			receiver[p] = updater[p];
-		}
-		return receiver;
-	};
-	
-	smpl.data.extendObject = function(receiver, extender) {
-		for (var p in extender) {
-			if (!receiver.hasOwnProperty(p)) {
-				receiver[p] = extender[p];
-			}
-		}
-		return receiver;
-	};
-	
 	/**
 	 * Filter an array of object. Each object is searched for the property whith the given value.
 	 *

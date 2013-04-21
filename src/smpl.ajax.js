@@ -5,7 +5,7 @@ if (typeof define !== 'function') {var define = require('amdefine')(module)}
  * @class smpl.ajax
  * @static
  */
-define(['./smpl.data'], function(smpl) {
+define(['./smpl.object'], function(smpl) {
 	
 	/*jshint browser: true */
 	/**
@@ -39,7 +39,7 @@ define(['./smpl.data'], function(smpl) {
 	 */
 	smpl.ajax = function(args) {
 		var config = Object.create(smpl.ajax.defaultConfig);
-		smpl.data.updateObject(config, args);
+		smpl.object.update(config, args);
 		
 		['onSuccess', 'onError', 'onDone'].forEach(function (key) {
 			if (config[key] && typeof config[key] === 'function') {

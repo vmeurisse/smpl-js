@@ -11,6 +11,7 @@ define([
         './smpl.dom',
         './smpl.Ecb',
         './smpl.number',
+        './smpl.object',
         './smpl.string',
         './smpl.tpl',
         './smpl.utils'

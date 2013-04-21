@@ -4,36 +4,7 @@ define(['smplAssert/assert', 'smplData/smpl.data'], function(assert, smpl) {
 		test('dependencies', function() {
 			assert.equals(Object.keys(smpl).sort(), ['data', 'global']);
 		});
-		suite('updateObject', function() {
-			test('updateObject', function() {
-				assert.equals(smpl.data.updateObject({
-					a: 1,
-					c: 3
-				}, {
-					a: 2,
-					b: 1
-				}), {
-					a: 2,
-					b: 1,
-					c: 3
-				});
-			});
-		});
-		suite('extendObject', function() {
-			test('extendObject', function() {
-				assert.equals(smpl.data.extendObject({
-					a: 1,
-					c: 3
-				}, {
-					a: 2,
-					b: 1
-				}), {
-					a: 1,
-					b: 1,
-					c: 3
-				});
-			});
-		});
+		
 		suite('filter', function() {
 			test('filter', function() {
 				assert.equals(smpl.data.filter([{o: 1, a: 1}, {o: 2, a: 2}, {o: 3, a: 1}], 'a', 1),

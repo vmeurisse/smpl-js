@@ -12,6 +12,7 @@
 	             'smplDom',
 	             'smplEcb',
 	             'smplNumber',
+	             'smplObject',
 	             'smplString',
 	             'smplTpl', 'smplTplWL',
 	             'smplUtils'];
@@ -41,6 +42,7 @@ define(['./assert',
         './smpl.dom',
         './smpl.Ecb',
         './smpl.number',
+        './smpl.object',
         './smpl.string',
         './smpl.tpl',
         './smpl.utils'], '');
