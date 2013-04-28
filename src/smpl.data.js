@@ -31,7 +31,30 @@ define(['./smpl.core'], function(smpl) {
 		return filteredList;
 	};
 	
-	 /**
+	/**
+	 * Return an indexed map of the given list
+	 *
+	 * @method index
+	 * 
+	 * @param list {Array} The list to index.
+	 * @param [keys] {string|Array.<string>} See `smpl.data.get`. `smpl.data.get(list[i], keys)` is used as index key.
+	 * @return {Object} the indexed map
+	 */
+	smpl.data.index = function(list, keys) {
+		if (typeof keys === 'string') {
+			keys = (keys === '') ? [] : keys.split('.');
+		} else if (keys === undefined) {
+			keys = [];
+		}
+		var map = {};
+		for (var i = 0; i < list.length; i++) {
+			var item = list[i];
+			map[smpl.data.get(item, keys)] = item;
+		}
+		return map;
+	};
+	
+	/**
 	 * Sorter constructor to be used with `smpl.data.sort`.
 	 * 
 	 * @class smpl.data.Sorter
