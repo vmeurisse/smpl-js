@@ -10,11 +10,11 @@ define(['./smpl.core'], function(smpl) {
 	
 	/**
 	 * Add zeros in front of `number` up to the desired `length`
-	 *
+	 * 
 	 * @method zeroPad
 	 * 
-	 * @param {Number} number the number to pas. Only positive integers number are supported
-	 * @param {Number} length The minimum length of the resulting string.
+	 * @param number {Number} the number to pad. Only positive integers number are supported
+	 * @param length {Number} The minimum length of the resulting string.
 	 * @return {String} The padded number
 	 */
 	smpl.number.zeroPad = function(number, length) {
@@ -26,16 +26,29 @@ define(['./smpl.core'], function(smpl) {
 	
 	/**
 	 * Constrains a number inside the given interval
-	 *
+	 * 
 	 * @method constrain
 	 * 
-	 * @param {Number} number the original number
-	 * @param {Number} min the lower bound
-	 * @param {Number} max the upper bound
+	 * @param number {Number} the original number
+	 * @param min {Number} the lower bound
+	 * @param max {Number} the upper bound
 	 * @return {Number} The constrained number
 	 */
 	smpl.number.constrain = function(number, min, max) {
 		return (number < min) ? min : ((number > max) ? max : number);
+	};
+	
+	/**
+	 * Return a random integer between `min` and `max - 1`.
+	 * 
+	 * @method randomInt
+	 * 
+	 * @param min {Integer} the lower bound
+	 * @param max {Integer} the upper bound
+	 * @return {Integer} a random integer
+	 */
+	smpl.number.randomInt = function (min, max) {
+	    return Math.floor(Math.random() * (max - min)) + min;
 	};
 	
 	return smpl;
