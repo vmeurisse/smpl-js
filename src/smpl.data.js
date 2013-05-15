@@ -283,13 +283,10 @@ define(['./smpl.core'], function(smpl) {
 		if (typeof a !== 'object' || typeof b !== 'object') return false;
 		if (!a || !b) return false; //a or b is null
 		
-		if (stringA === '[object Boolean]' || stringA === '[object Number]') {
-			return smpl.data.compare(a.valueOf(), b.valueOf());
-		}
-		
 		stackA  = stackA || [];
 		stackB = stackB || [];
 		
+		// Test for recursivity
 		var i = stackA.length;
 		while (i--) {
 			if (stackA[i] === a) {
@@ -305,7 +302,6 @@ define(['./smpl.core'], function(smpl) {
 			// Special case for arrays: the length property is not returned by Object.keys but as impact on the array
 			return false;
 		}
-
 		
 		var keysA = Object.keys(a).sort(),
 		    keysB = Object.keys(b).sort();
@@ -317,16 +313,18 @@ define(['./smpl.core'], function(smpl) {
 				return false;
 			}
 		}
-
+		
 		stackA.push(a);
 		stackB.push(b);
-	
+		
 		i = keysA.length;
 		while (i--) {
 			var key = keysA[i];
 			if (!smpl.data.compare(a[key], b[key], stackA, stackB)) return false;
 		}
-		return true;
+		
+		if (Array.isArray(a)) return true;
+		else return (smpl.data.compare(+a, +b) && '' + a === '' + b);
 	};
 	
 	return smpl;

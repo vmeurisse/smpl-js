@@ -202,6 +202,7 @@ define(['smplAssert/assert', 'smplUtils/smpl.utils'], function(assert, smpl) {
 				              smpl.utils.stringify(b) + '>';
 				assert.throws(assert.equals.bind(assert, a, b, ' '), assert.AssertionError, message);
 			};
+			
 			test('simple equals', function() {
 				equals(null, null);
 				equals(undefined, undefined);
@@ -227,11 +228,22 @@ define(['smplAssert/assert', 'smplUtils/smpl.utils'], function(assert, smpl) {
 				inequals([], [1]);
 				inequals([1], [2]);
 				inequals({}, {a: 1});
+				inequals({}, null);
+				inequals({}, undefined);
 				inequals({a: 1}, {b: 1});
 				inequals(/a/, /b/);
 				inequals(/a/g, /a/);
 				inequals(true, false);
 			});
+			
+			test('dates', function() {
+				var a = new Date();
+				var b = new Date(a.getTime());
+				var c = new Date(a.getTime() + 1);
+				equals(a, b);
+				inequals(a, c);
+			});
+			
 			test('bad constructors', function() {
 				/* jshint -W053 */ //Allow bad constructors
 				equals(new String('test'), new String('test'));
@@ -244,6 +256,7 @@ define(['smplAssert/assert', 'smplUtils/smpl.utils'], function(assert, smpl) {
 				inequals(new Number(0), new Number(-0));
 				inequals(new Number(0), new Number(0.1));
 			});
+			
 			test('tricky values', function() {
 				/* jshint -W053 */ //Allow bad constructors
 				equals(NaN, NaN);
@@ -256,6 +269,7 @@ define(['smplAssert/assert', 'smplUtils/smpl.utils'], function(assert, smpl) {
 				equals(['a'], new Array('a'));
 				equals(new Object(2), new Number(2));
 			});
+			
 			test('transtype', function() {
 				inequals(0, '0');
 				inequals(0, '');
@@ -263,6 +277,7 @@ define(['smplAssert/assert', 'smplUtils/smpl.utils'], function(assert, smpl) {
 				inequals(false, '0');
 				inequals(true, '1');
 			});
+			
 			test('deep objects', function() {
 				var a = {a: {b: 1}};
 				var b = {a: {b: 1}};
@@ -270,6 +285,7 @@ define(['smplAssert/assert', 'smplUtils/smpl.utils'], function(assert, smpl) {
 				a.a.b = 2;
 				inequals(a, b);
 			});
+			
 			test('object prototype', function() {
 				var F = function() {};
 				var G = function() {};
@@ -279,6 +295,7 @@ define(['smplAssert/assert', 'smplUtils/smpl.utils'], function(assert, smpl) {
 				equals(a, b);
 				inequals(a, c);
 			});
+			
 			test('cyclic objects', function() {
 				var a = {a: {}};
 				var b = {a: {}};
@@ -288,6 +305,7 @@ define(['smplAssert/assert', 'smplUtils/smpl.utils'], function(assert, smpl) {
 				b.a.a = {a: {}};
 				inequals(a, b);
 			});
+			
 			test('Arrays', function() {
 				var a = [1, 2, '3', {a: 4}, true];
 				var b = [1, 2, '3', {a: 5}, true];
@@ -295,7 +313,7 @@ define(['smplAssert/assert', 'smplUtils/smpl.utils'], function(assert, smpl) {
 				b[3].a = 4;
 				equals(a, b);
 				
-				var BIG_LENGTH = 1000000000; //use something huge to test performence on sparse arrays
+				var BIG_LENGTH = 1000000000; //use something huge to test performance on sparse arrays
 				
 				a.length = BIG_LENGTH;
 				inequals(a, b);
