@@ -12,12 +12,12 @@
 		"amdefine": "0.0.x"
 	},
 	"devDependencies": {
-		"jake": "0.5.x",
+		"jake": "0.6.x",
 		"smpl-build-test": "0.6.x",
 		"requirejs": "2.1.x",
-		"es5-shim": "2.0.x",
+		"es5-shim": "2.1.x",
 		"JSON": "1.0.x",
-		"jsdom": "0.5.x"
+		"jsdom": "0.8.x"
 	},
 	"scripts": {
 		"test": "jake test",
