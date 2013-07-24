@@ -2,7 +2,7 @@
 	"name": "smpl",
 	"version": "0.2.0-alpha3",
 	"author": "Vincent Meurisse <dev@meurisse.org>",
-	"description": "A simple javascrit library used to build complex web applications",
+	"description": "A simple javascript library used to build complex web applications",
 	"keywords": ["simple",  "template", "ajax", "library", "data", "toolkit", "amd", "light", "lightweight", "mvc"],
 	"homepage": "https://github.com/vmeurisse/smpl-js",
 	"bugs": {
@@ -13,7 +13,7 @@
 	},
 	"devDependencies": {
 		"jake": "0.5.x",
-		"smpl-build-test": "0.4.x",
+		"smpl-build-test": "0.6.x",
 		"requirejs": "2.1.x",
 		"es5-shim": "2.0.x",
 		"JSON": "1.0.x",
@@ -25,6 +25,7 @@
 		"coverage": "jake coverage",
 		"lint": "jake lint",
 		"remote": "jake remote",
+		"local": "jake local",
 		"doc": "jake doc"
 	},
 	"repository": {
@@ -47,4 +48,3 @@
 		"lib": "src"
 	}
 }
-

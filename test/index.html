@@ -23,11 +23,11 @@
 				location: '../src',
 				main: 'smpl.js'
 			}, {
-				name: 'smpl-build',
-				location: '../node_modules/smpl-build-test'
+				name: 'paraffin',
+				location: '../node_modules/smpl-build-test/node_modules/paraffin'
 			}]
 		});
-		require(['smpl-build/mocha'], function (mocha) {
+		require(['paraffin/mocha'], function (mocha) {
 			require(['./testRunner'], function () {
 				mocha.run();
 			});
