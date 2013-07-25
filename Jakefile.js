@@ -46,13 +46,15 @@ var coverageConfig = {
 			{browserName: 'chrome', platform: 'Linux'},
 			{browserName: 'firefox', platform: 'Linux'},
 			{browserName: 'opera', version: 12, platform: 'Linux'},
-			{browserName: 'internet explorer', version: 10, platform: 'Windows 2012'},
-			{browserName: 'internet explorer', version: 9, platform: 'Windows 2008'},
-			{browserName: 'internet explorer', version: 8, platform: 'Windows 2003'},
-			{browserName: 'internet explorer', version: 7, platform: 'Windows 2003'},
+			{browserName: 'opera', version: 11, platform: 'Windows XP'},
+			{browserName: 'internet explorer', version: 10, platform: 'Windows 8'},
+			{browserName: 'internet explorer', version: 9, platform: 'Windows 7'},
+			{browserName: 'internet explorer', version: 8, platform: 'Windows XP'},
+			{browserName: 'internet explorer', version: 7, platform: 'Windows XP'},
+			//{browserName: 'android', version: '4.0', platform: 'Linux'},
 			//{browserName: 'iPad', version: 6, platform: 'Mac 10.8'},
-			{browserName: 'safari', version: 6, platform: 'Mac 10.8'},
-			{browserName: 'safari', version: 5, platform: 'Mac 10.6'}
+			//{browserName: 'safari', version: 6, platform: 'Mac 10.8'},
+			//{browserName: 'safari', version: 5, platform: 'Mac 10.6'}
 		],
 	},
 	manualStop: true
