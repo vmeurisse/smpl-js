@@ -50,7 +50,7 @@ var coverageConfig = {
 			{browserName: 'internet explorer', version: 9, platform: 'Windows 2008'},
 			{browserName: 'internet explorer', version: 8, platform: 'Windows 2003'},
 			{browserName: 'internet explorer', version: 7, platform: 'Windows 2003'},
-			{browserName: 'iPad', version: 6, platform: 'Mac 10.8'},
+			//{browserName: 'iPad', version: 6, platform: 'Mac 10.8'},
 			{browserName: 'safari', version: 6, platform: 'Mac 10.8'},
 			{browserName: 'safari', version: 5, platform: 'Mac 10.6'}
 		],
