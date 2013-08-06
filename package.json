@@ -1,6 +1,6 @@
 {
 	"name": "smpl",
-	"version": "0.2.0-alpha3",
+	"version": "0.2.0-alpha4",
 	"author": "Vincent Meurisse <dev@meurisse.org>",
 	"description": "A simple javascript library used to build complex web applications",
 	"keywords": ["simple",  "template", "ajax", "library", "data", "toolkit", "amd", "light", "lightweight", "mvc"],
