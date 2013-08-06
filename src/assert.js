@@ -173,6 +173,118 @@ define(['./smpl.data', './smpl.utils'], function(smpl) {
 		fail(message || 'Expected function to throw an error', assert.throws);
 	};
 	
+	function asArray(list) {
+		var array = [],
+		    i = list.length;
+		while (i--) array[i] = list[i];
+		return array;
+	}
+	
+	function compareHTML(a, b, parentA, parentB) {
+		if (!a || !b) return false;
+		if (a === b) return true;
+		if (a.nodeType !== b.nodeType) return false;
+		if (a.nodeName !== b.nodeName) return false;
+		if (a.localName !== b.localName) return false;
+		if (a.namespaceURI !== b.namespaceURI) return false;
+		if (a.prefix !== b.prefix) return false;
+		
+		// Actual compare
+		switch (a.nodeType) {
+			case 1:	//ELEMENT_NODE
+			case 9:	//DOCUMENT_NODE
+			case 11: //DOCUMENT_FRAGMENT_NODE
+				if (a.value !== b.value) return false;
+				
+				//Check attributes
+				if (a.attributes && b.attributes) {	// test in case attributes is undefined
+					if (a.attributes.length !== b.attributes.length) return false;
+					
+					var aAttr = asArray(a.attributes); //[].slice is not working in IE
+					var bAttr = asArray(b.attributes);
+					
+					smpl.data.sort(aAttr, [{key: 'nodeName'}, {key: 'nodeValue'}]);
+					smpl.data.sort(bAttr, [{key: 'nodeName'}, {key: 'nodeValue'}]);
+					
+					for (var i = 0; i < aAttr.length; i++) {
+						if (!compareHTML(aAttr[i], bAttr[i], a, b)) return false;
+					}
+				} else if (a.attributes !== b.attributes) {
+					return false;
+				}
+
+				if (a.contentDocument) { //iframes
+					if (!compareHTML(a.contentDocument, b.contentDocument)) return false;
+				}
+				if (a.contentWindow && a.contentWindow.document) { //iframes for IE7
+					if (!compareHTML(a.contentWindow.document, b.contentWindow.document)) return false;
+				}
+				
+				if ('script' === a.nodeName.toLowerCase()) {
+					if (a.innerHTML !== b.innerHTML) return false;
+				}
+				
+				if (a.nodeType === 9 && a.doctype) {
+					// In JSDom, the doctype is not in childNodes
+					if (!compareHTML(a.doctype, b.doctype)) return false;
+				}
+				
+				//Check children
+				var aChildren = a.childNodes;
+				var bChildren = b.childNodes;
+				if (aChildren.length !== bChildren.length) return false;
+				for (var j = 0; j < aChildren.length; j++) {
+					if (!compareHTML(aChildren[j], bChildren[j])) return false;
+				}
+				break;
+			case 2:	//ATTRIBUTE_NODE
+				// the classnames for a and b can be in a different order.
+				if (a.name === 'class') {
+					var aClasses = a.value.trim().split(/\s+/).sort();
+					var bClasses = b.value.trim().split(/\s+/).sort();
+					return smpl.data.compare(aClasses, bClasses);
+				}
+				return smpl.data.compare(parentA.getAttribute(a.name), parentB.getAttribute(b.name));
+			case 3:	//TEXT_NODE
+				return a.data === b.data;
+			case 4:	//CDATA_SECTION_NODE --- comment section
+				throw 'node of type CDATA_SECTION_NODE not supported.';
+			case 5:	//ENTITY_REFERENCE_NODE
+				throw 'node of type ENTITY_REFERENCE_NODE not supported.';
+			case 6:	//ENTITY_NODE
+				throw 'node of type ENTITY_NODE not supported.';
+			case 7:	//PROCESSING_INSTRUCTION_NODE
+				throw 'node of type PROCESSING_INSTRUCTION_NODE not supported.';
+			case 8:	//COMMENT_NODE
+				return a.data === b.data;
+			case 10: //DOCUMENT_TYPE_NODE --- DOCTYPE
+				return a.name === b.name &&
+				       a.publicId === b.publicId &&
+				       a.systemId === b.systemId &&
+				       a.internalSubset === b.internalSubset;
+			case 12: //NOTATION_NODE
+				throw 'node of type NOTATION_NODE not supported.';
+		}
+		return true;
+	}
+	
+	/**
+	 * Assert that `value` and `expected` are two equivalent dom elements.
+	 * 
+	 * @method domEquals
+	 * 
+	 * @param value {Node} dom element to test.
+	 * @param expected {Node} expected dom element.
+	 * @param message {String} Message to be used in the `AssertionError`.
+	 *                         If no message is provided, an automatic one will be used (optional)
+	 */
+	assert.domEquals = function(value, expected, message) {
+		if (!compareHTML(value, expected)) {
+			// fail breaks in IE with a value or an expected
+			fail(message, undefined, undefined, assert.domEquals);
+		}
+	};
+	
 	assert.AssertionError = AssertionError;
 	
 	return assert;
