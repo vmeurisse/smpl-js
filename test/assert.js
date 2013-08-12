@@ -437,6 +437,12 @@ define(['smplAssert/assert', 'smplUtils/smpl.utils'], function(assert, smpl) {
 				assert.throws(assert.domEquals.bind(assert, span1, span2), assert.AssertionError,
 						'The comparison between two elements with a different set of attributes succeeded.');
 			});
+			test('class', function() {
+				var div1 = document.createElement('div');
+				var div2 = document.createElement('div');
+				div1.setAttribute('class', '');
+				assert.domEquals(div1, div2);
+			});
 			test('ELEMENT_NODE', function() {
 				var div1 = document.createElement('div');
 				div1.id = 'id';
