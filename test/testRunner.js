@@ -1,7 +1,7 @@
 // We create a separate instance of smpl for each test suite
 (function() {
 	/* globals process, __dirname, requirejs */
-	var srcPath = (typeof process !== 'undefined' && process && process.env && process.env.SMPL_COVERAGE) ?
+	var srcPath = (typeof process !== 'undefined' && process && process.env && process.env.PARAFFIN_COVERAGE) ?
 	               '../coverage/src' :
 	               '../src';
 	

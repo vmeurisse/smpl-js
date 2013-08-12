@@ -1,6 +1,6 @@
 /* jshint node: true */
 
-var srcPath = process.env.SMPL_COVERAGE ? '../coverage/src' : '../src';
+var srcPath = process.env.PARAFFIN_COVERAGE ? '../coverage/src' : '../src';
 var requirejsConfig = {
 	baseUrl: __dirname,
 	nodeRequire: require,
