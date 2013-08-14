@@ -184,7 +184,8 @@ define(['./smpl.data', './smpl.utils'], function(smpl) {
 		var attributes = asArray(node.attributes || []);
 		var i = attributes.length;
 		while (i--) {
-			if (attributes[i].name === 'class') {
+			var name = attributes[i].name;
+			if (name === 'class' || name === 'style') {
 				attributes.splice(i, 1);
 			}
 		}
@@ -197,95 +198,181 @@ define(['./smpl.data', './smpl.utils'], function(smpl) {
 		return attr;
 	}
 	
-	function compareClasses(a, b) {
-		var aClasses = a.className.trim().split(/\s+/).sort().join(' ');
-		var bClasses = b.className.trim().split(/\s+/).sort().join(' ');
-		return aClasses === bClasses;
+	function getElementClasses(e) {
+		return e.className.trim().split(/\s+/).sort();
 	}
 	
-	function compareHTML(a, b, parentA, parentB) {
-		if (!a !== !b) return false;
-		if (a === b) return true;
-		if (a.nodeType !== b.nodeType) return false;
-		if (a.nodeName !== b.nodeName) return false;
-		if (a.localName !== b.localName) return false;
-		if (a.namespaceURI !== b.namespaceURI) return false;
-		if (a.prefix !== b.prefix) return false;
+	function compareClasses(a, b, stack) {
+		var aClasses = getElementClasses(a).join(' ');
+		var bClasses = getElementClasses(b).join(' ');
+		if (aClasses !== bClasses) {
+			var msg =  'Different classes at <' + stack + '>. Expected: <' + bClasses + '>, actual: <' + aClasses + '>';
+			fail(msg, undefined, undefined, assert.domEquals);
+		}
+	}
+	
+	function processStyle(style) {
+		var p = {};
+		if (typeof style.length === 'number') {
+			for (var i = 0; i < style.length; i++) {
+				p[style[i]] = style.getPropertyValue(style[i]);
+			}
+		} else {// IE<=8
+			for (var key in style) {
+				p[key] = style[key];
+			}
+		}
+		return p;
+	}
+	
+	function compareSyle(a, b, stack) {
+		var aStyle = a.style;
+		var bStyle = b.style;
 		
-		// Actual compare
+		aStyle = processStyle(aStyle || {});
+		bStyle = processStyle(bStyle || {});
+		
+		if (!smpl.data.compare(aStyle, bStyle)) {
+			var msg = 'Different style at <' + stack + '>. ' +
+			          'Expected: <' + JSON.stringify(bStyle) + '>, actual: <' +  JSON.stringify(aStyle) + '>';
+			fail(msg, undefined, undefined, assert.domEquals);
+		}
+	}
+	
+	function compareHTML(a, b, stack, parentA, parentB) {
+		var msg;
+		
+		if (!a !== !b) {
+			msg = 'Incorect node at  <' + stack + '>. Expected: <' + (b ? 'Object' : 'null') + '>, actual: <' +
+			      (a ? 'Object' : 'null') + '>';
+			fail(msg, undefined, undefined, assert.domEquals);
+		}
+		if (a === b) return;
+		
+		for (var key in {nodeType: 1, nodeName: 1, localName: 1, namespaceURI: 1, prefix: 1}) {
+			if (a[key] !== b[key]) {
+				msg = 'Incorect ' + key + ' at  <' + stack + '>. Expected: <' + b[key] + '>, actual: <' + a[key] + '>';
+				fail(msg, undefined, undefined, assert.domEquals);
+			}
+		}
+		
 		switch (a.nodeType) {
 			case 1: //ELEMENT_NODE
 			case 9: //DOCUMENT_NODE
 			case 11: //DOCUMENT_FRAGMENT_NODE
-				if (a.value !== b.value) return false;
+				stack += a.nodeName;
+				
+				if (a.value !== b.value) {
+					msg = 'Incorect node value at  <' + stack + '>. Expected: <' + b.value + '>, actual: <' +
+					      a.value + '>';
+					fail(msg, undefined, undefined, assert.domEquals);
+				}
 				
 				//Check attributes
 				var aAttr = getAttributes(a); //[].slice is not working in IE
 				var bAttr = getAttributes(b);
-				if (aAttr.length !== bAttr.length) return false;
+				if (aAttr.length !== bAttr.length) {
+					msg = 'Incorect number of attributes at <' + stack + '>. Expected: <' + bAttr.length +
+					      '>, actual: <' + aAttr.length + '>';
+					fail(msg, undefined, undefined, assert.domEquals);
+				}
 				smpl.data.sort(aAttr, [{key: 'nodeName'}, {key: 'nodeValue'}]);
 				smpl.data.sort(bAttr, [{key: 'nodeName'}, {key: 'nodeValue'}]);
 				for (var i = 0; i < aAttr.length; i++) {
-					if (!compareHTML(aAttr[i], bAttr[i], a, b)) return false;
+					compareHTML(aAttr[i], bAttr[i], stack, a, b);
 				}
 				
 				if (a.className || b.classname) {
-					if (!compareClasses(a, b)) return false;
+					compareClasses(a, b, stack);
 				}
+				compareSyle(a, b, stack);
 				
-				if (a.contentDocument) { //iframes
-					if (!compareHTML(a.contentDocument, b.contentDocument)) return false;
-				}
-				if (a.contentWindow && a.contentWindow.document) { //iframes for IE7
-					if (!compareHTML(a.contentWindow.document, b.contentWindow.document)) return false;
+				if ((a.contentWindow && a.contentWindow.document) || (b.contentWindow && b.contentWindow.document)) {
+					//iframes
+					compareHTML(a.contentWindow.document,  b.contentWindow.document);
 				}
 				
 				if ('script' === a.nodeName.toLowerCase()) {
-					if (a.innerHTML !== b.innerHTML) return false;
+					if (a.innerHTML !== b.innerHTML) {
+						msg = 'Incorect script content at <' + stack + '>. Expected: <' + b.innerHTML +
+						      '>, actual: <' + a.innerHTML + '>';
+						fail(msg, undefined, undefined, assert.domEquals);
+					}
 				}
 				
-				if (a.nodeType === 9 && a.doctype) {
+				if (a.nodeType === 9 && (a.doctype || b.doctype)) {
 					// In JSDom, the doctype is not in childNodes
-					if (!compareHTML(a.doctype, b.doctype)) return false;
+					compareHTML(a.doctype, b.doctype);
 				}
 				
 				//Check children
 				if (a.nodeName.toLowerCase() !== 'textarea') {
 					var aChildren = a.childNodes;
 					var bChildren = b.childNodes;
-					if (aChildren.length !== bChildren.length) return false;
+					if (aChildren.length !== bChildren.length) {
+						msg = 'Incorect number of children at <' + stack + '>. Expected: <' + bChildren.length +
+						      '>, actual: <' + aChildren.length + '>';
+						fail(msg, undefined, undefined, assert.domEquals);
+					}
 					for (var j = 0; j < aChildren.length; j++) {
-						if (!compareHTML(aChildren[j], bChildren[j])) return false;
+						compareHTML(aChildren[j], bChildren[j], stack + ' ');
 					}
 				}
-				break;
+				return;
 			case 2: //ATTRIBUTE_NODE
 				// the classnames for a and b can be in a different order.
 				if (a.name === 'class') {
-					if (!compareClasses(parentA, parentB)) return false;
+					compareClasses(parentA, parentB, stack);
 				}
-				return smpl.data.compare(getAttribute(parentA, a.name), getAttribute(parentB, b.name));
+				var attrA = getAttribute(parentA, a.name);
+				var attrB = getAttribute(parentB, b.name);
+				if (!smpl.data.compare(attrA, attrB)) {
+					msg = 'Incorect attribute at <' + stack + '>. Expected: <' + b.name + '=' + attrB +
+					      '>, actual: <' + a.name + '=' + attrA + '>';
+					fail(msg, undefined, undefined, assert.domEquals);
+				}
+				return;
 			case 3: //TEXT_NODE
-				return a.data === b.data;
+				if (b.data !== a.data) {
+					msg = 'Incorect text content at <' + stack + '>. Expected: <' + b.data +
+					      '>, actual: <' + a.data + '>';
+					fail(msg, undefined, undefined, assert.domEquals);
+				}
+				return;
 			case 4: //CDATA_SECTION_NODE --- comment section
-				throw 'node of type CDATA_SECTION_NODE not supported.';
+				msg = 'Comparison of CDATA_SECTION_NODE is not supported at <' + stack + '>';
+				return fail(msg, undefined, undefined, assert.domEquals);
 			case 5: //ENTITY_REFERENCE_NODE
-				throw 'node of type ENTITY_REFERENCE_NODE not supported.';
+				msg = 'Comparison of ENTITY_REFERENCE_NODE is not supported at <' + stack + '>';
+				return fail(msg, undefined, undefined, assert.domEquals);
 			case 6: //ENTITY_NODE
-				throw 'node of type ENTITY_NODE not supported.';
+				msg = 'Comparison of ENTITY_NODE is not supported at <' + stack + '>';
+				return fail(msg, undefined, undefined, assert.domEquals);
 			case 7: //PROCESSING_INSTRUCTION_NODE
-				throw 'node of type PROCESSING_INSTRUCTION_NODE not supported.';
+				msg = 'Comparison of PROCESSING_INSTRUCTION_NODE is not supported at <' + stack + '>';
+				return fail(msg, undefined, undefined, assert.domEquals);
 			case 8: //COMMENT_NODE
-				return a.data === b.data;
+				if (b.data !== a.data) {
+					msg = 'Incorect comment at <' + stack + '>. Expected: <' + b.data +
+					      '>, actual: <' + a.data + '>';
+					fail(msg, undefined, undefined, assert.domEquals);
+				}
+				return;
 			case 10: //DOCUMENT_TYPE_NODE --- DOCTYPE
-				return a.name === b.name &&
-				       a.publicId === b.publicId &&
-				       a.systemId === b.systemId &&
-				       a.internalSubset === b.internalSubset;
+				for (key in {name: 1, publicId: 1, systemId: 1, internalSubset: 1}) {
+					if (a[key] !== b[key]) {
+						msg = 'Incorect doctype.' + key + ' at  <' + stack + '>. Expected: <' + b[key] +
+						      '>, actual: <' + a[key] + '>';
+						fail(msg, undefined, undefined, assert.domEquals);
+					}
+				}
+				return;
 			case 12: //NOTATION_NODE
-				throw 'node of type NOTATION_NODE not supported.';
+				msg = 'Comparison of NOTATION_NODE is not supported at <' + stack + '>';
+				return fail(msg, undefined, undefined, assert.domEquals);
 		}
-		return true;
+		msg = 'Comparison exception at <' + stack + '>.';
+		fail(msg, undefined, undefined, assert.domEquals);
 	}
 	
 	/**
@@ -299,8 +386,10 @@ define(['./smpl.data', './smpl.utils'], function(smpl) {
 	 *                         If no message is provided, an automatic one will be used (optional)
 	 */
 	assert.domEquals = function(value, expected, message) {
-		if (!compareHTML(value, expected)) {
-			// fail breaks in IE with a value or an expected
+		if (!message) return compareHTML(value, expected, '');
+		try {
+			compareHTML(value, expected, '');
+		} catch (e) {
 			fail(message, undefined, undefined, assert.domEquals);
 		}
 	};
