@@ -394,6 +394,45 @@ define(['./smpl.data', './smpl.utils'], function(smpl) {
 		}
 	};
 	
+	var contains = function(value, expected) {
+		var expectedType = typeof expected;
+		if (expectedType !== typeof value) return false;
+		if (expectedType !== 'object' || expected === null || value === null) {
+			return smpl.data.compare(value, expected);
+		}
+		if (Array.isArray(expected)) {
+			for (var i = 0; i < expected.length; i++) {
+				if (expected.hasOwnProperty(i)) {
+					if (!contains(value[i], expected[i])) return false;
+				}
+			}
+		} else {
+			for (var key in expected) {
+				if (!contains(value[key], expected[key])) return false;
+			}
+		}
+		return true;
+	};
+	
+	/**
+	 * Assert that the `actual` object contains all the properties of the `expected` object.
+	 * 
+	 * Note that it doesn't matter if the property is part of the object or his prototype
+	 * 
+	 * ex: `assert.contains(obj, {a: 1})` will test that `obj` is an object and that `obj[a] === 1`.
+	 * 
+	 * @method contains
+	 * 
+	 * @param value {object} object to test
+	 * @param expected {object} object to test
+	 */
+	assert.contains = function(value, expected, message) {
+		if (!contains(value, expected)) {
+			fail(message, undefined, undefined, assert.contains);
+		}
+
+	};
+	
 	assert.AssertionError = AssertionError;
 	
 	return assert;

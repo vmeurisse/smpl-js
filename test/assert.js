@@ -416,7 +416,7 @@ define(['smplAssert/assert', 'smplUtils/smpl.utils'], function(assert, smpl) {
 				assert.domEquals(div, div, 'Same element comparison failed.');
 				assert.throws(assert.domEquals.bind(assert, div, div.attributes), assert.AssertionError,
 						'The comparison between two different node types succeeded.');
-
+				
 				var span1 = document.createElement('span');
 				assert.throws(assert.domEquals.bind(assert, div, span1), assert.AssertionError,
 						'The comparison between two elements of different node name succeeded.');
@@ -451,29 +451,29 @@ define(['smplAssert/assert', 'smplUtils/smpl.utils'], function(assert, smpl) {
 				div2.id = 'id';
 				div2.className = '  cn2  cn1';
 				assert.domEquals(div1, div2, 'The comparison between two identical simple elements failed.');
-
+				
 				div2.className = '  cn2  cn1 cn3';
 				assert.throws(assert.domEquals.bind(assert, div1, div2), assert.AssertionError,
 						'The comparison between two elements with different classes succeeded.');
 				div2.className = '  cn2  cn1';
-
+				
 				div1.innerHTML = '<span>text</span><span>text</span>';
 				div2.innerHTML = '<span>text</span><span>text</span>';
 				assert.domEquals(div1, div2, 'The comparison between two identical elements with children failed.');
-
+				
 				div2.innerHTML = '<span>text2</span><span>text</span>';
 				assert.throws(assert.domEquals.bind(assert, div1, div2), assert.AssertionError,
 						'The comparison between two elements with different children succeeded.');
-
+				
 				div1.innerHTML = '<span style="background-color: red">text</span><span>text</span>';
 				div2.innerHTML = '<span style="background-color: red">text</span><span>text</span>';
 				assert.domEquals(div1, div2,
 						'The comparison between two identical elements with a style attribute failed.');
-
+				
 				div2.innerHTML = '<span style="background-color: yellow">text</span><span>text</span>';
 				assert.throws(assert.domEquals.bind(assert, div1, div2), assert.AssertionError,
 						'The comparison between two elements with an different style attributes succeeded.');
-
+				
 				var div;
 				try {
 					div = document.createElement('div');
@@ -548,7 +548,7 @@ define(['smplAssert/assert', 'smplUtils/smpl.utils'], function(assert, smpl) {
 					idocument.close();
 					
 					assert.domEquals(iframe1, iframe2, 'The comparison between two identical iframes failed.');
-
+					
 					iframe3 = document.createElement('iframe');
 					iframe3.name = 'iframe';
 					document.body.appendChild(iframe3);
@@ -560,7 +560,7 @@ define(['smplAssert/assert', 'smplUtils/smpl.utils'], function(assert, smpl) {
 					idocument.open();
 					idocument.write('<!DOCTYPE html><html><head></head><body>this is the iframe</body></html>');
 					idocument.close();
-
+					
 					assert.throws(assert.domEquals.bind(assert, iframe1, iframe3), assert.AssertionError,
 							'The comparison between two iframes with different doctypes succeeded.');
 					
@@ -577,7 +577,7 @@ define(['smplAssert/assert', 'smplUtils/smpl.utils'], function(assert, smpl) {
 							'"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">' +
 							'<html><head></head><body>this is a different iframe</body></html>');
 					idocument.close();
-
+					
 					assert.throws(assert.domEquals.bind(assert, iframe1, iframe4), assert.AssertionError,
 							'The comparison between two iframes with different bodies succeeded.');
 				} finally {
@@ -588,6 +588,34 @@ define(['smplAssert/assert', 'smplUtils/smpl.utils'], function(assert, smpl) {
 				}
 			});
 			
+		});
+		
+		suite('contains', function() {
+			test('simple', function() {
+				assert.contains({'a': 1, 'b': 2}, {'a': 1});
+				
+				// Wrong value
+				assert.throws(assert.contains.bind(assert, {'a': 1, 'b': 2}, {'a': 2}));
+				
+				// Missing value
+				assert.throws(assert.contains.bind(assert, {'a': 1, 'b': 2}, {'c': 2}));
+				
+				var expected = [];
+				expected[3] = 3;
+				assert.contains([0, 1, 2, 3], expected);
+			});
+			
+			test('prototype', function() {
+				assert.contains(Object.create({'a': 1, 'b': 2}), {'a': 1});
+			});
+			
+			test('deep', function() {
+				assert.contains({x: {'a': 1, 'b': 2}}, {x: {'a': 1}});
+				
+				var expected = [];
+				expected[3] = {a: 1};
+				assert.contains([0, 1, 2, {a: 1, b: 2}], expected);
+			});
 		});
 	});
 });
