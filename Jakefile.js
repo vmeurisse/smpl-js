@@ -65,7 +65,7 @@ var getConfig = function(features) {
 	features.forEach(function(feature) {
 		config[feature] = coverageConfig[feature];
 	});
-	if (process.env.TRAVIS_NODE_VERSION && process.env.TRAVIS_NODE_VERSION !== '0.8') {
+	if (process.env.TRAVIS_NODE_VERSION && process.env.TRAVIS_NODE_VERSION !== '0.10') {
 		// For travis build, only start remote tests once
 		delete config.remote;
 	}
