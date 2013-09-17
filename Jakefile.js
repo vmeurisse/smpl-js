@@ -44,7 +44,7 @@ var coverageConfig = {
 		url: 'http://localhost:' + process.env.npm_package_config_port + '/test/index.html',
 		browsers: [
 			{browserName: 'chrome', platform: 'Linux'},
-			{browserName: 'firefox', platform: 'Linux'},
+			//{browserName: 'firefox', version: 22, platform: 'Linux'},
 			{browserName: 'opera', version: 12, platform: 'Linux'},
 			{browserName: 'opera', version: 11, platform: 'Windows XP'},
 			{browserName: 'internet explorer', version: 10, platform: 'Windows 8'},
@@ -53,8 +53,8 @@ var coverageConfig = {
 			{browserName: 'internet explorer', version: 7, platform: 'Windows XP'},
 			//{browserName: 'android', version: '4.0', platform: 'Linux'},
 			//{browserName: 'iPad', version: 6, platform: 'Mac 10.8'},
-			//{browserName: 'safari', version: 6, platform: 'Mac 10.8'},
-			//{browserName: 'safari', version: 5, platform: 'Mac 10.6'}
+			{browserName: 'safari', version: 6, platform: 'Mac 10.8'},
+			{browserName: 'safari', version: 5, platform: 'Mac 10.6'}
 		],
 	},
 	manualStop: true
