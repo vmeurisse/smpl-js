@@ -34,13 +34,13 @@ var coverageConfig = {
 		src: dir.src,
 		coverageDir: dir.coverageDir,
 		minCoverage: 70,
-		copyall: true
+		copyall: true,
+		coverageOnly: true
 	},
 	remote: {
 		user: process.env.SAUCELABS_USER || process.env.npm_package_config_sauceLabs_user,
 		key: process.env.SAUCELABS_KEY || process.env.npm_package_config_sauceLabs_key,
 		name: 'smpl test suite',
-		sauceConnect: true,
 		url: 'http://localhost:' + process.env.npm_package_config_port + '/test/index.html',
 		browsers: [
 			{browserName: 'chrome', platform: 'Linux'},
@@ -56,6 +56,10 @@ var coverageConfig = {
 			{browserName: 'safari', version: 6, platform: 'Mac 10.8'},
 			{browserName: 'safari', version: 5, platform: 'Mac 10.6'}
 		],
+	},
+	sauceConnect: {
+		user: process.env.SAUCELABS_USER || process.env.npm_package_config_sauceLabs_user,
+		key: process.env.SAUCELABS_KEY || process.env.npm_package_config_sauceLabs_key
 	},
 	manualStop: true
 };
@@ -119,7 +123,7 @@ task('lint', [], {async: true}, function() {
 });
 
 task('remote', [], {async: true}, function() {
-	smplBuild.tests(getConfig(['server', 'remote', 'coverage']), callback);
+	smplBuild.tests(getConfig(['server', 'remote', 'sauceConnect', 'coverage']), callback);
 });
 
 task('local', [], {async: true}, function() {
@@ -141,7 +145,7 @@ task('local', [], {async: true}, function() {
 });
 
 task('test', ['lint'], {async: true}, function() {
-	smplBuild.tests(getConfig(['node', 'server', 'remote', 'coverage']), callback);
+	smplBuild.tests(getConfig(['node', 'server', 'remote', 'sauceConnect', 'coverage']), callback);
 });
 
 task('unit', [], {async: true}, function() {

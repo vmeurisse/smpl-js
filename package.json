@@ -13,7 +13,7 @@
 	},
 	"devDependencies": {
 		"jake": "0.6.x",
-		"smpl-build-test": "0.7.0",
+		"smpl-build-test": "0.8.0",
 		"requirejs": "2.1.x",
 		"es5-shim": "2.1.x",
 		"JSON": "1.0.x",
