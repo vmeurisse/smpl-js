@@ -138,9 +138,10 @@ task('local', [], {async: true}, function() {
 	process.stdin.resume();
 	process.stdin.once('data', function() {
 		process.stdin.pause();
-		runner.stop();
-		showReportLocation();
-		complete();
+		runner.stop(function() {
+			showReportLocation();
+			complete();
+		});
 	});
 });
 
