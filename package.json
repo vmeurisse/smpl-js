@@ -9,15 +9,15 @@
 		"url": "https://github.com/vmeurisse/smpl-js/issues"
 	},
 	"dependencies": {
-		"amdefine": "0.0.x"
+		"amdefine": "0.1.x"
 	},
 	"devDependencies": {
-		"jake": "0.6.x",
+		"jake": "0.7.x",
 		"smpl-build-test": "0.8.0",
 		"requirejs": "2.1.x",
-		"es5-shim": "2.1.x",
+		"es5-shim": "2.3.x",
 		"JSON": "1.0.x",
-		"jsdom": "0.8.x"
+		"jsdom": "0.10.x"
 	},
 	"scripts": {
 		"test": "jake test",
