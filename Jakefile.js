@@ -87,23 +87,30 @@ var showReportLocation = function() {
 	console.log();
 };
 
-var manualStop = function(runner) {
-	console.log();
-	console.log('Please run your unit tests');
-	console.log();
-	console.log(coverageConfig.remote.url);
-	console.log(coverageConfig.remote.url + '?coverage=true');
-	console.log();
-	console.log('Press [ENTER] when ready to generate report');
-	console.log();
-	process.stdin.resume();
-	process.stdin.once('data', function() {
-		process.stdin.pause();
+var manualStop = function(e, runner) {
+	if (e) {
+		console.log(e);
 		runner.stop(function() {
-			showReportLocation();
-			complete();
+			callback(e);
 		});
-	});
+	} else {
+		console.log();
+		console.log('Please run your unit tests');
+		console.log();
+		console.log(coverageConfig.remote.url);
+		console.log(coverageConfig.remote.url + '?coverage=true');
+		console.log();
+		console.log('Press [ENTER] when ready to generate report');
+		console.log();
+		process.stdin.resume();
+		process.stdin.once('data', function() {
+			process.stdin.pause();
+			runner.stop(function() {
+				showReportLocation();
+				complete();
+			});
+		});
+	}
 };
 
 task('coverage', [], {async: true}, function() {
@@ -146,13 +153,13 @@ task('remote', [], {async: true}, function() {
 
 task('local', [], {async: true}, function() {
 	smplBuild.tests(getConfig(['server', 'coverage', 'manualStop']), function(e, runner) {
-		manualStop(runner);
+		manualStop(e, runner);
 	});
 });
 
 task('tunnel', [], {async: true}, function() {
 	smplBuild.tests(getConfig(['server', 'coverage', 'sauceConnect', 'manualStop']), function(e, runner) {
-		manualStop(runner);
+		manualStop(e, runner);
 	});
 });
 
