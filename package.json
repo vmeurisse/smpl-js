@@ -26,6 +26,7 @@
 		"lint": "jake lint",
 		"remote": "jake remote",
 		"local": "jake local",
+		"tunnel": "jake tunnel",
 		"doc": "jake doc"
 	},
 	"repository": {

@@ -80,13 +80,31 @@ var getConfig = function(features) {
 	return config;
 };
 
-function showReportLocation() {
+var showReportLocation = function() {
 	var location = dir.coverageDir.replace(/\\/g, '/');
 	console.log();
 	console.log('HTML report is at file:///' + location + 'html-report/index.html');
 	console.log();
-}
+};
 
+var manualStop = function(runner) {
+	console.log();
+	console.log('Please run your unit tests');
+	console.log();
+	console.log(coverageConfig.remote.url);
+	console.log(coverageConfig.remote.url + '?coverage=true');
+	console.log();
+	console.log('Press [ENTER] when ready to generate report');
+	console.log();
+	process.stdin.resume();
+	process.stdin.once('data', function() {
+		process.stdin.pause();
+		runner.stop(function() {
+			showReportLocation();
+			complete();
+		});
+	});
+};
 
 task('coverage', [], {async: true}, function() {
 	smplBuild.tests(getConfig(['node', 'coverage']), callback);
@@ -127,21 +145,14 @@ task('remote', [], {async: true}, function() {
 });
 
 task('local', [], {async: true}, function() {
-	var runner = smplBuild.tests(getConfig(['server', 'coverage', 'manualStop']));
-	console.log();
-	console.log('Please run your unit tests');
-	console.log();
-	console.log(coverageConfig.remote.url + '?coverage=true');
-	console.log();
-	console.log('Press [ENTER] when ready to generate report');
-	console.log();
-	process.stdin.resume();
-	process.stdin.once('data', function() {
-		process.stdin.pause();
-		runner.stop(function() {
-			showReportLocation();
-			complete();
-		});
+	smplBuild.tests(getConfig(['server', 'coverage', 'manualStop']), function(e, runner) {
+		manualStop(runner);
+	});
+});
+
+task('tunnel', [], {async: true}, function() {
+	smplBuild.tests(getConfig(['server', 'coverage', 'sauceConnect', 'manualStop']), function(e, runner) {
+		manualStop(runner);
 	});
 });
 
