@@ -12,30 +12,30 @@
 		"amdefine": "0.1.x"
 	},
 	"devDependencies": {
-		"jake": "0.7.x",
-		"smpl-build-test": "0.8.0",
-		"requirejs": "2.1.x",
 		"es5-shim": "2.3.x",
+		"jake": "0.7.x",
+		"jsdom": "0.10.x",
 		"JSON": "1.0.x",
-		"jsdom": "0.10.x"
+		"requirejs": "2.1.x",
+		"smpl-build-test": "0.8.0"
 	},
 	"scripts": {
-		"test": "jake test",
-		"unit": "jake unit",
 		"coverage": "jake coverage",
+		"doc": "jake doc",
 		"lint": "jake lint",
-		"remote": "jake remote",
 		"local": "jake local",
+		"remote": "jake remote",
+		"test": "jake test",
 		"tunnel": "jake tunnel",
-		"doc": "jake doc"
+		"unit": "jake unit"
 	},
 	"repository": {
 		"type": "git",
 		"url": "https://github.com/vmeurisse/smpl-js.git"
 	},
 	"files": [
-		"package.json",
 		"Jakefile.js",
+		"package.json",
 		"README.md",
 		"src"
 	],
