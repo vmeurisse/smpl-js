@@ -47,8 +47,8 @@ define(['./smpl.core'], function(smpl) {
 	 * @param max {Integer} the upper bound
 	 * @return {Integer} a random integer
 	 */
-	smpl.number.randomInt = function (min, max) {
-	    return Math.floor(Math.random() * (max - min)) + min;
+	smpl.number.randomInt = function(min, max) {
+		return Math.floor(Math.random() * (max - min)) + min;
 	};
 	
 	return smpl;

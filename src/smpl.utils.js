@@ -18,7 +18,7 @@ define(['./smpl.core'], function(smpl) {
 		return smpl.utils.uniq.last;
 	};
 	
-	var indent = function (array, level, chars) {
+	var indent = function(array, level, chars) {
 		if (!array.length) {
 			return chars;
 		}

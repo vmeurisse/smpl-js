@@ -49,7 +49,7 @@ define(['./smpl.core'], function(smpl) {
 	 * @param {String} end  The substring to search
 	 * @return {Boolean} true if `string` ends with `end`. False otherwise
 	 */
-	smpl.string.endsWith = function (string, end) {
+	smpl.string.endsWith = function(string, end) {
 		return string.slice(string.length - end.length) === end;
 	};
 	

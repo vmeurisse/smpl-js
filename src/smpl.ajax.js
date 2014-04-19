@@ -41,7 +41,7 @@ define(['./smpl.object'], function(smpl) {
 		var config = Object.create(smpl.ajax.defaultConfig);
 		smpl.object.update(config, args);
 		
-		['onSuccess', 'onError', 'onDone'].forEach(function (key) {
+		['onSuccess', 'onError', 'onDone'].forEach(function(key) {
 			if (config[key] && typeof config[key] === 'function') {
 				config[key] = [config[key]];
 			} else if (!config[key]) {

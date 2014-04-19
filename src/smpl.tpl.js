@@ -19,7 +19,7 @@ define(['./smpl.string', './smpl.utils'], function(smpl) {
 	};
 	smpl.tpl = {};
 	
-	smpl.tpl.Template = function (name, blocks, parents) {
+	smpl.tpl.Template = function(name, blocks, parents) {
 		this.__name = name || 'anonymous';
 		this.__blocks = blocks;
 		this.__widgets = {};
@@ -176,7 +176,7 @@ define(['./smpl.string', './smpl.utils'], function(smpl) {
 	};
 	
 	smpl.tpl.utils.MAIN = '_main';
-	smpl.tpl.utils.make = function (tpl, txt) {
+	smpl.tpl.utils.make = function(tpl, txt) {
 		var l = txt.length,
 			pos = 0,
 			startPos = 0,

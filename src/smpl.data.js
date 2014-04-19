@@ -17,7 +17,7 @@ define(['./smpl.core'], function(smpl) {
 	 * 
 	 * @param {Array.<Object>} list The list to filter. The original list is not modified.
 	 * @param {String} property The property to search in each object.
-	 * @param {?} property The property to search in each object. Equality is tested using the === operator.
+	 * @param {?} value The value to search in each object. Equality is tested using the === operator.
 	 * @return {Array.<Object>} The filtered list.
 	 */
 	smpl.data.filter = function(list, property, value) {
@@ -60,15 +60,15 @@ define(['./smpl.core'], function(smpl) {
 	 * @class smpl.data.Sorter
 	 * @constructor
 	 * 
-	 * @param {Object} args
-	 * @param {String} args.type            Type of the sorter. Default: 'default'. (optional). Supported values are:
+	 * @param {Object} sorter
+	 * @param {String} sorter.type            Type of the sorter. Default: 'default'. (optional). Supported values are:
 	 *                                       - 'default': 
 	 *                                       - 'number': 
 	 *                                       - 'enum': Compare values against a given order. Not found items are put at
 	 *                                                 the end.
 	 *                                       - 'text': To compare text in a case insensitive maner
-	 * @param {String} args.key             
-	 * @param {Number} args.dir             
+	 * @param {String} sorter.key             
+	 * @param {Number} sorter.dir             
 	 * @param {Array.<?>} args.enumArray    
 	 */
 	smpl.data.Sorter = function(sorter) {
@@ -257,7 +257,7 @@ define(['./smpl.core'], function(smpl) {
 		return obj;
 	};
 	
-	smpl.data.compare = function (a, b, stackA, stackB) {
+	smpl.data.compare = function(a, b, stackA, stackB) {
 		if (a === b) {
 			// We must take care that comparing 0 and -0 should return false;
 			return a !== 0 || 1 / a === 1 / b;
@@ -329,4 +329,3 @@ define(['./smpl.core'], function(smpl) {
 	
 	return smpl;
 });
-
