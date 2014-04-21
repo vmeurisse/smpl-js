@@ -12,7 +12,7 @@
 		"amdefine": "0.1.x"
 	},
 	"devDependencies": {
-		"es5-shim": "2.3.x",
+		"es5-shim": "~3.0.2",
 		"jake": "0.7.x",
 		"jsdom": "0.10.x",
 		"JSON": "1.0.x",
