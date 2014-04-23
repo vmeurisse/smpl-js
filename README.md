@@ -4,9 +4,9 @@ smpl-js
 Links
 -----
 
-[![NPM version](https://badge.fury.io/js/smpl.png)](http://badge.fury.io/js/smpl)
+[![NPM version](https://badge.fury.io/js/smpl.svg)](http://badge.fury.io/js/smpl)
 
-[![Build status](https://secure.travis-ci.org/vmeurisse/smpl-js.png?branch=master)](http://travis-ci.org/vmeurisse/smpl-js)
+[![Build status](https://travis-ci.org/vmeurisse/smpl-js.svg?branch=master)](http://travis-ci.org/vmeurisse/smpl-js)
 
 [![Selenium test status](https://saucelabs.com/buildstatus/smpl)](https://saucelabs.com/u/smpl)
 
